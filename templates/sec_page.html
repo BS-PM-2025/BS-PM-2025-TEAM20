@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Sec Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+        }
+        .welcome-message {
+            margin-top: 50px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .container {
+            padding: 20px;
+        }
+        footer {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Welcome to Sec Page</h1>
+</header>
+
+<div class="container">
+    <p class="welcome-message">Welcome to the Sec Page!</p>
+    <p>We're happy to have you here. You're now part of the academic community!</p>
+    <!-- כפתור הפנייה לדף הבקשות -->
+    <a href="{% url 'request_list' %}" class="button">Go to Requests</a>
+</div>
+
+<footer>
+    <p>&copy; 2025 Lecturer Page. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

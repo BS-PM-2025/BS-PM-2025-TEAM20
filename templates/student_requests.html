@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Requests</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f4f4; }
+        table { width: 80%; margin: auto; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ddd; }
+        th { background: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+
+<h2>My Grade Improvement Requests</h2>
+<table>
+    <tr>
+        <th>Course</th>
+        <th>Current Grade</th>
+        <th>Desired Grade</th>
+        <th>Status</th>
+    </tr>
+    {% for request in requests %}
+    <tr>
+        <td>{{ request.course_name }}</td>
+        <td>{{ request.current_grade }}</td>
+        <td>{{ request.desired_grade }}</td>
+        <td>{{ request.status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

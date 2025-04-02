@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Student Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+        }
+        .welcome-message {
+            margin-top: 50px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .container {
+            padding: 20px;
+        }
+        footer {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+        }
+        .section {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px #ccc;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .show-form-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .show-form-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Welcome to Student Page</h1>
+</header>
+
+<div class="container">
+    <p class="welcome-message">Welcome to our student page!</p>
+    <p>We're happy to have you here. You're now part of our student community!</p>
+
+    <!-- Button to navigate to student_requests/request_form page -->
+    <button class="show-form-button" onclick="navigateToRequestForm()">Improve Grade</button>
+
+</div>
+
+<footer>
+    <p>&copy; 2025 Student Page. All rights reserved.</p>
+</footer>
+
+<script>
+    // JavaScript function to navigate to the request_form page within student_requests
+    function navigateToRequestForm() {
+        window.location.href = "request_form/";  // Change this URL to match the correct path
+    }
+</script>
+
+</body>
+</html>
