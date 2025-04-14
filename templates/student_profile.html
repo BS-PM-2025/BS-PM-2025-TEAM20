@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profile</title>
+</head>
+<body>
+    <h2>Student Profile</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">שמור</button>
+    </form>
+
+    <hr>
+    <h3>Profile Summary</h3>
+
+    {% if profile.profile_picture %}
+        <img src="{{ profile.profile_picture.url }}" width="120" alt="Profile Picture">
+    {% else %}
+        <p>No profile picture uploaded.</p>
+    {% endif %}
+<a href="{% url 'home' %}" class="back-button">← Back to Home</a>
+
+    <p><strong>Name:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+    <p><strong>Username:</strong> {{ student.username }}</p>
+    <p><strong>Email:</strong> {{ profile.email|default:"Not Provided" }}</p>
+
+    <h4>Academic Details</h4>
+    <p><strong>Birth Date:</strong> {{ profile.birth_date|default:"Not Provided" }}</p>
+    <p><strong>Field of Study:</strong> {{ profile.field_of_study|default:"Not Provided" }}</p>
+    <p><strong>Graduation Year:</strong> {{ profile.graduation_year|default:"Not Provided" }}</p>
+    <p><strong>GPA:</strong> {{ profile.gpa|default:"Not Provided" }}</p>
+
+</body>
+</html>

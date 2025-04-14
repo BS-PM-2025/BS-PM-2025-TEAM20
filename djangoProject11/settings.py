@@ -121,7 +121,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
+# ב-settings.py
+# החלף 'accounts' בשם האפליקציה שלך
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -135,3 +136,19 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Email settings for sending emails using Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'elatrshnaghm@gmail.com'  # כתובת המייל שלך
+EMAIL_HOST_PASSWORD = 'hvijippszipohpna'  # סיסמה או App Password של חשבון ה־Gmail שלך
+DEFAULT_FROM_EMAIL = 'elatrshnaghm@gmail.com'  # המייל שממנו תישלח ההתראה
+
+
+import os
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

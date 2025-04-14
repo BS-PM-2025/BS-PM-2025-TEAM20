@@ -2,34 +2,137 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Requests</title>
+    <title>Grade Improvement Requests</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f4f4; }
-        table { width: 80%; margin: auto; border-collapse: collapse; }
-        th, td { padding: 10px; border: 1px solid #ddd; }
-        th { background: #4CAF50; color: white; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .request {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .request p {
+            margin: 8px 0;
+        }
+
+        .request strong {
+            color: #444;
+            display: inline-block;
+            width: 140px;
+        }
+
+        .no-requests {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-arrow:hover {
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .null-value {
+            color: #aaa;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
 
-<h2>My Grade Improvement Requests</h2>
-<table>
-    <tr>
-        <th>Course</th>
-        <th>Current Grade</th>
-        <th>Desired Grade</th>
-        <th>Status</th>
-    </tr>
-    {% for request in requests %}
-    <tr>
-        <td>{{ request.course_name }}</td>
-        <td>{{ request.current_grade }}</td>
-        <td>{{ request.desired_grade }}</td>
-        <td>{{ request.status }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<a href="{% url 'student_page' %}" class="back-arrow">← Back</a>
+
+<div class="container">
+   {% if username %}
+    <h2>Grade Requests for {{ username }}</h2>
+    <p>Last submission: {{ last_login_time }}</p>
+{% endif %}
+
+    {% if requests %}
+        {% for req in requests %}
+            <div class="request">
+                <p><strong>Course:</strong> {{ req.course_name|default:"NULL" }}</p>
+                <p><strong>Current Grade:</strong>
+                    {% if req.current_grade is not None %}
+                        {{ req.current_grade }}
+                    {% else %}
+                        <span class="null-value">NULL</span>
+                    {% endif %}
+                </p>
+                <p><strong>Desired Grade:</strong>
+                    {% if req.desired_grade is not None %}
+                        {{ req.desired_grade }}
+                    {% else %}
+                        <span class="null-value">NULL</span>
+                    {% endif %}
+                </p>
+                <p><strong>Status:</strong> {{ req.status|default:"NULL" }}</p>
+                <p><strong>Reason:</strong>
+                    {% if req.reason %}
+                        {{ req.reason }}
+                    {% else %}
+                        <span class="null-value">NULL</span>
+                    {% endif %}
+                </p>
+                <p><strong>Email:</strong>
+                    {% if req.email %}
+                        {{ req.email }}
+                    {% else %}
+                        <span class="null-value">NULL</span>
+                    {% endif %}
+                </p>
+                <p><strong>Username:</strong>
+                    {% if req.username %}
+                        {{ req.username }}
+                    {% else %}
+                        <span class="null-value">NULL</span>
+                    {% endif %}
+                </p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-requests">No requests found.</p>
+    {% endif %}
+</div>
 
 </body>
 </html>

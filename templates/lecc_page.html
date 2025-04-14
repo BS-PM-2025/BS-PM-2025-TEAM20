@@ -6,49 +6,78 @@
     <title>Welcome to Lec Page</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
-            color: #333;
-            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
+            position: relative;
         }
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 20px;
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
         }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
         .welcome-message {
-            margin-top: 50px;
             font-size: 24px;
             font-weight: bold;
             color: #4CAF50;
+            margin-bottom: 10px;
         }
-        .container {
-            padding: 20px;
-        }
+
         footer {
             margin-top: 30px;
-            padding: 10px;
-            background-color: #333;
+            padding-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
             color: white;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-arrow:hover {
+            background-color: rgba(0, 0, 0, 0.4);
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Welcome to Lec Page</h1>
-</header>
+<a href="{% url 'login_lecc' %}" class="back-arrow">← Back</a>
 
 <div class="container">
+    <h1>Welcome to Lec Page</h1>
     <p class="welcome-message">Welcome to the Lec Page!</p>
     <p>We're happy to have you here. You're now part of the academic community!</p>
-</div>
 
-<footer>
-    <p>&copy; 2025 Lecturer Page. All rights reserved.</p>
-</footer>
+    <footer>
+        <p>&copy; 2025 Lecturer Page. All rights reserved.</p>
+    </footer>
+</div>
 
 </body>
 </html>

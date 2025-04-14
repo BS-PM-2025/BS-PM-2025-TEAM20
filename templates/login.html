@@ -1,17 +1,62 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <style>
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #f0f0f0;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
 </head>
 <body>
-    <h2>Login</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
+    <!-- כפתור חזרה בצד שמאל למעלה -->
+    <button class="back-button" onclick="window.location.href='/'">← Back to Home</button>
+
+    <div class="container">
+        <h2>Login</h2>
+
+        {% if form.errors %}
+            <ul class="error-list">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+        </form>
+
+        <div class="forgot-password">
+            <p><a href="{% url 'password_reset' %}">Forgot Password?</a></p>
+        </div>
+
+        <div class="signup-link">
+            <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
+        </div>
+    </div>
 </body>
 </html>

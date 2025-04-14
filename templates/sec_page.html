@@ -4,44 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Sec Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
-            color: #333;
-            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
+            position: relative;
         }
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 20px;
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
         }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
         .welcome-message {
-            margin-top: 50px;
             font-size: 24px;
             font-weight: bold;
             color: #4CAF50;
+            margin-bottom: 10px;
         }
-        .container {
-            padding: 20px;
-        }
+
         footer {
             margin-top: 30px;
-            padding: 10px;
-            background-color: #333;
-            color: white;
+            padding-top: 10px;
+            font-size: 14px;
+            color: #555;
         }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-arrow:hover {
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-buttons {
+            margin: 20px 0;
+        }
+
         .button {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
             text-decoration: none;
-            border-radius: 5px;
+            margin: 10px 0;
             display: inline-block;
-            margin-top: 20px;
+            text-align: center;
         }
+
+        .button i {
+            margin-right: 8px;
+        }
+
         .button:hover {
             background-color: #45a049;
         }
@@ -49,20 +95,26 @@
 </head>
 <body>
 
-<header>
-    <h1>Welcome to Sec Page</h1>
-</header>
+<a href="{% url 'login_lecc' %}" class="back-arrow">← Back</a>
 
 <div class="container">
+    <h2>Welcome to Sec Page</h2>
     <p class="welcome-message">Welcome to the Sec Page!</p>
     <p>We're happy to have you here. You're now part of the academic community!</p>
-    <!-- כפתור הפנייה לדף הבקשות -->
-    <a href="{% url 'request_list' %}" class="button">Go to Requests</a>
-</div>
 
-<footer>
-    <p>&copy; 2025 Lecturer Page. All rights reserved.</p>
-</footer>
+    <div class="nav-buttons">
+        <a href="{% url 'request_list' %}" class="button">
+            <i class="fas fa-list"></i>  Requests improveing Scores
+        </a>
+        <a href="{% url 'add_office_hours' %}" class="button">
+            <i class="fas fa-clock"></i> Office Hours
+        </a>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Lecturer Page. All rights reserved.</p>
+    </footer>
+</div>
 
 </body>
 </html>
