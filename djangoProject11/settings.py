@@ -82,11 +82,13 @@ DATABASES = {
         'ENGINE': 'mssql',
         'NAME': 'App',
         'USER': 'sa',
-        'PASSWORD': 'Naghm@2004',
-        'HOST': 'localhost',
+        'PASSWORD': 'ZEDAN2806',
+        'HOST': 'DESKTOP-2BBOLBE\\MSSQLSERVER01',
+        'PORT': '1433',
 
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
+            'trust_server_certificate': 'yes',
         },
     }
 }

@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate
 from .forms import SignupForm, UserRegisterForm, UserRegisterLecForm, UserRegisterStu1Form
 
 from django.shortcuts import render, redirect
+from .models import StudentProfile
 
 
 def signup_view(request):
@@ -54,16 +55,40 @@ from django.contrib import messages
 from .forms import UserRegisterStu1Form
 from django.contrib.auth.models import User
 
+from django.contrib.auth.models import User
+from .models import UserRegisterStu1
+from .forms import UserRegisterStu1Form
+
 def signup_student(request):
     if request.method == 'POST':
-        form = UserRegisterStu1Form(request.POST)  # השתמש בטופס הנכון
+        form = UserRegisterStu1Form(request.POST)
         if form.is_valid():
-            form.save()  # שומר את הנתונים בטבלה UserRegisterLec
-            return redirect('login')  # הפנייה לדף המתאים לאחר ההרשמה
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+
+            
+            student = form.save(commit=False)
+            student.user = user
+            student.save()
+            StudentProfile.objects.create(student=student)
+
+            return redirect('login')
     else:
-        form = UserRegisterStu1Form()  # יוצרים את הטופס החדש במידה ולא נשלח טופס
+        form = UserRegisterStu1Form()
 
     return render(request, 'signup_student.html', {'form': form})
+
 
 
 
@@ -765,34 +790,28 @@ def update_profile(request):
     return render(request, 'update_profile.html', {'form': form})
 
 
-@csrf_exempt  # Only use this if absolutely necessary
+@csrf_exempt
+
+
+@login_required
 def update_student_profile(request):
+    try:
+        student = UserRegisterStu1.objects.get(user=request.user)
+    except UserRegisterStu1.DoesNotExist:
+        return redirect('create_student_profile')
+
+    profile, created = StudentProfile.objects.get_or_create(student=student)
+
     if request.method == 'POST':
-        try:
-            student = get_object_or_404(UserRegisterStu1, user=request.user)
-            profile = StudentProfile.objects.get(student=student)
+        form = StudentProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = StudentProfileForm(instance=profile)
 
-            # Handle profile picture separately
-            if 'profile_picture' in request.FILES:
-                profile.profile_picture = request.FILES['profile_picture']
-                profile.save()
-                return JsonResponse({'status': 'success'})
+    return render(request, 'student_profile_form.html', {'form': form})
 
-            # Handle other fields
-            field = request.POST.get('field')
-            value = request.POST.get('value')
-
-            if field and hasattr(profile, field):
-                setattr(profile, field, value)
-                profile.save()
-                return JsonResponse({'status': 'success'})
-
-            return JsonResponse({'status': 'error', 'message': 'Invalid field'})
-
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 from .models import StudentProfile, UserRegisterStu1
 from .forms import StudentProfileForm
 
