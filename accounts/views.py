@@ -56,58 +56,59 @@ from django.contrib.auth.models import User
 
 def signup_student(request):
     if request.method == 'POST':
-        form = UserRegisterStu1Form(request.POST)  # השתמש בטופס הנכון
+        form = UserRegisterStu1Form(request.POST)
         if form.is_valid():
-            form.save()  # שומר את הנתונים בטבלה UserRegisterLec
-            return redirect('login')  # הפנייה לדף המתאים לאחר ההרשמה
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+
+            student = form.save(commit=False)
+            student.user = user
+            student.save()
+
+            return redirect('login')
     else:
-        form = UserRegisterStu1Form()  # יוצרים את הטופס החדש במידה ולא נשלח טופס
+        form = UserRegisterStu1Form()
 
     return render(request, 'signup_student.html', {'form': form})
 
 
-
-
 def signup_lec(request):
     if request.method == 'POST':
-        form = UserRegisterLecForm(request.POST)  # השתמש בטופס הנכון
-        if form.is_valid():
-            form.save()  # שומר את הנתונים בטבלה UserRegisterLec
-            return redirect('lec_page')  # הפנייה לדף המתאים לאחר ההרשמה
-    else:
-        form = UserRegisterLecForm()  # יוצרים את הטופס החדש במידה ולא נשלח טופס
-
-    return render(request, 'signup_lec.html', {'form': form})
-
-
-def signup_lec(request):
-    if request.method == 'POST':
-        form = UserRegister(request.POST)
+        form = UserRegisterLecForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('lec_page')  # לאחר ההרשמה, הפנייה לדף התלמיד
+            return redirect('lec_page')
     else:
-        form = UserRegister()
-    return render(request, 'signup_lec.html', {'form': form})  # הטופס יוצג ב-HTML
-
-from django.shortcuts import render, redirect
-from .forms import UserRegisterForm
+        form = UserRegisterLecForm()
+    return render(request, 'signup_lec.html', {'form': form})
 
 def signup_lecc(request):
     if request.method == 'POST':
-        form = UserRegisterLecForm(request.POST)  # השתמש בטופס הנכון
+        form = UserRegisterLecForm(request.POST)
         if form.is_valid():
-            form.save()  # שומר את הנתונים בטבלה UserRegisterLec
-            return redirect('lecc_page')  # הפנייה לדף המתאים לאחר ההרשמה
+            form.save()
+            return redirect('lecc_page')
     else:
-        form = UserRegisterLecForm()  # יוצרים את הטופס החדש במידה ולא נשלח טופס
-
+        form = UserRegisterLecForm()
     return render(request, 'signup_lec.html', {'form': form})
+
 
 
 
 def student_page(request):
     return render(request, 'student_page.html')  # דף התלמיד לאחר ההרשמה
+
 def lecc_page(request):
     return render(request, 'lecc_page.html')  # דף התלמיד לאחר ההרשמה
 
@@ -418,7 +419,7 @@ def request_grade_improvement(request):
 from django.shortcuts import render
 
 def success_view(request):
-    return render(request, 'request_success.html')  # עמוד הצלחה
+    return render(request, 'request_success.html')
 
 
 
