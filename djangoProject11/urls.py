@@ -34,10 +34,7 @@ from accounts import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
-    path('', views.home_view, name='home'),
-
+    path('admin/', admin.site.urls),  # נתיב לממשק הניהול
     path('signup/', views.signup_view, name='signup'),
     path('home/', views.home_view, name='home'),
     path('', home_view, name='home'),# נתיב לדף ההרשמה
@@ -57,8 +54,8 @@ urlpatterns = [
     path('signup_lecc/', views.signup_lecc, name='signup_lecc'),
     path('student_requests/', views.student_requests, name='student_requests'),  # הנתיב לדף student_requests
     path('student/request_form/', views.request_form, name='request_form'),
-    path('request_success/', views.success_view, name='request_success'),y
-    # פרופיל סטודנט
+    path('request_success/', views.success_view, name='success'),
+    path('request_list/', views.request_list, name='request_list'),
     path('profile/', views.student_profile, name='student_profile'),
     path('profile/edit/', views.student_profile, {'edit': True}, name='edit_student_profile'),
     path('update-profile/', views.update_student_profile, name='update_profile'),
@@ -66,7 +63,7 @@ urlpatterns = [
 
     path('office_hours/', views.office_hours_list, name='office_hours_list'),
     path('add/', views.add_office_hours, name='add_office_hours'),
-    path('profile/edit/', views.student_profile, {'edit': True}, name='edit_student_profile'),
+  path('profile/edit/', views.student_profile, {'edit': True}, name='edit_student_profile'),
     path('profile/edit/', views.student_profile, {'edit': True}, name='student_profile_edit'),  # נתיב לעריכת פרופיל
     path('update_profile/', views.update_student_profile, name='update_student_profile'),
 
