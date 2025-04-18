@@ -66,5 +66,3 @@ urlpatterns = [
     path('lecc_page/', views.lecc_page, name='lecc_page'),
 
 ]
-
-    ]

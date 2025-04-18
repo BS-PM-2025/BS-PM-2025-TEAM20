@@ -89,21 +89,6 @@ def signup_student(request):
 
 
 # View to handle lecturer signup and redirect to 'lec_page'
-def signup_lec(request):
-    if request.method == 'POST':
-        # Create a form instance with submitted POST data
-        form = UserRegisterLecForm(request.POST)
-        if form.is_valid():
-            # Save the new lecturer to the database
-            form.save()
-            # Redirect to lecturer page after successful registration
-            return redirect('lec_page')
-    else:
-        # If GET request, create an empty form
-        form = UserRegisterLecForm()
-    # Render the signup template with the form
-    return render(request, 'signup_lec.html', {'form': form})
-
 
 
 
