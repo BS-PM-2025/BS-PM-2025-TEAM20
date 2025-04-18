@@ -49,6 +49,16 @@ class UserRegister(models.Model):
         return self.username
 
 
+    # String representation of the lecturer (shows username)
+    def __str__(self):
+        return self.username
+
+
+# Required Django imports
+from django.db import models
+from django.contrib.auth.models import User  # Importing Django's built-in User model (optional if needed)
+from django.contrib.auth.hashers import make_password  # For encrypting passwords if used
+from django.utils import timezone  # For handling time fields if needed
 
 def get_last_user():
     return User.objects.last().id if User.objects.exists() else 1  # Or another default ID if no users exist

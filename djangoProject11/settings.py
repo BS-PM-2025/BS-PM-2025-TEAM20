@@ -82,7 +82,8 @@ DATABASES = {
         'NAME': 'App',
         'USER': 'sa',
         'PASSWORD': 'Naghm@2004',
-        'HOST': '192.168.1.3',
+        'HOST': 'localhost',
+
 
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',

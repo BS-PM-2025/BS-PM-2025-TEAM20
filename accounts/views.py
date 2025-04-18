@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate
 from .forms import SignupForm, UserRegisterForm, UserRegisterLecForm, UserRegisterStu1Form
 
 from django.shortcuts import render, redirect
+from .models import StudentProfile
 
 
 def signup_view(request):
@@ -54,18 +55,54 @@ from django.contrib import messages
 from .forms import UserRegisterStu1Form
 from django.contrib.auth.models import User
 
+from django.contrib.auth.models import User
+from .models import UserRegisterStu1
+from .forms import UserRegisterStu1Form
+
 def signup_student(request):
     if request.method == 'POST':
-        form = UserRegisterStu1Form(request.POST)  # השתמש בטופס הנכון
+        form = UserRegisterStu1Form(request.POST)
         if form.is_valid():
-            form.save()  # שומר את הנתונים בטבלה UserRegisterLec
-            return redirect('login')  # הפנייה לדף המתאים לאחר ההרשמה
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+
+            student = form.save(commit=False)
+            student.user = user
+            student.save()
+
+            return redirect('login')
     else:
-        form = UserRegisterStu1Form()  # יוצרים את הטופס החדש במידה ולא נשלח טופס
+        form = UserRegisterStu1Form()
 
     return render(request, 'signup_student.html', {'form': form})
 
 
+# View to handle lecturer signup and redirect to 'lec_page'
+def signup_lec(request):
+    if request.method == 'POST':
+        # Create a form instance with submitted POST data
+        form = UserRegisterLecForm(request.POST)
+        if form.is_valid():
+            # Save the new lecturer to the database
+            form.save()
+            # Redirect to lecturer page after successful registration
+            return redirect('lec_page')
+    else:
+        # If GET request, create an empty form
+        form = UserRegisterLecForm()
+    # Render the signup template with the form
+    return render(request, 'signup_lec.html', {'form': form})
 
 
 
@@ -73,6 +110,7 @@ def signup_student(request):
 
 from django.shortcuts import render, redirect
 from .forms import UserRegisterForm
+
 
 
 
@@ -252,6 +290,8 @@ def login_student(request):
 
 
 
+
+# View to handle secretary login
 def login_sec(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -261,31 +301,38 @@ def login_sec(request):
 
             # חיפוש המשתמש ב- UserData לפי שם המשתמש
             try:
-                user =  UserRegister.objects.get(username=username)
-                if user.password == password:  # בדוק אם הסיסמה תואמת
-                    # אם הסיסמה נכונה, צור אובייקט משתמש של Django ואותך לאימות
+                # Search for the user in UserRegister table by username
+                user = UserRegister.objects.get(username=username)
+
+                if user.password == password:
+                    # If password matches, authenticate with Django system
                     django_user = authenticate(request, username=username, password=password)
 
                     if django_user is not None:
-                        # התחבר למערכת
+                        # If Django user is valid, log in the user
                         login(request, django_user)
-                        return redirect('sec_page')  # הפנה את המשתמש לדף הבית
+                        # Redirect to secretary page after successful login
+                        return redirect('sec_page')
                     else:
-                        return redirect('sec_page')   # אם לא נמצא משתמש
+                        # If Django user not found, still redirect (can be improved)
+                        return redirect('sec_page')
                 else:
-                    form.add_error(None, 'סיסמה לא נכונה')  # שגיאה אם הסיסמה לא נכונה
-            except  UserRegister.DoesNotExist:
-                form.add_error(None, 'שם משתמש לא קיים')  # שגיאה אם שם המשתמש לא קיים
+                    # Add form error if password is incorrect
+                    form.add_error(None, 'Incorrect password')
+            except UserRegister.DoesNotExist:
+                # Add form error if username does not exist
+                form.add_error(None, 'Username does not exist')
     else:
         form = LoginForm()
 
     return render(request, 'login_sec.html', {'form': form})
 
 
-from .forms import UserRegisterForm  # וודא שזה הייבוא
+from .forms import UserRegisterForm
 
 # views.py
 from .forms import UserRegisterForm  # שים לב שאתה מייבא את הטופס, לא את המודל
+
 def signup_sec(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)  # ודא שאתה משתמש בטופס ולא במודל
@@ -304,7 +351,6 @@ from django.contrib.auth.decorators import login_required
 from .models import GradeImprovementRequest
 from .forms import GradeImprovementRequestForm
 from .models import GradeImprovementRequest, UserRegisterStu1
-
 
 def request_grade_improvement(request):
     if request.method == 'POST':
@@ -326,7 +372,7 @@ def request_grade_improvement(request):
 from django.shortcuts import render
 
 def success_view(request):
-    return render(request, 'request_success.html')  # עמוד הצלחה
+    return render(request, 'request_success.html')
 
 
 
@@ -676,31 +722,15 @@ def update_profile(request):
 @csrf_exempt  # Only use this if absolutely necessary
 def update_student_profile(request):
     if request.method == 'POST':
-        try:
-            student = get_object_or_404(UserRegisterStu1, user=request.user)
-            profile = StudentProfile.objects.get(student=student)
+        form = StudentProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = StudentProfileForm(instance=profile)
 
-            # Handle profile picture separately
-            if 'profile_picture' in request.FILES:
-                profile.profile_picture = request.FILES['profile_picture']
-                profile.save()
-                return JsonResponse({'status': 'success'})
+    return render(request, 'student_profile_form.html', {'form': form})
 
-            # Handle other fields
-            field = request.POST.get('field')
-            value = request.POST.get('value')
-
-            if field and hasattr(profile, field):
-                setattr(profile, field, value)
-                profile.save()
-                return JsonResponse({'status': 'success'})
-
-            return JsonResponse({'status': 'error', 'message': 'Invalid field'})
-
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 from .models import StudentProfile, UserRegisterStu1
 from .forms import StudentProfileForm
 
