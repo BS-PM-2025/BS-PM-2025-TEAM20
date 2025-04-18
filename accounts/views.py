@@ -89,7 +89,36 @@ def signup_student(request):
 
 
 # View to handle lecturer signup and redirect to 'lec_page'
+def signup_lec(request):
+    if request.method == 'POST':
+        # Create a form instance with submitted POST data
+        form = UserRegisterLecForm(request.POST)
+        if form.is_valid():
+            # Save the new lecturer to the database
+            form.save()
+            # Redirect to lecturer page after successful registration
+            return redirect('lec_page')
+    else:
+        # If GET request, create an empty form
+        form = UserRegisterLecForm()
+    # Render the signup template with the form
+    return render(request, 'signup_lec.html', {'form': form})
 
+# View to handle lecturer signup and redirect to 'lecc_page'
+def signup_lecc(request):
+    if request.method == 'POST':
+        # Create a form instance with submitted POST data
+        form = UserRegisterLecForm(request.POST)
+        if form.is_valid():
+            # Save the new lecturer to the database
+            form.save()
+            # Redirect to lecc page after successful registration
+            return redirect('lecc_page')
+    else:
+        # If GET request, create an empty form
+        form = UserRegisterLecForm()
+    # Render the signup template with the form
+    return render(request, 'signup_lec.html', {'form': form})
 
 
 
@@ -106,6 +135,10 @@ def student_page(request):
 def sec_page(request):
     return render(request, 'sec_page.html')  # דף התלמיד לאחר ההרשמה
 
+def lecc_page(request):
+    return render(request, 'lecc_page.html')  # lecturer home page
+def lec_page(request):
+    return render(request, 'sec_page.html')  #lecturer home page
 from django.shortcuts import render
 
 def home_view(request):
@@ -202,7 +235,8 @@ from .models import UserRegister
 def student_page(request):
     return render(request, 'student_page.html')  # Render the student page template
 
-
+def lec_page(request):
+    return render(request, 'sec_page.html')
 from django.shortcuts import render, redirect
 
 from .forms import LoginForm
@@ -274,7 +308,43 @@ def login_student(request):
 
 
 
+# View to handle lecturer login:
+def login_lec(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            # Get username and password from the form
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
 
+            try:
+                # Search for the user in UserRegister table by username
+                user = UserRegister.objects.get(username=username)
+
+                if user.password == password:
+                    # If password matches, authenticate with Django system
+                    django_user = authenticate(request, username=username, password=password)
+
+                    if django_user is not None:
+                        # If Django user is valid, log in the user
+                        login(request, django_user)
+                        # Redirect to lecturer page after successful login
+                        return redirect('lec_page')
+                    else:
+                        # If Django user not found, still redirect (can be improved)
+                        return redirect('lec_page')
+                else:
+                    # Add form error if password is incorrect
+                    form.add_error(None, 'Incorrect password')
+            except UserRegister.DoesNotExist:
+                # Add form error if username not found
+                form.add_error(None, 'Username does not exist')
+    else:
+        # If GET request, create empty form
+        form = LoginForm()
+
+    # Render login page with form
+    return render(request, 'login_lec.html', {'form': form})
 
 # View to handle secretary login
 def login_sec(request):
@@ -311,7 +381,53 @@ def login_sec(request):
         form = LoginForm()
 
     return render(request, 'login_sec.html', {'form': form})
+# views.py
+from .forms import UserRegisterForm  # שים לב שאתה מייבא את הטופס, לא את המודל
 
+def login_lecc(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            # Get username and password from the submitted form
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+
+            # Search for the user in UserRegisterLec model by username
+            user = UserRegisterLec.objects.filter(username=username).first()  # Using filter to avoid exception if not found
+
+            if user:
+                # If user exists, check if the password matches
+                if user.password == password:
+                    # If password is correct, authenticate the user with Django system
+                    django_user = authenticate(request, username=username, password=password)
+
+                    if django_user is not None:
+                        # If authentication is successful, log in the user
+                        login(request, django_user)
+                        return redirect('lecc_page')  # Redirect to the lecturer special page
+                    else:
+                        # If Django authentication fails, still redirect (can be improved)
+                        return redirect('lecc_page')
+                else:
+                    # Add form error if password is incorrect
+                    form.add_error(None, 'Incorrect password')
+            else:
+                # Add form error if username does not exist
+                form.add_error(None, 'Username does not exist')
+    else:
+        # If GET request, create an empty form
+        form = LoginForm()
+
+    # Render the login page with the form
+    return render(request, 'login_lecc.html', {'form': form})
+
+
+# Import necessary Django utilities and models
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import GradeImprovementRequest
+from .forms import GradeImprovementRequestForm
+from .models import GradeImprovementRequest, UserRegisterStu1
 
 from .forms import UserRegisterForm
 

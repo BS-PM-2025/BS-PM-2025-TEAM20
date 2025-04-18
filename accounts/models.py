@@ -96,6 +96,33 @@ class StudentLoginHistory(models.Model):
 
 from django.db import models
 
+# Model to store lecturer registration information
+class UserRegisterLec(models.Model):
+    # Username field - must be unique (no duplicate usernames)
+    username = models.CharField(max_length=100, unique=True)
+
+    # Email field - must be unique (no duplicate emails)
+    email = models.EmailField(unique=True)
+
+    # Password field - stored as plain text for now (should be encrypted ideally)
+    password = models.CharField(max_length=255)
+
+    # First name of the lecturer
+    first_name = models.CharField(max_length=100)
+
+    # Last name of the lecturer
+    last_name = models.CharField(max_length=100)
+
+    # String representation of the lecturer (shows username)
+    def _str_(self):
+        return self.username
+
+
+# Required Django imports
+from django.db import models
+from django.contrib.auth.models import User  # Importing Django's built-in User model (optional if needed)
+from django.contrib.auth.hashers import make_password  # For encrypting passwords if used
+from django.utils import timezone  # For handling time fields if needed
 
 class OfficeHours(models.Model):
     # שם הסניף/המשרד
