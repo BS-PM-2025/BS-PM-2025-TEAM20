@@ -76,23 +76,20 @@ LOGIN_REDIRECT_URL = '/home/'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
         'NAME': 'App',
         'USER': 'sa',
-        'PASSWORD': 'ZEDAN2806',
-        'HOST': 'DESKTOP-2BBOLBE\\MSSQLSERVER01',
-        'PORT': '1433',
+        'PASSWORD': 'Naghm@2004',
+        'HOST': 'localhost',
+
 
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
-            'trust_server_certificate': 'yes',
         },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
