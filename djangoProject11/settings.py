@@ -76,7 +76,6 @@ LOGIN_REDIRECT_URL = '/home/'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
@@ -85,12 +84,12 @@ DATABASES = {
         'PASSWORD': 'Naghm@2004',
         'HOST': 'localhost',
 
+
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
         },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

@@ -22,9 +22,15 @@ class UserRegisterForm(forms.ModelForm):
     class Meta:
         model = UserRegister
         fields = ['username', 'email', 'password', 'first_name', 'last_name']
+
+
+# Django ModelForm for registering a lecturer
 class UserRegisterLecForm(forms.ModelForm):
     class Meta:
+        # Link this form to the UserRegisterLec model
         model = UserRegisterLec
+
+        # Specify the fields to include in the form
         fields = ['username', 'email', 'password', 'first_name', 'last_name']
 
 
