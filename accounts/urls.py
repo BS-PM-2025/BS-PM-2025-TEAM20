@@ -12,7 +12,7 @@ urlpatterns = [
 
 
 
- path('signup/', views.signup_view, name='signup'),
+    path('signup/', views.signup_view, name='signup'),
 
     path('signup_student/', views.signup_student, name='signup_student'),
     path('update-profile/', update_profile, name='update_profile'),
@@ -21,16 +21,15 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('login_lec/', views.login_lec, name='login_lec'),
     path('signup_lecc/', views.signup_lecc, name='signup_lecc'),
-path('signup_lecc/', views.signup_lecc, name='signup_lecc'),
-path('login_lecc/', views.login_lecc, name='login_lecc'),
-path('login_sec/', views.login_sec, name='login_sec'),
+    path('login_lecc/', views.login_lecc, name='login_lecc'),
+    path('login_sec/', views.login_sec, name='login_sec'),
     path('signup/', views.signup_view, name='signup'),
     path('signup_student/', views.signup_student, name='signup_student'),
     path('signup_lec/', views.signup_lec, name='signup_lec'),
-path('signup_sec/', views.signup_lec, name='signup_sec'),
+    path('signup_sec/', views.signup_lec, name='signup_sec'),
     path('profile/', views.student_profile, name='student_profile'),
     path('profile/edit/', views.student_profile, name='edit_student_profile'),
-path('update_profile/', views.update_student_profile, name='update_student_profile'),
+    path('update_profile/', views.update_student_profile, name='update_student_profile'),
 
 
     path('profile/edit/', views.student_profile, {'edit': True}, name='student_profile_edit'),  # נתיב לעריכת פרופיל
@@ -39,9 +38,9 @@ path('update_profile/', views.update_student_profile, name='update_student_profi
     path('login/student/', views.login_student, name='login_student'),
     path('login/lecturer/', views.login_lec, name='login_lec'),
     path('student/', views.student_page, name='student_page'),
-   path('sec_page/', views.sec_page, name='sec_page'),
+    path('sec_page/', views.sec_page, name='sec_page'),
     path('lec_page/', views.lec_page, name='lec_page'),
-path('lecc_page/', views.lecc_page, name='lecc_page'),
+    path('lecc_page/', views.lecc_page, name='lecc_page'),
     path('', views.home_view, name='home'),
     path('office_hours/', views.office_hours_list, name='office_hours_list'),
     path('add/', views.add_office_hours, name='add_office_hours'),
@@ -56,15 +55,11 @@ path('lecc_page/', views.lecc_page, name='lecc_page'),
     path('reset-password/<uidb64>/<token>/', views.reset_password, name='reset_password'),
 
     path('password_reset_done/', views.password_reset_done, name='password_reset_done'),
-path('password-reset/', views.send_password_reset_email, name='password_reset'),
     path('password-reset/done/', views.password_reset_done, name='password_reset_done'),
-    path('reset-password/<uidb64>/<token>/', views.reset_password, name='reset_password'),
     path('create-profile/', views.create_student_profile, name='create_student_profile'),
-path('profile/', views.student_profile, name='profile'),
-path('profile/', views.student_profile, name='profile'),
+    path('profile/', views.student_profile, name='profile'),
     path('update-profile/', views.update_student_profile, name='update_profile'),  # הוספת אפשרות עדכון
     path('create-profile/', views.create_student_profile, name='create_student_profile'),
-path('update_profile/', views.update_student_profile, name='update_profile'),
 
 
 
