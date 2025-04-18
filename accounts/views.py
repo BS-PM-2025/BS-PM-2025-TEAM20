@@ -77,11 +77,9 @@ def signup_student(request):
                 last_name=last_name
             )
 
-            
             student = form.save(commit=False)
             student.user = user
             student.save()
-            StudentProfile.objects.create(student=student)
 
             return redirect('login')
     else:
@@ -89,56 +87,50 @@ def signup_student(request):
 
     return render(request, 'signup_student.html', {'form': form})
 
-
-
-
-
+# View to handle lecturer signup and redirect to 'lec_page'
 def signup_lec(request):
     if request.method == 'POST':
-        form = UserRegisterLecForm(request.POST)  # השתמש בטופס הנכון
+        # Create a form instance with submitted POST data
+        form = UserRegisterLecForm(request.POST)
         if form.is_valid():
-            form.save()  # שומר את הנתונים בטבלה UserRegisterLec
-            return redirect('lec_page')  # הפנייה לדף המתאים לאחר ההרשמה
+            # Save the new lecturer to the database
+            form.save()
+            # Redirect to lecturer page after successful registration
+            return redirect('lec_page')
     else:
-        form = UserRegisterLecForm()  # יוצרים את הטופס החדש במידה ולא נשלח טופס
-
+        # If GET request, create an empty form
+        form = UserRegisterLecForm()
+    # Render the signup template with the form
     return render(request, 'signup_lec.html', {'form': form})
 
-
-def signup_lec(request):
-    if request.method == 'POST':
-        form = UserRegister(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('lec_page')  # לאחר ההרשמה, הפנייה לדף התלמיד
-    else:
-        form = UserRegister()
-    return render(request, 'signup_lec.html', {'form': form})  # הטופס יוצג ב-HTML
-
-from django.shortcuts import render, redirect
-from .forms import UserRegisterForm
-
+# View to handle lecturer signup and redirect to 'lecc_page'
 def signup_lecc(request):
     if request.method == 'POST':
-        form = UserRegisterLecForm(request.POST)  # השתמש בטופס הנכון
+        # Create a form instance with submitted POST data
+        form = UserRegisterLecForm(request.POST)
         if form.is_valid():
-            form.save()  # שומר את הנתונים בטבלה UserRegisterLec
-            return redirect('lecc_page')  # הפנייה לדף המתאים לאחר ההרשמה
+            # Save the new lecturer to the database
+            form.save()
+            # Redirect to lecc page after successful registration
+            return redirect('lecc_page')
     else:
-        form = UserRegisterLecForm()  # יוצרים את הטופס החדש במידה ולא נשלח טופס
-
+        # If GET request, create an empty form
+        form = UserRegisterLecForm()
+    # Render the signup template with the form
     return render(request, 'signup_lec.html', {'form': form})
+
+
+
 
 
 
 def student_page(request):
     return render(request, 'student_page.html')  # דף התלמיד לאחר ההרשמה
+
 def lecc_page(request):
-    return render(request, 'lecc_page.html')  # דף התלמיד לאחר ההרשמה
-
+    return render(request, 'lecc_page.html')  # lecturer home page
 def lec_page(request):
-    return render(request, 'sec_page.html')  # דף התלמיד לאחר ההרשמה
-
+    return render(request, 'sec_page.html')  #lecturer home page
 def sec_page(request):
     return render(request, 'sec_page.html')  # דף התלמיד לאחר ההרשמה
 
@@ -237,7 +229,8 @@ from .models import UserRegister
 
 def student_page(request):
     return render(request, 'student_page.html')  # Render the student page template
-
+def lec_page(request):
+    return render(request, 'lec_page.html')
 
 from django.shortcuts import render, redirect
 
@@ -308,70 +301,134 @@ def login_student(request):
     else:
         print("Request method is not POST.")  # הדפסה
 
-
+# View to handle lecturer login:
 def login_lec(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
+            # Get username and password from the form
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            # חיפוש המשתמש ב- UserData לפי שם המשתמש
             try:
-                user =  UserRegister.objects.get(username=username)
-                if user.password == password:  # בדוק אם הסיסמה תואמת
-                    # אם הסיסמה נכונה, צור אובייקט משתמש של Django ואותך לאימות
+                # Search for the user in UserRegister table by username
+                user = UserRegister.objects.get(username=username)
+
+                if user.password == password:
+                    # If password matches, authenticate with Django system
                     django_user = authenticate(request, username=username, password=password)
 
                     if django_user is not None:
-                        # התחבר למערכת
+                        # If Django user is valid, log in the user
                         login(request, django_user)
-                        return redirect('lec_page')  # הפנה את המשתמש לדף הבית
+                        # Redirect to lecturer page after successful login
+                        return redirect('lec_page')
                     else:
-                        return redirect('lec_page')   # אם לא נמצא משתמש
+                        # If Django user not found, still redirect (can be improved)
+                        return redirect('lec_page')
                 else:
-                    form.add_error(None, 'סיסמה לא נכונה')  # שגיאה אם הסיסמה לא נכונה
-            except  UserRegister.DoesNotExist:
-                form.add_error(None, 'שם משתמש לא קיים')  # שגיאה אם שם המשתמש לא קיים
+                    # Add form error if password is incorrect
+                    form.add_error(None, 'Incorrect password')
+            except UserRegister.DoesNotExist:
+                # Add form error if username not found
+                form.add_error(None, 'Username does not exist')
     else:
+        # If GET request, create empty form
         form = LoginForm()
 
+    # Render login page with form
     return render(request, 'login_lec.html', {'form': form})
 
+
+# View to handle secretary login
 def login_sec(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
+            # Get username and password from the form
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            # חיפוש המשתמש ב- UserData לפי שם המשתמש
             try:
-                user =  UserRegister.objects.get(username=username)
-                if user.password == password:  # בדוק אם הסיסמה תואמת
-                    # אם הסיסמה נכונה, צור אובייקט משתמש של Django ואותך לאימות
+                # Search for the user in UserRegister table by username
+                user = UserRegister.objects.get(username=username)
+
+                if user.password == password:
+                    # If password matches, authenticate with Django system
                     django_user = authenticate(request, username=username, password=password)
 
                     if django_user is not None:
-                        # התחבר למערכת
+                        # If Django user is valid, log in the user
                         login(request, django_user)
-                        return redirect('sec_page')  # הפנה את המשתמש לדף הבית
+                        # Redirect to secretary page after successful login
+                        return redirect('sec_page')
                     else:
-                        return redirect('sec_page')   # אם לא נמצא משתמש
+                        # If Django user not found, still redirect (can be improved)
+                        return redirect('sec_page')
                 else:
-                    form.add_error(None, 'סיסמה לא נכונה')  # שגיאה אם הסיסמה לא נכונה
-            except  UserRegister.DoesNotExist:
-                form.add_error(None, 'שם משתמש לא קיים')  # שגיאה אם שם המשתמש לא קיים
+                    # Add form error if password is incorrect
+                    form.add_error(None, 'Incorrect password')
+            except UserRegister.DoesNotExist:
+                # Add form error if username does not exist
+                form.add_error(None, 'Username does not exist')
     else:
+        # If GET request, create empty form
         form = LoginForm()
 
+    # Render login page with form
     return render(request, 'login_sec.html', {'form': form})
 
 
-from .forms import UserRegisterForm  # וודא שזה הייבוא
+from .forms import UserRegisterForm
 
 # views.py
 from .forms import UserRegisterForm  # שים לב שאתה מייבא את הטופס, לא את המודל
+
+def login_lecc(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            # Get username and password from the submitted form
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+
+            # Search for the user in UserRegisterLec model by username
+            user = UserRegisterLec.objects.filter(username=username).first()  # Using filter to avoid exception if not found
+
+            if user:
+                # If user exists, check if the password matches
+                if user.password == password:
+                    # If password is correct, authenticate the user with Django system
+                    django_user = authenticate(request, username=username, password=password)
+
+                    if django_user is not None:
+                        # If authentication is successful, log in the user
+                        login(request, django_user)
+                        return redirect('lecc_page')  # Redirect to the lecturer special page
+                    else:
+                        # If Django authentication fails, still redirect (can be improved)
+                        return redirect('lecc_page')
+                else:
+                    # Add form error if password is incorrect
+                    form.add_error(None, 'Incorrect password')
+            else:
+                # Add form error if username does not exist
+                form.add_error(None, 'Username does not exist')
+    else:
+        # If GET request, create an empty form
+        form = LoginForm()
+
+    # Render the login page with the form
+    return render(request, 'login_lecc.html', {'form': form})
+
+
+# Import necessary Django utilities and models
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import GradeImprovementRequest
+from .forms import GradeImprovementRequestForm
+from .models import GradeImprovementRequest, UserRegisterStu1
+
 def signup_sec(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)  # ודא שאתה משתמש בטופס ולא במודל
@@ -383,44 +440,9 @@ def signup_sec(request):
     return render(request, 'signup_sec.html', {'form': form})
 
 
-def lec_page(request):
-    return render(request, 'sec_page.html')  # Render the lecturer page template
+# View to render the lecturer's page
 
-def login_lecc(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-
-            # חיפוש המשתמש ב- UserRegister לפי שם המשתמש
-            user = UserRegisterLec.objects.filter(username=username).first()  # השתמש ב-filter
-
-            if user:  # אם נמצא משתמש
-                if user.password == password:  # בדוק אם הסיסמה תואמת
-                    # אם הסיסמה נכונה, צור אובייקט משתמש של Django ואותך לאימות
-                    django_user = authenticate(request, username=username, password=password)
-
-                    if django_user is not None:
-                        # התחבר למערכת
-                        login(request, django_user)
-                        return redirect('lecc_page')  # הפנה את המשתמש לדף הבית
-                    else:
-                        return redirect('lecc_page')   # אם לא נמצא משתמש
-                else:
-                    form.add_error(None, 'סיסמה לא נכונה')  # שגיאה אם הסיסמה לא נכונה
-            else:
-                form.add_error(None, 'שם משתמש לא קיים')  # שגיאה אם שם המשתמש לא קיים
-    else:
-        form = LoginForm()
-
-    return render(request, 'login_lecc.html', {'form': form})
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import GradeImprovementRequest
-from .forms import GradeImprovementRequestForm
-from .models import GradeImprovementRequest, UserRegisterStu1
+# View to handle login for a special lecturer account
 
 
 def request_grade_improvement(request):
@@ -443,7 +465,7 @@ def request_grade_improvement(request):
 from django.shortcuts import render
 
 def success_view(request):
-    return render(request, 'request_success.html')  # עמוד הצלחה
+    return render(request, 'request_success.html')
 
 
 
