@@ -48,20 +48,7 @@ class UserRegister(models.Model):
     def __str__(self):
         return self.username
 
-class UserRegisterLec(models.Model):
-    # עמודות לטבלת משתמשים
-    username = models.CharField(max_length=100, unique=True)  # אם ברצונך למנוע כפילויות בשמות משתמשים
-    email = models.EmailField(unique=True)  # אם ברצונך למנוע כפילויות בדוא"ל
-    password = models.CharField(max_length=255)  # הסיסמה תשמר כטקסט מוצפן
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
 
-    def __str__(self):
-        return self.username
-
-from django.db import models
-from django.contrib.auth.models import User  # Importing the User model
-from django.contrib.auth.hashers import make_password
 
 def get_last_user():
     return User.objects.last().id if User.objects.exists() else 1  # Or another default ID if no users exist
