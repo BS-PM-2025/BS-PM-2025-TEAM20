@@ -63,12 +63,10 @@ from django.db import models
 from django.contrib.auth.models import User  # Importing the User model
 from django.contrib.auth.hashers import make_password
 
-def get_last_user():
-    return User.objects.last().id if User.objects.exists() else 1  # Or another default ID if no users exist
 from django.utils import timezone
 
 class UserRegisterStu1(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=get_last_user)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
