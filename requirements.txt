@@ -1,2 +1,4 @@
 Django>=3.2
 django-mssql-backend
+django-mssql-backend==2.8.1
+pyodbc>=4.0.0

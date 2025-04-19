@@ -83,12 +83,14 @@ DATABASES = {
         'USER': 'sa',
         'PASSWORD': 'Naghm@2004',
         'HOST': '192.168.56.1',
+        'PORT': '1433',  # מפורש בפורט
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
+            'unicode_results': True,
+            'extra_params': 'TrustServerCertificate=yes'  # אם יש בעיות SSL
         },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

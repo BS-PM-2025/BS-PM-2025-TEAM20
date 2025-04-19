@@ -13,7 +13,20 @@ pipeline {
         PYTHONPATH = "${HOME}/.local/lib/python3.10/site-packages:${env.PYTHONPATH}"
         // שימי לב: שנה את python3.10 אם את משתמשת בגרסה אחרת
     }
-
+stage('Install Dependencies') {
+    steps {
+        sh '''
+            echo "⬇️ Installing Microsoft ODBC Driver..."
+            curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+            curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+            sudo apt-get update
+            sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17
+            echo "⬇️ Installing Python packages..."
+            pip3 install --user --upgrade pip
+            pip3 install --user -r requirements.txt
+        '''
+    }
+}
     stages {
         stage('Checkout') {
             steps {
