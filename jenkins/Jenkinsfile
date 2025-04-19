@@ -1,117 +1,30 @@
 pipeline {
-    agent any
-
-    environment {
-        // הגדרות מסלולים וסביבה
-        PYTHONPATH = "${env.WORKSPACE}/.local/lib/python3.10/site-packages:${env.PYTHONPATH}"
-        DJANGO_SETTINGS_MODULE = "djangoProject11.settings"
-
-        // הגדרות מסד נתונים (מומלץ להעביר ל-Credentials של Jenkins)
-        DB_HOST = "192.168.56.1"
-        DB_PORT = "1433"
-        DB_NAME = "App"
-    }
-
+    agent none
     stages {
-        stage('Checkout Code') {
+        stage('Build') {
+            agent {
+                docker {
+                    image 'python:2-alpine'
+                }
+            }
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/JO']],  // התאם לשם הברנצ' שלך
-                    extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/NaghmEbrahem30/Jenkins.git']]
-                ])
+                sh 'python -m py_compile sources/add2vals.py sources/calc.py'
             }
         }
-
-        stage('Setup Environment') {
-            steps {
-                sh '''
-                    echo "### Setting up Python environment ###"
-                    python3 --version
-                    pip3 --version
-
-                    # יצירת סביבה וירטואלית (אופציונלי)
-                    python3 -m venv .venv
-                    source .venv/bin/activate
-                '''
+        stage('Test') {
+            agent {
+                docker {
+                    image 'qnib/pytest'
+                }
             }
-        }
-
-        stage('Install Dependencies') {
             steps {
-                sh '''
-                    echo "### Installing Python packages ###"
-                    pip3 install --upgrade pip wheel
-                    pip3 install -r requirements.txt
-
-                    # התקנת חבילות נוספות אם נדרש
-                    pip3 install pyodbc django-mssql-backend
-                '''
+                sh 'py.test --verbose --junit-xml test-reports/results.xml sources/test_calc.py'
             }
-        }
-
-        stage('Configure ODBC') {
-            steps {
-                sh '''
-                    echo "### Configuring Microsoft ODBC Driver ###"
-                    # הוספת מאגר החבילות
-                    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-archive-keyring.gpg
-                    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/ubuntu/20.04/prod focal main" | sudo tee /etc/apt/sources.list.d/mssql-release.list
-
-                    # התקנת דרייברים
-                    sudo apt-get update -qq
-                    echo "msodbcsql17 msodbcsql/ACCEPT_EULA boolean true" | sudo debconf-set-selections
-                    sudo apt-get install -y --no-install-recommends msodbcsql17 unixodbc-dev
-
-                    # בדיקת התקנת דרייבר
-                    odbcinst -q -d
-                '''
+            post {
+                always {
+                    junit 'test-reports/results.xml'
+                }
             }
-        }
-
-        stage('Database Migration') {
-            steps {
-                sh '''
-                    echo "### Applying database migrations ###"
-                    python3 manage.py check
-                    python3 manage.py migrate --no-input
-                '''
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh '''
-                    echo "### Running test suite ###"
-                    python3 manage.py test --no-input
-                '''
-            }
-        }
-    }
-
-    post {
-        always {
-            // ארכוב קבצים חשובים
-            archiveArtifacts artifacts: '**/migrations/*.py,**/requirements.txt', allowEmptyArchive: true
-            junit '**/test-results/*.xml'  // אם אתה משתמש ב-test reporting
-        }
-        success {
-            slackSend color: "good", message: "Pipeline succeeded: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
-            echo '### PIPELINE COMPLETED SUCCESSFULLY ###'
-        }
-        failure {
-            slackSend color: "danger", message: "Pipeline failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
-            echo '### PIPELINE FAILED - CHECK LOGS ###'
-            // שליחת התראה במייל
-            emailext body: "Check console output at ${env.BUILD_URL}", subject: "Pipeline Failed: ${env.JOB_NAME}", to: 'naghm@example.com'
-        }
-        cleanup {
-            // ניקוי אחרון
-            sh '''
-                echo "Cleaning up workspace..."
-                rm -rf .venv || true
-            '''
         }
     }
 }
