@@ -1,49 +1,52 @@
 pipeline {
     agent any
 
+    environment {
+        // מבטיח שהסרגל ~/.local/bin יתווסף ל-PATH כדי שה-pip --user יהיה זמין
+        PATH = "${HOME}/.local/bin:${env.PATH}"
+    }
+
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
             steps {
-                git branch: 'JO', url: 'https://github.com/NaghmEbrahem30/Jenkins.git'
+                // שולף את הקוד מה־SCM שהוגדר ב‑Job
+                checkout scm
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    python3 -m venv venv
-                    source venv/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
+                    # מתקין pip ו־virtualenv (אם נדרש) למשתמש ולא לצורך הרצת root
+                    pip3 install --user --upgrade pip
+
+                    # מתקין את כל התלויות מקובץ requirements.txt לתוך ~/.local
+                    pip3 install --user -r requirements.txt
                 '''
             }
         }
 
         stage('Run Migrations') {
             steps {
-                sh '''
-                    source venv/bin/activate
-                    python3 manage.py migrate
-                '''
+                // מריץ מיגרציות בעזרת python3 מתוך המערכת
+                sh 'python3 manage.py migrate'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh '''
-                    source venv/bin/activate
-                    python3 manage.py test
-                '''
+                // מריץ את כל הבדיקות
+                sh 'python3 manage.py test'
             }
         }
     }
 
     post {
         success {
-            echo '🎉 כל הטסטים עברו בהצלחה!'
+            echo '🎉 כל השלבים עברו בהצלחה!'
         }
         failure {
-            echo '❌ יש שגיאה באחד השלבים. בדוק את הלוגים.'
+            echo '❌ יש שגיאה – בדוק את לוג Jenkins.'
         }
     }
 }
