@@ -8,7 +8,7 @@ pipeline {
         PYTHONPATH = "${HOME}/.local/lib/python3.10/site-packages:${env.PYTHONPATH}"
     }
 
-    stages {  // <-- זה החסר העיקרי שגרם לשגיאה!
+    stages {
         stage('Checkout') {
             steps {
                 checkout scm
@@ -19,10 +19,17 @@ pipeline {
             steps {
                 sh '''
                     echo "⬇️ Installing Microsoft ODBC Driver..."
-                    curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-                    curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-                    sudo apt-get update
-                    sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
+                    # הורדה והתקנה ללא שימוש ב-sudo
+                    curl https://packages.microsoft.com/keys/microsoft.asc > microsoft.asc
+                    gpg --dearmor < microsoft.asc > microsoft.gpg
+                    mv microsoft.gpg /etc/apt/trusted.gpg.d/
+
+                    curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > mssql-release.list
+                    mv mssql-release.list /etc/apt/sources.list.d/
+
+                    apt-get update -y
+                    ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
+
                     echo "⬇️ Installing Python packages..."
                     pip3 install --user --upgrade pip
                     pip3 install --user -r requirements.txt
