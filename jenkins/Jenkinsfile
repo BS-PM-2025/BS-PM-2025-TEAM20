@@ -4,15 +4,30 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'jenkis', // או כל שם הסניף שברצונך לבנות
+                git branch: 'jenkis',
                     url: 'https://github.com/NaghmEbrahem30/Jenkins.git',
                     credentialsId: 'github-creds'
             }
         }
 
+        stage('Install Requirements') {
+            steps {
+                // יוצרים סביבת וירטואלית ומתקינים את הדרישות
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                '''
+            }
+        }
+
         stage('Run Django Tests') {
             steps {
-                sh 'python3 manage.py test' // הרץ את מבחני Django
+                sh '''
+                    . venv/bin/activate
+                    python3 manage.py test
+                '''
             }
         }
     }
