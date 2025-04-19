@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     stages {
+        // מחליפים את Checkout ה־מוגדר כברירת־מחדל בביטוי מפורש בענף main
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/NaghmEbrahem30/Jenkins.git'
+                git branch: 'JO', url: 'https://github.com/NaghmEbrahem30/Jenkins.git'
             }
         }
 
