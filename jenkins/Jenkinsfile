@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', // או SPR1
-                    url: 'https://github.com/BS-PM-2025/BS-PM-2025-TEAM20.git',
+                git branch: 'jenkis', // או כל שם הסניף שברצונך לבנות
+                    url: 'https://github.com/NaghmEbrahem30/Jenkins.git',
                     credentialsId: 'github-creds'
             }
         }
