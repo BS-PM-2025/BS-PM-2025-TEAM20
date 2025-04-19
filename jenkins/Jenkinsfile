@@ -15,24 +15,12 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Setup Python') {
             steps {
                 sh '''
-                    echo "⬇️ Installing Microsoft ODBC Driver..."
-                    # הורדה והתקנה ללא שימוש ב-sudo
-                    curl https://packages.microsoft.com/keys/microsoft.asc > microsoft.asc
-                    gpg --dearmor < microsoft.asc > microsoft.gpg
-                    mv microsoft.gpg /etc/apt/trusted.gpg.d/
-
-                    curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > mssql-release.list
-                    mv mssql-release.list /etc/apt/sources.list.d/
-
-                    apt-get update -y
-                    ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
-
                     echo "⬇️ Installing Python packages..."
-                    pip3 install --user --upgrade pip
-                    pip3 install --user -r requirements.txt
+                    python3 -m pip install --user --upgrade pip
+                    python3 -m pip install --user -r requirements.txt
                 '''
             }
         }
@@ -40,8 +28,8 @@ pipeline {
         stage('Check DB Engine') {
             steps {
                 sh '''
-                    echo "📦 Checking database engine..."
-                    grep "ENGINE" djangoProject11/settings.py || echo "⚠️ ENGINE not found in settings.py"
+                    echo "📦 Checking database configuration..."
+                    grep -A 10 "DATABASES" djangoProject11/settings.py || echo "⚠️ Database config not found"
                 '''
             }
         }
@@ -50,7 +38,7 @@ pipeline {
             steps {
                 sh '''
                     echo "🛠️ Running migrations..."
-                    python3 manage.py migrate
+                    python3 manage.py migrate --no-input
                 '''
             }
         }
@@ -59,7 +47,7 @@ pipeline {
             steps {
                 sh '''
                     echo "🧪 Running tests..."
-                    python3 manage.py test
+                    python3 manage.py test --no-input
                 '''
             }
         }
@@ -71,6 +59,7 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed - check logs!'
+            archiveArtifacts artifacts: '**/migrations/*.py', allowEmptyArchive: true
         }
     }
 }
