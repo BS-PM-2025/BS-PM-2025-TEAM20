@@ -2,32 +2,13 @@ pipeline {
     agent any
 
     environment {
-        // הוספת הנתיב של pip --user ל־PATH
         PATH = "${HOME}/.local/bin:${env.PATH}"
-
-        // משתנה Django
         DJANGO_SETTINGS_MODULE = "djangoProject11.settings"
-
-        // פתרון לבעיה של ModuleNotFoundError עבור mssql
         PYTHONUSERBASE = "${HOME}/.local"
         PYTHONPATH = "${HOME}/.local/lib/python3.10/site-packages:${env.PYTHONPATH}"
-        // שימי לב: שנה את python3.10 אם את משתמשת בגרסה אחרת
     }
-stage('Install Dependencies') {
-    steps {
-        sh '''
-            echo "⬇️ Installing Microsoft ODBC Driver..."
-            curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-            curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-            sudo apt-get update
-            sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17
-            echo "⬇️ Installing Python packages..."
-            pip3 install --user --upgrade pip
-            pip3 install --user -r requirements.txt
-        '''
-    }
-}
-    stages {
+
+    stages {  // <-- זה החסר העיקרי שגרם לשגיאה!
         stage('Checkout') {
             steps {
                 checkout scm
@@ -37,7 +18,12 @@ stage('Install Dependencies') {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    echo "⬇️ מתקין חבילות..."
+                    echo "⬇️ Installing Microsoft ODBC Driver..."
+                    curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+                    curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+                    sudo apt-get update
+                    sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
+                    echo "⬇️ Installing Python packages..."
                     pip3 install --user --upgrade pip
                     pip3 install --user -r requirements.txt
                 '''
@@ -47,8 +33,8 @@ stage('Install Dependencies') {
         stage('Check DB Engine') {
             steps {
                 sh '''
-                    echo "📦 בדיקת תקינות המנוע..."
-                    grep ENGINE djangoProject11/settings.py || echo "⚠️ שים לב: ENGINE לא מוגדר בקובץ settings.py"
+                    echo "📦 Checking database engine..."
+                    grep "ENGINE" djangoProject11/settings.py || echo "⚠️ ENGINE not found in settings.py"
                 '''
             }
         }
@@ -56,8 +42,8 @@ stage('Install Dependencies') {
         stage('Run Migrations') {
             steps {
                 sh '''
-                    echo "🛠️ מריץ מיגרציות..."
-                    PYTHONPATH=$PYTHONPATH python3 manage.py migrate
+                    echo "🛠️ Running migrations..."
+                    python3 manage.py migrate
                 '''
             }
         }
@@ -65,8 +51,8 @@ stage('Install Dependencies') {
         stage('Run Tests') {
             steps {
                 sh '''
-                    echo "🧪 מריץ בדיקות..."
-                    PYTHONPATH=$PYTHONPATH python3 manage.py test
+                    echo "🧪 Running tests..."
+                    python3 manage.py test
                 '''
             }
         }
@@ -74,10 +60,10 @@ stage('Install Dependencies') {
 
     post {
         success {
-            echo '🎉 כל השלבים עברו בהצלחה!'
+            echo '🎉 Pipeline completed successfully!'
         }
         failure {
-            echo '❌ יש שגיאה – בדוק את לוג Jenkins.'
+            echo '❌ Pipeline failed - check logs!'
         }
     }
 }
