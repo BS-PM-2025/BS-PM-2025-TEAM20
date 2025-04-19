@@ -4,6 +4,8 @@ pipeline {
     environment {
         // מבטיח שהסרגל ~/.local/bin יתווסף ל-PATH כדי שה-pip --user יהיה זמין
         PATH = "${HOME}/.local/bin:${env.PATH}"
+        // משתמש בהגדרות בדיקה עם SQLite ללא התקנות נוספות
+        DJANGO_SETTINGS_MODULE = 'djangoProject11.test_settings'
     }
 
     stages {
@@ -17,7 +19,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    # מתקין pip ו־virtualenv (אם נדרש) למשתמש ולא לצורך הרצת root
+                    # מתקין pip למשתמש ולא דורש הרשאות root
                     pip3 install --user --upgrade pip
 
                     # מתקין את כל התלויות מקובץ requirements.txt לתוך ~/.local
@@ -28,14 +30,14 @@ pipeline {
 
         stage('Run Migrations') {
             steps {
-                // מריץ מיגרציות בעזרת python3 מתוך המערכת
+                // מריץ מיגרציות תוך שימוש בהגדרות הבדיקה (SQLite in-memory)
                 sh 'python3 manage.py migrate'
             }
         }
 
         stage('Run Tests') {
             steps {
-                // מריץ את כל הבדיקות
+                // מריץ את כל הבדיקות, משתמש ב-DJANGO_SETTINGS_MODULE שהוגדר
                 sh 'python3 manage.py test'
             }
         }
