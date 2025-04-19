@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', // או SPR1
+                    url: 'https://github.com/BS-PM-2025/BS-PM-2025-TEAM20.git',
+                    credentialsId: 'github-creds'
+            }
+        }
+
+        stage('Install Requirements') {
+            steps {
+                sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Django Tests') {
+            steps {
+                sh 'python3 manage.py test'
+            }
+        }
+    }
+}

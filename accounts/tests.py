@@ -70,3 +70,13 @@ class GradeImprovementTest(TestCase):
 
        # יפנה לעמוד התחברות אם המשתמש לא מחובר
 
+
+
+
+from django.test import TestCase
+from django.urls import reverse
+
+class SuccessViewTest(TestCase):
+    def test_success_page_status_code(self):
+        response = self.client.get(reverse('success'))  # אם זה השם של ה-URL
+        self.assertEqual(response.status_code, 200)
