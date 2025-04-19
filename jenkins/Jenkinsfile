@@ -2,11 +2,16 @@ pipeline {
     agent any
 
     environment {
-        // מוסיף את ~/.local/bin ל-PATH כדי ש-pip --user יעבוד
+        // הוספת הנתיב של pip --user ל־PATH
         PATH = "${HOME}/.local/bin:${env.PATH}"
 
-        // מציין את קובץ ההגדרות של Django
+        // משתנה Django
         DJANGO_SETTINGS_MODULE = "djangoProject11.settings"
+
+        // פתרון לבעיה של ModuleNotFoundError עבור mssql
+        PYTHONUSERBASE = "${HOME}/.local"
+        PYTHONPATH = "${HOME}/.local/lib/python3.10/site-packages:${env.PYTHONPATH}"
+        // שימי לב: שנה את python3.10 אם את משתמשת בגרסה אחרת
     }
 
     stages {
@@ -19,10 +24,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    # עדכון pip למשתמש
+                    echo "⬇️ מתקין חבילות..."
                     pip3 install --user --upgrade pip
-
-                    # התקנת התלויות
                     pip3 install --user -r requirements.txt
                 '''
             }
@@ -41,7 +44,7 @@ pipeline {
             steps {
                 sh '''
                     echo "🛠️ מריץ מיגרציות..."
-                    python3 manage.py migrate
+                    PYTHONPATH=$PYTHONPATH python3 manage.py migrate
                 '''
             }
         }
@@ -50,7 +53,7 @@ pipeline {
             steps {
                 sh '''
                     echo "🧪 מריץ בדיקות..."
-                    python3 manage.py test
+                    PYTHONPATH=$PYTHONPATH python3 manage.py test
                 '''
             }
         }
