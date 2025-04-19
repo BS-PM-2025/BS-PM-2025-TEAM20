@@ -1,10 +1,49 @@
 pipeline {
     agent any
+
     stages {
-        stage('git') {
+        stage('Clone Repository') {
             steps {
-                echo "welcome to jenkins pipeline"
+                git 'https://github.com/NaghmEbrahem30/Jenkins.git'
             }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    python -m venv venv
+                    source venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Migrations') {
+            steps {
+                sh '''
+                    source venv/bin/activate
+                    python manage.py migrate
+                '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh '''
+                    source venv/bin/activate
+                    python manage.py test
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '🎉 כל הטסטים עברו בהצלחה!'
+        }
+        failure {
+            echo '❌ יש שגיאה באחד השלבים. בדוק את הלוגים.'
         }
     }
 }
