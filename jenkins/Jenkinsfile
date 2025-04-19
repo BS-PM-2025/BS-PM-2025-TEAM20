@@ -2,19 +2,16 @@ pipeline {
     agent any
 
     environment {
-        // מבטיח שהסרגל ~/.local/bin יתווסף ל-PATH כדי שה-pip --user יהיה זמין
+        // מוסיף את ~/.local/bin ל-PATH כדי ש-pip --user יעבוד
         PATH = "${HOME}/.local/bin:${env.PATH}"
-        // משתמש בהגדרות בדיקה עם SQLite ללא התקנות נוספות
 
-    DJANGO_SETTINGS_MODULE = "djangoProject11.settings"
-
-
+        // מציין את קובץ ההגדרות של Django
+        DJANGO_SETTINGS_MODULE = "djangoProject11.settings"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // שולף את הקוד מה־SCM שהוגדר ב‑Job
                 checkout scm
             }
         }
@@ -22,26 +19,39 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    # מתקין pip למשתמש ולא דורש הרשאות root
+                    # עדכון pip למשתמש
                     pip3 install --user --upgrade pip
 
-                    # מתקין את כל התלויות מקובץ requirements.txt לתוך ~/.local
+                    # התקנת התלויות
                     pip3 install --user -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Check DB Engine') {
+            steps {
+                sh '''
+                    echo "📦 בדיקת תקינות המנוע..."
+                    grep ENGINE djangoProject11/settings.py || echo "⚠️ שים לב: ENGINE לא מוגדר בקובץ settings.py"
                 '''
             }
         }
 
         stage('Run Migrations') {
             steps {
-                // מריץ מיגרציות תוך שימוש בהגדרות הבדיקה (SQLite in-memory)
-                sh 'python3 manage.py migrate'
+                sh '''
+                    echo "🛠️ מריץ מיגרציות..."
+                    python3 manage.py migrate
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                // מריץ את כל הבדיקות, משתמש ב-DJANGO_SETTINGS_MODULE שהוגדר
-                sh 'python3 manage.py test'
+                sh '''
+                    echo "🧪 מריץ בדיקות..."
+                    python3 manage.py test
+                '''
             }
         }
     }
