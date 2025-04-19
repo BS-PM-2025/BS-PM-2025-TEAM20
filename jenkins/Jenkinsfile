@@ -5,7 +5,10 @@ pipeline {
         // מבטיח שהסרגל ~/.local/bin יתווסף ל-PATH כדי שה-pip --user יהיה זמין
         PATH = "${HOME}/.local/bin:${env.PATH}"
         // משתמש בהגדרות בדיקה עם SQLite ללא התקנות נוספות
-        DJANGO_SETTINGS_MODULE = 'djangoProject11.test_settings'
+
+    DJANGO_SETTINGS_MODULE = "djangoProject11.settings"
+
+
     }
 
     stages {
