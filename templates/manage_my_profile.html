@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <title>עריכת פרופיל אישי</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        /* קונטיינר צר יותר במרכז */
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-size: 0.9rem; /* הקטנת הגודל */
+        }
+
+        h2, h4 {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* קצת ריווח בין הכותרות והטפסים */
+        h4 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        /* כפתור שמירה מודגש ורוחב מלא */
+        button[type="submit"] {
+            width: 100%;
+            font-size: 1rem;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        /* הקטנת הפסקאות בטפסים */
+        .form-container p {
+            margin-bottom: 0.5rem;
+        }
+
+        /* אפשר להקטין שדות קלט */
+        input, select, textarea {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+
+    <h2 class="text-center mb-4">עריכת פרופיל אישי</h2>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <h4>פרטים אישיים</h4>
+        {{ user_form.as_p }}
+
+        <h4>פרטי פרופיל נוספים</h4>
+        {{ profile_form.as_p }}
+
+        <button type="submit" class="btn btn-primary">שמור</button>
+    </form>
+</div>
+</body>
+</html>

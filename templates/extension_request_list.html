@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>רשימת בקשות להארכת זמן</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f4f8;
+            padding: 30px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-container label {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fafafa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 14px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        thead {
+            background-color: #3498db;
+            color: white;
+        }
+        tbody tr:hover {
+            background-color: #f0f8ff;
+        }
+        button {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button[name="status"][value="approved"] {
+            background-color: #2ecc71;
+            color: white;
+        }
+        button[name="status"][value="rejected"] {
+            background-color: #e74c3c;
+            color: white;
+        }
+        a.download-link {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>רשימת בקשות להארכת זמן</h2>
+
+    <!-- שדה חיפוש לפי חודש -->
+    <div class="search-container">
+        <label for="monthSearch">חפש לפי חודש מועד הגשה:</label>
+        <input type="month" id="monthSearch" onchange="filterByMonth()">
+    </div>
+
+    <table id="requestsTable">
+        <thead>
+            <tr>
+                <th>שם הסטודנט</th>
+                <th>מייל</th>
+                <th>מקצוע</th>
+                <th>מועד הגשה מקורי</th>
+                <th>מספר ימים שהתבקשו</th>
+                <th>סיבה</th>
+                <th>מסמך מצורף</th>
+                <th>סטטוס</th>
+                <th>פעולות</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td>{{ req.student_name }}</td>
+                <td>{{ req.email }}</td>
+                <td>{{ req.subject }}</td>
+                <td>{{ req.original_deadline }}</td>
+                <td>{{ req.requested_extension_time }}</td>
+                <td>{{ req.reason_for_extension }}</td>
+                <td>
+                    {% if req.supporting_documents %}
+                        <a href="{{ req.supporting_documents.url }}" class="download-link" download target="_blank">הורד</a>
+                    {% else %}
+                        אין קובץ
+                    {% endif %}
+                </td>
+                <td>{{ req.get_status_display }}</td>
+                <td>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="request_id" value="{{ req.id }}">
+                        <button type="submit" name="status" value="approved">אשר</button>
+                        <button type="submit" name="status" value="rejected">דחה</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function filterByMonth() {
+    const monthInput = document.getElementById("monthSearch").value; // yyyy-mm
+    const table = document.getElementById("requestsTable");
+    const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+    for (let i = 0; i < rows.length; i++) {
+        const deadlineCell = rows[i].getElementsByTagName("td")[3];
+        const deadlineText = deadlineCell.textContent.trim();
+
+        const parsedDate = new Date(deadlineText);
+        if (isNaN(parsedDate)) {
+            rows[i].style.display = ""; // מציג גם אם אי אפשר להמיר
+            continue;
+        }
+
+        const rowMonth = parsedDate.toISOString().slice(0, 7); // yyyy-mm
+
+        if (!monthInput || rowMonth === monthInput) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+}
+</script>
+
+</body>
+</html>

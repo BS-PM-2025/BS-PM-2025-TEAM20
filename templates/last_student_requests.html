@@ -1,0 +1,94 @@
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f9;
+        padding: 30px;
+        direction: rtl;
+    }
+
+    .container {
+        max-width: 850px;
+        margin: auto;
+        background-color: #ffffff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .error-message {
+        color: red;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fafafa;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    thead {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    th, td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        font-size: 15px;
+    }
+
+    tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    td[colspan="5"] {
+        color: #666;
+        font-style: italic;
+    }
+</style>
+
+<div class="container">
+    <h2>הבקשות של {{ email }}</h2>
+
+    {% if error %}
+      <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>מקצוע</th>
+                <th>מועד הגשה מקורי</th>
+                <th>מס' ימים שהתבקשו</th>
+                <th>סיבה</th>
+                <th>סטטוס</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in student_requests %}
+            <tr>
+                <td>{{ req.subject }}</td>
+                <td>{{ req.original_deadline }}</td>
+                <td>{{ req.requested_extension_time }}</td>
+                <td>{{ req.reason_for_extension }}</td>
+                <td>{{ req.get_status_display }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">לא נמצאו בקשות עבור כתובת אימייל זו.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,128 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>My Profile</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #74ebd5, #ACB6E5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            max-width: 600px;
-            width: 100%;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .profile-picture {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .profile-picture img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            object-fit: cover;
-        }
-
-        .profile-info {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #444;
-            text-align: left;
-        }
-
-        .profile-info p {
-            margin: 12px 0;
-        }
-
-        .label {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .update-button {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 12px 30px;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-
-        .update-button:hover {
-            background-color: #45a049;
-        }
-
-        .update-button:focus {
-            outline: none;
-        }
-
-        .back-arrow {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            text-decoration: none;
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 8px 14px;
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-
-        .back-arrow:hover {
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-    </style>
+    <meta charset="UTF-8" />
+    <title>Student Profile</title>
 </head>
 <body>
-    <div class="container">
-        <a href="{% url 'student_page' %}" class="back-arrow">&#8592; Back</a>
-        <h1>Welcome, {{ profile.student.first_name }} {{ last_name }}</h1>
+    <h2>Student Profile for {{ profile.student.username }}</h2>
 
-        <div class="profile-picture">
-            {% if profile.profile_picture %}
-                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture">
-            {% else %}
-                <p>No Profile Picture</p>
-            {% endif %}
-        </div>
+    {% if profile.profile_picture %}
+        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" width="150" />
+    {% else %}
+        <p>No profile picture uploaded.</p>
+    {% endif %}
 
-        <div class="profile-info">
-            <p><span class="label">Username:</span> {{ profile.student.username }}</p>
-            <p><span class="label">Email:</span> {{ profile.email }}</p>
-            <p><span class="label">Date of Birth:</span> {{ profile.birth_date }}</p>
-            <p><span class="label">Field of Study:</span> {{ profile.field_of_study }}</p>
-            <p><span class="label">Graduation Year:</span> {{ profile.graduation_year }}</p>
-            <p><span class="label">GPA:</span> {{ profile.gpa }}</p>
-            <p><span class="label">Last Login Date:</span> {{ profile.student.last_login }}</p>
-        </div>
+    <p><strong>Email:</strong> {{ profile.email|default:"Not Provided" }}</p>
+    <p><strong>Birth Date:</strong> {{ profile.birth_date|default:"Not Provided" }}</p>
+    <p><strong>Field of Study:</strong> {{ profile.field_of_study|default:"Not Provided" }}</p>
+    <p><strong>Graduation Year:</strong> {{ profile.graduation_year|default:"Not Provided" }}</p>
+    <p><strong>GPA:</strong> {{ profile.gpa|default:"Not Provided" }}</p>
 
-        <!-- Button to update profile -->
-        <a href="{% url 'update_profile' %}" class="update-button">Update Profile</a>
-    </div>
+    <a href="/">Back to Home</a>
 </body>
 </html>

@@ -1,0 +1,30 @@
+<h1>שעות קבלה זמינות</h1>
+
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+    <thead>
+        <tr>
+            <th>מרצה</th>
+            <th>יום</th>
+            <th>שעת התחלה</th>
+            <th>שעת סיום</th>
+            <th>פעולה</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for slot in office_hours %}
+        <tr>
+            <td>{{ slot.lecturer.username }}</td>
+            <td>{{ slot.day }}</td>
+            <td>{{ slot.start_time }}</td>
+            <td>{{ slot.end_time }}</td>
+            <td>
+                <a href="{% url 'confirm_appointment' slot.pk %}">אשר הגעה לפגישה</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">אין שעות פנויות.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,21 @@
+<h2>Available Meeting Slots</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Lecturer</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for slot in slots %}
+        <tr>
+            <td>{{ slot.lecturer.username }}</td>
+            <td>{{ slot.date }}</td>
+            <td>{{ slot.time }}</td>
+            <td><a href="{% url 'book_appointment' slot.id %}">Book</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

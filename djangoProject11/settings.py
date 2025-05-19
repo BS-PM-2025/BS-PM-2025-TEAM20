@@ -76,18 +76,15 @@ LOGIN_REDIRECT_URL = '/home/'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+import os
+
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'App',
-        'USER': 'sa',
-        'PASSWORD': 'Naghm@2004',
-        'HOST': '192.168.56.1',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
 
 
 # Password validation

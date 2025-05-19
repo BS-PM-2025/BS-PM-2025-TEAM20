@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatroom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #e5ddd5;
+            padding: 0;
+            margin: 0;
+        }
+
+        .chat-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-box {
+            background: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-header {
+            background-color: #075e54;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+            position: relative;
+        }
+
+        /* כפתור BACK */
+        .back-button {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #064e44;
+            border: none;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #043833;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: scroll;
+            background: #dcf8c6;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            position: relative;
+            clear: both;
+        }
+
+        .student {
+            background-color: #fff;
+            align-self: flex-start;
+            float: left;
+            border-bottom-left-radius: 0;
+        }
+
+        .lecturer {
+            background-color: #cfe9ba;
+            align-self: flex-end;
+            float: right;
+            border-bottom-right-radius: 0;
+        }
+
+        .timestamp {
+            display: block;
+            font-size: 0.7em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background: #f0f0f0;
+            border-top: 1px solid #ccc;
+        }
+
+        .chat-input select, .chat-input input {
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        .chat-input button {
+            background: #075e54;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background: #064e44;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box">
+            <div class="chat-header">
+                <button onclick="window.location.href='{% url 'student_page' %}'" class="back-button">← Back</button>
+                Student ↔ Lecturer Chat
+            </div>
+            <div class="messages" id="messages"></div>
+
+            <div class="chat-input">
+                <select id="sender">
+                    <option value="student">Student</option>
+                    <option value="lecturer">Lecturer</option>
+                </select>
+                <input type="text" id="messageInput" placeholder="Type your message..." style="flex: 1;">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadMessages() {
+            const res = await fetch('/get_messages/');
+            const data = await res.json();
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+            data.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'message ' + msg.sender;
+                div.innerHTML = `<strong>${msg.sender === 'student' ? '🧑‍🎓' : '👨‍🏫'} ${msg.sender}</strong><br>${msg.message}<span class="timestamp">${msg.timestamp}</span>`;
+                messagesDiv.appendChild(div);
+            });
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const sender = document.getElementById('sender').value;
+            const message = document.getElementById('messageInput').value;
+            if (message.trim() === '') return;
+
+            await fetch('/send_message/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sender, message })
+            });
+
+            document.getElementById('messageInput').value = '';
+            loadMessages();
+        }
+
+        function goBack() {
+            window.location.href = '/student_page'; // שנה את ה-URL לפי הצורך
+        }
+
+        setInterval(loadMessages, 2000);
+        loadMessages();
+    </script>
+</body>
+</html>

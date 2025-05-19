@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/student.css">
+</head>
+<body>
+
+<a href="{% url 'student_page' %}" class="back-arrow">← Back</a>
+
+<div class="container">
+    <h2>Provide Your Feedback</h2>
+    <form id="feedbackForm">
+        <div class="form-group">
+            <label for="comment">Your Comment:</label>
+            <textarea id="comment" name="comment" rows="5" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="rating">Your Rating:</label>
+            <div class="stars" id="stars">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+            </div>
+            <input type="hidden" name="rating" id="rating" required>
+        </div>
+
+        <button type="submit">Submit Feedback</button>
+    </form>
+
+    <p id="message"></p>
+</div>
+
+<script>
+    // Update rating based on selected stars
+    document.querySelectorAll('.star').forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.getAttribute('data-value');
+            document.getElementById('rating').value = rating;
+
+            // Update star appearance
+            document.querySelectorAll('.star').forEach(star => {
+                star.style.color = star.getAttribute('data-value') <= rating ? 'gold' : 'gray';
+            });
+        });
+    });
+
+    // Handle form submission
+    document.getElementById('feedbackForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const comment = document.getElementById('comment').value;
+        const rating = document.getElementById('rating').value;
+
+        // Make an AJAX request to save the feedback
+        fetch('/submit_feedback/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                comment: comment,
+                rating: rating
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('message').textContent = "Thank you for your feedback!";
+            } else {
+                document.getElementById('message').textContent = "Error submitting feedback. Please try again.";
+            }
+        })
+        .catch(error => {
+            document.getElementById('message').textContent = "Error submitting feedback. Please try again.";
+        });
+    });
+</script>
+
+</body>
+</html>

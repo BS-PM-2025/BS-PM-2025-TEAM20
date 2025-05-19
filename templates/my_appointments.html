@@ -1,0 +1,40 @@
+<h1>הפגישות שלי</h1>
+
+{% if user.is_staff %}
+    <h2>מרצה – שעות הקבלה שלך</h2>
+{% else %}
+    <h2>סטודנט – שעות הקבלה של המרצים</h2>
+{% endif %}
+
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+    <thead>
+        <tr>
+            <th>מרצה</th>
+            <th>יום</th>
+            <th>שעת התחלה</th>
+            <th>שעת סיום</th>
+            {% if not user.is_staff %}
+                <th>פעולה</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for slot in office_hours %}
+            <tr>
+                <td>{{ slot.lecturer.username }}</td>
+                <td>{{ slot.day }}</td>
+                <td>{{ slot.start_time }}</td>
+                <td>{{ slot.end_time }}</td>
+                {% if not user.is_staff %}
+                <td>
+                    <a href="{% url 'book_appointment' slot.pk %}">קבע פגישה</a>
+                </td>
+                {% endif %}
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">אין שעות קבלה להצגה.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

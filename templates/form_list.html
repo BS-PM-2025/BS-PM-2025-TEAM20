@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploaded Forms</title>
+</head>
+<body>
+    <h2>Uploaded Forms</h2>
+    <table>
+        <tr>
+            <th>Form Name</th>
+            <th>Download Link</th>
+        </tr>
+        {% for form in forms %}
+        <tr>
+            <td>{{ form.form_name }}</td>
+            <td><a href="{{ form.file.url }}" target="_blank">Download PDF</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

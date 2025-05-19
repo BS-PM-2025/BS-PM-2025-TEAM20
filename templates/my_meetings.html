@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Meetings</title>
+</head>
+<body>
+    <h1>Your Meetings</h1>
+    <ul>
+        {% for meeting in meetings %}
+            <li>
+                {{ meeting.date }} {{ meeting.time }} -
+                {% if meeting.is_booked %}
+                    Booked by: {{ meeting.student }}
+                {% else %}
+                    Available
+                {% endif %}
+                {% if meeting.student == user or meeting.lecturer == user %}
+                    <a href="{% url 'cancel_meeting' meeting.id %}">Cancel</a>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No meetings found.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'available_slots' %}">Book a new meeting</a>
+</body>
+</html>

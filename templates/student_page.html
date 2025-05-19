@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Welcome to Student Page</title>
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/student.css">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/student.css" />
 </head>
 <body>
 
 <a href="{% url 'login' %}" class="back-arrow">← Back</a>
-
 
 <div class="container">
     <h2>Welcome to Student Page</h2>
@@ -18,11 +17,30 @@
 
     <div class="nav-buttons">
         <button onclick="navigateToRequestForm()">📈 Improve Grade</button>
-        <button onclick="navigateToProfile()">👤 My Profile</button>
+
+        <button onclick="navigateToProfile()">👤 הפרופיל שלי</button>
+
         <button onclick="navigateToOfficeHours()">🕒 Office Hours</button>
+        <button onclick="navigateToFeedback()">📝 Add Feedback</button>
+        <button onclick="openChatBot()">💬 Chat with Bot</button>
+        <button onclick="openChat()">💬 ChatLecture</button>
+        <button onclick="openChat1()">💬 ChatSec</button>
+
+        <button onclick="navigateToTimeExtensionRequest()">⏳ Request Time Extension</button>
+
+
+         <button onclick="window.location.href='{% url 'student_reception_hours' %}'">📅 שעות קבלה לסטודנט</button>
+        <!-- בדף הבית של סטודנט -->
+        <button onclick="window.location.href='{% url 'office_hours_list' %}'">📅 קבע פגישה</button>
+        <button onclick="window.location.href='{% url 'my_appointments' %}'">📋 הפגישות שלי</button>
+
+        <!-- הכפתור החדש להפניה לדף בקשה למרצה -->
+        <button onclick="navigateToStudentRequest()">📝 בקשה חדשה למרצה</button>
+        <button onclick="navigateToDocumentRequest()">📄 בקשות מסמכים</button>
+
+        <!-- הכפתור שהוספתי להפניה לדף שעות קבלה לסטודנט -->
+        <button onclick="navigateToStudentReception()">🕒 שעות קבלה לסטודנט</button>
     </div>
-
-
 </div>
 
 <script>
@@ -30,13 +48,53 @@
         window.location.href = "request_form/";
     }
 
-function navigateToProfile() {
-  window.location.href = "/create-profile/";
-}
-
-
     function navigateToOfficeHours() {
         window.location.href = "/office_hours/";
+    }
+
+    function navigateToDocumentRequest() {
+        window.location.href = "/submit_document_request/";
+    }
+
+    function navigateToFeedback() {
+        window.location.href = "/feedback/";
+    }
+
+    function openChatBot() {
+        window.open("/chatbot/");
+    }
+
+    function openChat() {
+        window.open("/chatroom/");
+    }
+
+    function navigateToProfile() {
+        window.location.href = "{% url 'manage_my_profile' %}";
+    }
+
+    function openChat1() {
+        window.open("/student-secretary-chat/");
+    }
+
+    function navigateToFormRequest() {
+        window.location.href = "/request_for_form/";
+    }
+
+    function navigateToTimeExtensionRequest() {
+        window.location.href = "/request_time_extension/";
+    }
+
+    function navigateToBookMeeting() {
+        window.location.href = "/book_meeting/";
+    }
+
+    function navigateToStudentRequest() {
+        window.location.href = "/submit-request/";
+    }
+
+    // הפונקציה החדשה להפניה לדף שעות קבלה לסטודנט
+    function navigateToStudentReception() {
+        window.location.href = "/student_rec/";
     }
 </script>
 

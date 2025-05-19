@@ -1,0 +1,6 @@
+<h1>קביעת פגישה עם {{ lecturer.name }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">קבע פגישה</button>
+</form>

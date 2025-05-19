@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Cancel Booking</title></head>
+<body>
+<h2>Cancel Booking</h2>
+<p>Are you sure you want to cancel the booking on {{ slot.date }} at {{ slot.time }}?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Cancel Booking</button>
+</form>
+</body>
+</html>

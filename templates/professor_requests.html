@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <title>כל הבקשות</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+        table { border-collapse: collapse; width: 100%; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 0 5px #ccc; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #3498db; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        a.button { background: #2ecc71; color: white; padding: 8px 12px; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">כל הבקשות</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>שם הסטודנט</th>
+                <th>אימייל הסטודנט</th>
+                <th>מייל המרצה</th>
+                <th>סוג הבקשה</th>
+                <th>תיאור</th>
+                <th>סטטוס</th>
+                <th>תגובה של המרצה</th>
+                <th>פעולות</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td>{{ req.student_name }}</td>
+                <td>{{ req.student_email }}</td>
+                <td>{{ req.professor_email }}</td>
+                <td>{{ req.request_type }}</td>
+                <td>{{ req.description }}</td>
+                <td>{{ req.get_status_display }}</td>
+                <td>{{ req.professor_response|default:"-" }}</td>
+                <td>
+                    {% if req.status == 'pending' %}
+                        <a href="{% url 'respond_request' req.id %}" class="button">השב</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8">אין בקשות.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

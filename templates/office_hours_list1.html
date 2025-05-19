@@ -1,0 +1,14 @@
+<h1>שעות קבלה זמינות</h1>
+<ul>
+    {% for hour in hours %}
+        <li>
+            <strong>מרצה:</strong> {{ hour.lecturer.username }}<br>
+            <strong>יום:</strong> {{ hour.day }}<br>
+            <strong>שעה:</strong> {{ hour.start_time }} - {{ hour.end_time }}<br>
+            <a href="{% url 'book_appointment' hour.pk %}">📅 קבע פגישה</a>
+        </li>
+        <hr>
+    {% empty %}
+        <p>לא נמצאו שעות קבלה.</p>
+    {% endfor %}
+</ul>

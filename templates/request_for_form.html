@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request a Form</title>
+</head>
+<body>
+    <h2>Request a Form</h2>
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- השדה לבחירת שם הטופס -->
+        <label for="form_name">Select Form:</label>
+        <input type="text" name="form_name" id="form_name" required>
+
+        <!-- הוספת שדה לשם המשתמש -->
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" value="{{ user.username }}" readonly required>
+
+        <button type="submit">Request</button>
+    </form>
+</body>
+</html>

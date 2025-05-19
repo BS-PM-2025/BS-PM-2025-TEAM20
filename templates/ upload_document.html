@@ -1,0 +1,7 @@
+<h2>העלאת מסמך לסטודנט</h2>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.uploaded_file }}
+  <button type="submit">שלח לסטודנט</button>
+</form>
