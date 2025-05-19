@@ -104,11 +104,31 @@
 
     <div class="nav-buttons">
         <a href="{% url 'request_list' %}" class="button">
-            <i class="fas fa-list"></i>  Requests improveing Scores
+            <i class="fas fa-list"></i> Requests for Improving Scores
         </a>
         <a href="{% url 'add_office_hours' %}" class="button">
             <i class="fas fa-clock"></i> Office Hours
         </a>
+        <a href="{% url 'upload_form' %}" class="button">
+            <i class="fas fa-upload"></i> Upload Form for Requests
+        </a>
+        <!-- כפתור חדש לצפייה בכל שעות הקבלה -->
+        <a href="{% url 'office_hours_list' %}" class="button">
+            <i class="fas fa-calendar-alt"></i> View Office Hours
+        </a>
+        <a href="{% url 'extension_request_list' %}" class="button">
+    <i class="fas fa-list"></i> Requests for Exra time
+             <a href="{% url 'student_secretary_chat' %}" class="button">
+
+    <i class="fas fa-list"></i> Chat
+<a href="{% url 'secretary_requests' %}" class="button">
+    <i class="fas fa-file-alt"></i> Document Requests
+</a>
+
+
+
+</a>
+
     </div>
 
     <footer>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <title>תגובה לבקשה מסטודנט</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+        form { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 5px #ccc; }
+        textarea { width: 100%; height: 150px; padding: 10px; margin-top: 10px; }
+        button { margin-top: 15px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">תגובה לבקשה של {{ student_request.student_name }}</h1>
+
+    <p><strong>סוג הבקשה:</strong> {{ student_request.request_type }}</p>
+    <p><strong>תיאור:</strong> {{ student_request.description }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">שלח תגובה</button>
+    </form>
+</body>
+</html>

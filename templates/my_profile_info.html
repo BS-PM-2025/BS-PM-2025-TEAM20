@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Profile</title>
+</head>
+<body>
+    <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+
+    {% if profile.profile_picture %}
+        <img src="{{ profile.profile_picture.url }}" width="150" />
+    {% endif %}
+
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ profile.email|default:user.email }}</p>
+    <p><strong>Birth Date:</strong> {{ profile.birth_date }}</p>
+    <p><strong>Field of Study:</strong> {{ profile.field_of_study }}</p>
+    <p><strong>Graduation Year:</strong> {{ profile.graduation_year }}</p>
+    <p><strong>GPA:</strong> {{ profile.gpa }}</p>
+
+    <a href="{% url 'my_profile' %}">Edit Profile</a>
+</body>
+</html>

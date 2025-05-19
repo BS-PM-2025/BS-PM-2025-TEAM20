@@ -1,0 +1,11 @@
+<h2>קביעת פגישה עם {{ office_hour.lecturer.username }}</h2>
+<p><strong>יום:</strong> {{ office_hour.day }}</p>
+<p><strong>שעה:</strong> {{ office_hour.start_time }} - {{ office_hour.end_time }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">שלח בקשה</button>
+</form>
+
+<a href="{% url 'office_hours_list' %}">⬅ חזרה לשעות קבלה</a>

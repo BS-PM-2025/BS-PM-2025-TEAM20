@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Form</title>
+</head>
+<body>
+    <h2>Upload a Form</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- פרטי הסטודנט -->
+        <label for="student_name">Student Name:</label>
+        <input type="text" name="student_name" id="student_name" value="{{ user.first_name }} {{ user.last_name }}" readonly>
+
+        <label for="student_id">Student ID:</label>
+        <input type="text" name="student_id" id="student_id" value="{{ user.username }}" readonly>
+
+        <label for="student_email">Student Email:</label>
+        <input type="email" name="student_email" id="student_email" value="{{ user.Email }}" readonly>
+
+        <!-- שם הטופס -->
+        <label for="form_name">Form Name:</label>
+        <input type="text" name="form_name" id="form_name" required>
+
+        <!-- העלאת קובץ PDF -->
+        <label for="file">PDF File:</label>
+        <input type="file" name="file" id="file" accept="application/pdf" required>
+
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>

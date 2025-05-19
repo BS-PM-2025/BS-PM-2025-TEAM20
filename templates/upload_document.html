@@ -1,0 +1,17 @@
+<!-- upload_document.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>העלאת מסמך</title>
+</head>
+<body>
+    <h2>העלאת מסמך עבור {{ request_obj.student_email }}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>בחר קובץ:</label>
+        <input type="file" name="uploaded_file" required>
+        <button type="submit">שלח</button>
+    </form>
+</body>
+</html>

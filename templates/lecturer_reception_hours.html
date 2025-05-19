@@ -1,0 +1,23 @@
+
+{% block content %}
+<div class="container mt-4">
+    <h2>ניהול שעות קבלה - מרצה {{ request.user.username }}</h2>
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">הוסף שעות קבלה</button>
+    </form>
+
+    <h3>שעות קבלה קיימות</h3>
+    <ul class="list-group">
+        {% for rh in reception_hours %}
+        <li class="list-group-item">
+            {{ rh.date }} בין {{ rh.start_time }} ל-{{ rh.end_time }}
+            ({{ rh.bookings.count }} הזמנות)
+        </li>
+        {% empty %}
+        <li class="list-group-item">אין שעות קבלה</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

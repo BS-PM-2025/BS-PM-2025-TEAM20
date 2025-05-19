@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Welcome to Lec Page</title>
     <style>
         body {
@@ -63,6 +63,71 @@
         .back-arrow:hover {
             background-color: rgba(0, 0, 0, 0.4);
         }
+
+        .chat-button,
+        .meeting-button,
+        .slot-button,
+        .appointments-button,
+        .requests-button {
+            color: white;
+            font-size: 18px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 10px 0;
+            width: 80%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .chat-button {
+            background-color: #4CAF50;
+        }
+        .chat-button:hover {
+            background-color: #45a049;
+        }
+
+        .meeting-button {
+            background-color: #FF8C00;
+        }
+        .meeting-button:hover {
+            background-color: #E07B00;
+        }
+
+        .slot-button {
+            background-color: #2196F3;
+        }
+        .slot-button:hover {
+            background-color: #1976D2;
+        }
+
+        .appointments-button {
+            background-color: #9C27B0;
+        }
+        .appointments-button:hover {
+            background-color: #7B1FA2;
+        }
+
+        .requests-button {
+            background-color: #f44336; /* אדום */
+        }
+        .requests-button:hover {
+            background-color: #d32f2f;
+        }
+
+        .lecturer-info {
+            text-align: left;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .lecturer-info span {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -73,6 +138,26 @@
     <h1>Welcome to Lec Page</h1>
     <p class="welcome-message">Welcome to the Lec Page!</p>
     <p>We're happy to have you here. You're now part of the academic community!</p>
+
+    <!-- Buttons -->
+    <button class="chat-button" onclick="window.location.href='{% url 'chatroom' %}'">Go to Chatroom</button>
+
+    <button class="meeting-button" onclick="window.location.href='{% url 'schedule_meeting' %}'">Schedule a Meeting with Student</button>
+
+    <button class="slot-button" onclick="window.location.href='{% url 'create_slots' %}'">📆 פרסם שעות קבלה</button>
+
+    <button class="appointments-button" onclick="window.location.href='{% url 'my_appointments' %}'">📋 הפגישות שלי</button>
+
+    <!-- כפתור חדש לדף בקשות הסטודנטים למרצה -->
+    <button class="requests-button" onclick="window.location.href='{% url 'professor_requests' %}'">📨 בקשות סטודנטים</button>
+        <button class="requests-button" onclick="window.location.href='{% url 'all_feedbacks' %}'">📋כל הפידבקים</button>
+    <!-- כפתור חדש לצפייה בשעות הקבלה שפורסמו -->
+<button class="slot-button" onclick="window.location.href='{% url 'lecturer_reception_hours' %}'">📅 הצג את שעות הקבלה שפרסמת</button>
+
+
+
+
+
 
     <footer>
         <p>&copy; 2025 Lecturer Page. All rights reserved.</p>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>שעות קבלה זמינות</title>
+</head>
+<body>
+    <h1>שעות קבלה זמינות</h1>
+    <ul>
+        {% for hour in hours %}
+            <li>
+                <strong>מרצה:</strong> {{ hour.lecturer.username }}<br>
+                <strong>יום:</strong> {{ hour.get_day_display }}<br>
+                <strong>שעה:</strong> {{ hour.start_time }} - {{ hour.end_time }}<br>
+                <a href="{% url 'book_appointment' hour.pk %}">📅 קבע פגישה</a>
+            </li>
+            <hr>
+        {% empty %}
+            <p>לא קיימות שעות קבלה זמינות כרגע.</p>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'my_appointments' %}">הפגישות שלי</a>
+</body>
+</html>

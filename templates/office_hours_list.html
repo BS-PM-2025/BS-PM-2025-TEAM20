@@ -15,7 +15,6 @@
             height: 100vh;
             margin: 0;
         }
-
         .container {
             background-color: white;
             padding: 40px;
@@ -25,13 +24,11 @@
             width: 100%;
             text-align: center;
         }
-
         h1 {
             color: #333;
             margin-bottom: 20px;
             font-size: 2.5em;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -39,33 +36,27 @@
             border-radius: 8px;
             overflow: hidden;
         }
-
         th, td {
             padding: 15px;
             border: 1px solid #ddd;
             text-align: left;
             transition: background-color 0.3s ease;
         }
-
         th {
             background-color: #4CAF50;
             color: white;
             font-weight: bold;
             text-transform: uppercase;
         }
-
         td {
             background-color: #f9f9f9;
         }
-
         tr:nth-child(even) td {
             background-color: #f2f2f2;
         }
-
         tr:hover td {
             background-color: #d1e7dd;
         }
-
         .back-arrow {
             position: absolute;
             top: 20px;
@@ -80,9 +71,25 @@
             transition: background-color 0.3s ease;
             z-index: 10;
         }
-
         .back-arrow:hover {
             background-color: rgba(0, 0, 0, 0.5);
+        }
+        .edit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -99,20 +106,119 @@
                 <th>Opening Time</th>
                 <th>Closing Time</th>
                 <th>Additional Info</th>
+                <th>Edit</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody>
             {% for office in office_hours %}
-            <tr>
-                <td>{{ office.office_name }}</td>
-                <td>{{ office.opening_time }}</td>
-                <td>{{ office.closing_time }}</td>
-                <td>{{ office.additional_info }}</td>
+            <tr data-id="{{ office.id }}">
+                <td class="name">{{ office.office_name }}</td>
+                <td class="open">{{ office.opening_time }}</td>
+                <td class="close">{{ office.closing_time }}</td>
+                <td class="info">{{ office.additional_info }}</td>
+                <td>
+                    <button class="edit-btn" onclick="editRow(this)">Edit</button>
+                </td>
+                <td>
+                    <button class="delete-btn" onclick="deleteRow(this)">Delete</button>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+    function editRow(button) {
+        const row = button.closest('tr');
+        const cells = row.querySelectorAll('td');
+
+        // Create input fields
+        cells[0].innerHTML = `<input type="text" value="${cells[0].textContent.trim()}">`;
+        cells[1].innerHTML = `<input type="text" value="${cells[1].textContent.trim()}">`;
+        cells[2].innerHTML = `<input type="text" value="${cells[2].textContent.trim()}">`;
+        cells[3].innerHTML = `<input type="text" value="${cells[3].textContent.trim()}">`;
+
+        // Change Edit button to Save
+        button.textContent = "Save";
+        button.setAttribute("onclick", "saveRow(this)");
+    }
+
+    function saveRow(button) {
+        const row = button.closest('tr');
+        const id = row.dataset.id;
+        const inputs = row.querySelectorAll('input');
+
+        const data = {
+            office_name: inputs[0].value,
+            opening_time: inputs[1].value,
+            closing_time: inputs[2].value,
+            additional_info: inputs[3].value
+        };
+
+        fetch(`/update_office_hour/${id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.text())  // שינוי מ- `.json()` ל- `.text()`
+            .then(data => {
+                document.body.innerHTML = data;  // מציג את HTML שהתקבל
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+ function deleteRow(button) {
+    const row = button.closest('tr');
+    const id = row.dataset.id;
+
+    fetch(`/update_office_hour/${id}/`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),  // שימוש ב-CSRF Token
+        },
+    })
+    .then(response => {
+        if (response.ok) {
+            row.remove();  // מחיקת השורה מהטבלה בצד הלקוח
+            alert("המידע נמחק בהצלחה");
+        } else {
+            return response.json();  // כדי לקבל מידע נוסף על השגיאה
+        }
+    })
+    .then(data => {
+        if (data && data.error) {
+            alert("שגיאה במחיקה: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("שגיאה לא צפויה");
+    });
+}
+
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
 
 </body>
 </html>

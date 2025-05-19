@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><title>Available Slots</title></head>
+<body>
+<h2>Available Office Hour Slots</h2>
+
+{% for slot in slots %}
+    <div>
+        <p>{{ slot.date }} at {{ slot.time }} with {{ slot.lecturer_name }}</p>
+        <form method="post" action="{% url 'book_slot' slot.id %}">
+            {% csrf_token %}
+            Name: <input type="text" name="student_name" required>
+            Email: <input type="email" name="student_email" required>
+            <button type="submit">Book</button>
+        </form>
+    </div>
+{% empty %}
+    <p>No available slots.</p>
+{% endfor %}
+
+</body>
+</html>

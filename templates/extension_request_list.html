@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>רשימת בקשות להארכת זמן</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f4f8;
+            padding: 30px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .search-group {
+            display: flex;
+            align-items: center;
+        }
+        .search-group label {
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        .search-group input {
+            padding: 6px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .reset-btn {
+            background-color: #e67e22;
+            color: white;
+            font-weight: bold;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fafafa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 14px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        thead {
+            background-color: #3498db;
+            color: white;
+        }
+        tbody tr:hover {
+            background-color: #f0f8ff;
+        }
+        button {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button[name="status"][value="approved"] {
+            background-color: #2ecc71;
+            color: white;
+        }
+        button[name="status"][value="rejected"] {
+            background-color: #e74c3c;
+            color: white;
+        }
+        a.download-link {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>רשימת בקשות להארכת זמן</h2>
+
+    <div class="search-container">
+        <div class="search-group">
+            <label for="studentSearch">חפש לפי סטודנט:</label>
+            <input type="text" id="studentSearch" onkeyup="filterRequests()">
+        </div>
+        <div class="search-group">
+            <label for="typeSearch">חפש לפי מקצוע:</label>
+            <input type="text" id="typeSearch" onkeyup="filterRequests()">
+        </div>
+        <div class="search-group">
+            <label for="monthSearch">חפש לפי חודש מועד הגשה:</label>
+            <input type="month" id="monthSearch" onchange="filterRequests()">
+        </div>
+        <button class="reset-btn" onclick="resetFilters()">איפוס סינון</button>
+    </div>
+
+    <table id="requestsTable">
+        <thead>
+        <tr>
+            <th>שם הסטודנט</th>
+            <th>מייל</th>
+            <th>מקצוע</th>
+            <th>מועד הגשה מקורי</th>
+            <th>מספר ימים שהתבקשו</th>
+            <th>סיבה</th>
+            <th>מסמך מצורף</th>
+            <th>סטטוס</th>
+            <th>פעולות</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for req in requests %}
+        <tr>
+            <td>{{ req.student_name }}</td>
+            <td>{{ req.email }}</td>
+            <td>{{ req.subject }}</td>
+            <td>{{ req.original_deadline }}</td>
+            <td>{{ req.requested_extension_time }}</td>
+            <td>{{ req.reason_for_extension }}</td>
+            <td>
+                {% if req.supporting_documents %}
+                    <a href="{{ req.supporting_documents.url }}" class="download-link" download target="_blank">הורד</a>
+                {% else %}
+                    אין קובץ
+                {% endif %}
+            </td>
+            <td>{{ req.get_status_display }}</td>
+            <td>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ req.id }}">
+                    <button type="submit" name="status" value="approved">אשר</button>
+                    <button type="submit" name="status" value="rejected">דחה</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function filterRequests() {
+    const studentValue = document.getElementById("studentSearch").value.toLowerCase();
+    const subjectValue = document.getElementById("typeSearch").value.toLowerCase();
+    const monthValue = document.getElementById("monthSearch").value;
+
+    const table = document.getElementById("requestsTable");
+    const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+    for (let i = 0; i < rows.length; i++) {
+        const studentText = rows[i].cells[0].textContent.toLowerCase();
+        const subjectText = rows[i].cells[2].textContent.toLowerCase();
+        const deadlineText = rows[i].cells[3].textContent.trim();
+
+        const parsedDate = new Date(deadlineText);
+        const rowMonth = !isNaN(parsedDate) ? parsedDate.toISOString().slice(0, 7) : "";
+
+        const matchStudent = studentText.includes(studentValue);
+        const matchSubject = subjectText.includes(subjectValue);
+        const matchMonth = !monthValue || rowMonth === monthValue;
+
+        if (matchStudent && matchSubject && matchMonth) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+}
+
+
+//trying
+
+function resetFilters() {
+    document.getElementById("studentSearch").value = "";
+    document.getElementById("typeSearch").value = "";
+    document.getElementById("monthSearch").value = "";
+    filterRequests();
+}
+</script>
+
+</body>
+</html>

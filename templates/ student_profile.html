@@ -1,0 +1,15 @@
+<h1>הפגישות שלי</h1>
+<table>
+    <tr>
+        <th>מרצה</th>
+        <th>תאריך הפגישה</th>
+        <th>סטטוס</th>
+    </tr>
+    {% for meeting in meetings %}
+    <tr>
+        <td>{{ meeting.lecturer.name }}</td>
+        <td>{{ meeting.date }}</td>
+        <td>{% if meeting.confirmed %} מאושר {% else %} ממתין לאישור {% endif %}</td>
+    </tr>
+    {% endfor %}
+</table>
