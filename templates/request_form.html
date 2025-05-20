@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Request Official Document</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Request an Official Document</h2>
+        <form method="POST">
+            <label>Document Type:</label>
+            <select name="document_type" required>
+                <option value="Enrollment Certificate">Enrollment Certificate</option>
+                <option value="Transcript">Transcript</option>
+                <option value="Graduation Certificate">Graduation Certificate</option>
+            </select>
+
+            <label>Reason for Request:</label>
+            <textarea name="reason" rows="3" placeholder="Write the reason here..."></textarea>
+
+            <label>Preferred Language:</label>
+            <select name="language" required>
+                <option value="Arabic">Arabic</option>
+                <option value="English">English</option>
+            </select>
+
+            <label>Delivery Method:</label>
+            <select name="delivery_method" required>
+                <option value="Email">Email</option>
+                <option value="Pickup from university">Pickup from university</option>
+            </select>
+
+            <button type="submit">Submit Request</button>
+        </form>
+    </div>
+</body>
+</html>
