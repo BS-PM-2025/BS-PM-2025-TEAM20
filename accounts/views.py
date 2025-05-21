@@ -81,6 +81,7 @@ def signup_lec(request):
             return HttpResponse(f"Form Errors: {form.errors}")
     else:
         form = UserRegisterLecForm()
+        print("🛑 Signup Lec Errors:", form.errors)
     return render(request, 'signup_lec.html', {'form': form})
 
 
@@ -1782,6 +1783,7 @@ def submit_document_request(request):
             return redirect('submit_document_request')
     else:
         form = DocumentRequestForm()
+        print("📌 Form Errors:", form.errors)
     return render(request, 'submit_document_request.html', {'form': form})
 
 def secretary_requests_view(request):

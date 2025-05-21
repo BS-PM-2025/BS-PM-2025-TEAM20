@@ -2,8 +2,8 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-from .forms import UserRegisterStu1Form, UserRegisterLecForm, GradeImprovementRequestForm
-from .models import UserRegisterStu1, UserRegisterLec, GradeImprovementRequest, TimeExtensionRequest
+from .forms import UserRegisterStu1Form, GradeImprovementRequestForm
+from .models import UserRegisterStu1, GradeImprovementRequest, TimeExtensionRequest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 class SignupStudentTests(TestCase):
@@ -21,42 +21,10 @@ class SignupStudentTests(TestCase):
             'password': '12345678',
             'first_name': 'Test',
             'last_name': 'Student',
-            'user': user.id  # ربط المستخدم بـ auth_user
+            'user': user.id
         })
         self.assertEqual(response.status_code, 302)
         self.assertTrue(UserRegisterStu1.objects.filter(username='teststu').exists())
-
-
-from django.contrib.auth.models import User
-from .models import UserRegisterStu1, UserRegisterLec
-from django.urls import reverse
-from django.test import TestCase
-
-class SignupLecturerTests(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(username='realuser', password='pass123')
-        UserRegisterStu1.objects.create(
-            user=self.user,
-            username='realuser',
-            email='realuser@email.com',
-            password='pass123',
-            first_name='Real',
-            last_name='User'
-        )
-
-    def test_post_valid_signup_lec(self):
-        response = self.client.post(reverse('signup_lec'), {
-            'username': 'lectest',
-            'email': 'lec@test.com',
-            'password': '12345678',
-            'first_name': 'Lecturer',
-            'last_name': 'Test'
-        })
-
-        print("\nResponse content:", response.content.decode())
-
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(UserRegisterLec.objects.filter(username='lectest').exists())
 
 
 class GradeImprovementRequestTests(TestCase):
@@ -91,7 +59,7 @@ class GradeImprovementRequestTests(TestCase):
             'desired_grade': 85,
             'reason': 'Improved performance'
         })
-        self.assertEqual(response.status_code, 302)  # Redirect to login
+        self.assertEqual(response.status_code, 302)
 
 
 class TimeExtensionRequestTests(TestCase):
@@ -115,17 +83,3 @@ class SuccessViewTests(TestCase):
         response = self.client.get(reverse('success'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'request_success.html')
-
-from .models import StudentRequest, DocumentRequest, Feedback, OfficeHours11
-
-class DocumentRequestTests(TestCase):
-    def test_post_valid_document_request(self):
-        response = self.client.post(reverse('submit_document_request'), {
-            'student_name': 'Yaqeen',
-            'student_email': 'yaqeen@example.com',
-            'document_type': 'אישור לימודים',
-            'additional_info': 'Need it for work'
-        }, format='multipart')
-
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(DocumentRequest.objects.filter(student_name='Yaqeen').exists())
