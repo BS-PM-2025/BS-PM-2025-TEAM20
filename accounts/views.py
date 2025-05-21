@@ -72,13 +72,15 @@ def signup_student(request):
 
 def signup_lec(request):
     if request.method == 'POST':
-        form = UserRegisterLecForm(request.POST)  # השתמש בטופס הנכון
+        form = UserRegisterLecForm(request.POST)
         if form.is_valid():
-            form.save()  # שומר את הנתונים בטבלה UserRegisterLec
-            return redirect('lec_page')  # הפנייה לדף המתאים לאחר ההרשמה
+            form.save()
+            return redirect('lec_page')
+        else:
+            from django.http import HttpResponse
+            return HttpResponse(f"Form Errors: {form.errors}")
     else:
-        form = UserRegisterLecForm()  # יוצרים את הטופס החדש במידה ולא נשלח טופס
-
+        form = UserRegisterLecForm()
     return render(request, 'signup_lec.html', {'form': form})
 
 

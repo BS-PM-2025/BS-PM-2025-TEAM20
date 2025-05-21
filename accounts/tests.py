@@ -1,82 +1,117 @@
-from django.test import TestCase
 
-# Create your tests here.
 from django.test import TestCase
 from django.urls import reverse
-from .forms import UserRegisterStu1Form, UserRegisterLecForm
-from .models import UserRegisterStu1, UserRegisterLec
+from django.contrib.auth.models import User
+from .forms import UserRegisterStu1Form, UserRegisterLecForm, GradeImprovementRequestForm
+from .models import UserRegisterStu1, UserRegisterLec, GradeImprovementRequest, TimeExtensionRequest
+from django.core.files.uploadedfile import SimpleUploadedFile
 
-class SignupStudentViewTests(TestCase):
+class SignupStudentTests(TestCase):
     def test_get_signup_student_form(self):
         response = self.client.get(reverse('signup_student'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'signup_student.html')
         self.assertIsInstance(response.context['form'], UserRegisterStu1Form)
 
+    def test_post_valid_signup_student(self):
+        user = User.objects.create_user(username='auth_user', password='pass123')
+        response = self.client.post(reverse('signup_student'), {
+            'username': 'teststu',
+            'email': 'test@student.com',
+            'password': '12345678',
+            'first_name': 'Test',
+            'last_name': 'Student',
+            'user': user.id  # ربط المستخدم بـ auth_user
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(UserRegisterStu1.objects.filter(username='teststu').exists())
 
-from django.test import TestCase
-from django.urls import reverse
-from .models import UserRegisterLec
 
-class SignupLecViewTests(TestCase):
-    def test_get_signup_lec_form(self):
-        response = self.client.get(reverse('signup_lec'))
-        self.assertEqual(response.status_code, 200)
-
-
-
-
-
-from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
-from .views import request_grade_improvement, success_view
-from .models import GradeImprovementRequest
-from .forms import GradeImprovementRequestForm
-from django.test import TestCase
+from .models import UserRegisterStu1, UserRegisterLec
 from django.urls import reverse
-from django.contrib.auth.models import User
-from .forms import GradeImprovementRequestForm
+from django.test import TestCase
 
-class GradeImprovementTest(TestCase):
-
+class SignupLecturerTests(TestCase):
     def setUp(self):
-        # יצירת משתמש לדימוי התחברות
-        self.user = User.objects.create_user(username='testuser', password='password123')
+        self.user = User.objects.create_user(username='realuser', password='pass123')
+        UserRegisterStu1.objects.create(
+            user=self.user,
+            username='realuser',
+            email='realuser@email.com',
+            password='pass123',
+            first_name='Real',
+            last_name='User'
+        )
 
-    def test_post_authenticated_creates_request(self):
-        """אם המשתמש מחובר, הבקשה נשמרת ומועברת לדף הצלחה"""
-        self.client.login(username='testuser', password='password123')
-        data = {
-            'course': 'History',
+    def test_post_valid_signup_lec(self):
+        response = self.client.post(reverse('signup_lec'), {
+            'username': 'lectest',
+            'email': 'lec@test.com',
+            'password': '12345678',
+            'first_name': 'Lecturer',
+            'last_name': 'Test'
+        })
+
+        print("\nResponse content:", response.content.decode())
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(UserRegisterLec.objects.filter(username='lectest').exists())
+
+
+class GradeImprovementRequestTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='student1', password='pass123')
+        UserRegisterStu1.objects.create(
+            user=self.user,
+            username='student1',
+            email='student1@email.com',
+            password='12345678',
+            first_name='Test',
+            last_name='Student'
+        )
+
+    def test_post_grade_request_authenticated(self):
+        self.client.login(username='student1', password='pass123')
+        response = self.client.post(reverse('request_form'), {
+            'course_name': 'Math',
             'current_grade': 60,
-            'requested_grade': 80,
-            'reason': 'שיפרתי את ההבנה שלי במקצוע'
-        }
+            'desired_grade': 85,
+            'reason': 'Improved performance',
+            'email': 'student1@email.com',
+            'username': 'student1'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(GradeImprovementRequest.objects.exists())
 
-        response = self.client.post('/grade-request/', data)  # שימוש ישיר בנתיב
-
-
-
-    def test_post_unauthenticated_redirects_to_login(self):
-        """משתמש לא מחובר מועבר לעמוד התחברות"""
-        data = {
-            'course': 'History',
+    def test_post_grade_request_unauthenticated(self):
+        response = self.client.post(reverse('request_form'), {
+            'course_name': 'Math',
             'current_grade': 60,
-            'requested_grade': 80,
-            'reason': 'שיפרתי את ההבנה שלי במקצוע'
-        }
-
-        response = self.client.post('/grade-request/', data)  # שימוש ישיר בנתיב
-
-       # יפנה לעמוד התחברות אם המשתמש לא מחובר
+            'desired_grade': 85,
+            'reason': 'Improved performance'
+        })
+        self.assertEqual(response.status_code, 302)  # Redirect to login
 
 
+class TimeExtensionRequestTests(TestCase):
+    def test_submit_time_extension_valid(self):
+        file = SimpleUploadedFile("support.pdf", b"test content")
+        response = self.client.post(reverse('request_time_extension'), {
+            'student_name': 'TimeTester',
+            'email': 'time@test.com',
+            'subject': 'Algorithms',
+            'original_deadline': '2025-06-01',
+            'requested_extension_time': 3,
+            'reason_for_extension': 'Medical reason',
+            'supporting_documents': file,
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(TimeExtensionRequest.objects.filter(student_name='TimeTester').exists())
 
 
-from django.test import TestCase
-from django.urls import reverse
-
-class SuccessViewTest(TestCase):
+class SuccessViewTests(TestCase):
     def test_success_page_status_code(self):
-        response = self.client.get(reverse('success'))  # אם זה השם של ה-URL
+        response = self.client.get(reverse('success'))
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'request_success.html')
