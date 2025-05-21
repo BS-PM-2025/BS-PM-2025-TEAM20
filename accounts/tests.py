@@ -115,3 +115,17 @@ class SuccessViewTests(TestCase):
         response = self.client.get(reverse('success'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'request_success.html')
+
+from .models import StudentRequest, DocumentRequest, Feedback, OfficeHours11
+
+class DocumentRequestTests(TestCase):
+    def test_post_valid_document_request(self):
+        response = self.client.post(reverse('submit_document_request'), {
+            'student_name': 'Yaqeen',
+            'student_email': 'yaqeen@example.com',
+            'document_type': 'אישור לימודים',
+            'additional_info': 'Need it for work'
+        }, format='multipart')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(DocumentRequest.objects.filter(student_name='Yaqeen').exists())
