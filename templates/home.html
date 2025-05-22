@@ -1,105 +1,172 @@
 {% load static %}
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <title>EduFlow - דף הבית</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moderna Inspired Homepage</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
     <style>
         body, html {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
         }
 
-        .hero {
+        /* תפריט ניווט */
+        .navbar {
+            background-color: #332f2f; /* צבע חדש */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 2rem;
+        }
+
+        .navbar a {
+            color: #b5e745; /* צבע חדש */
+            text-decoration: none;
+            margin: 0 1rem;
+            font-weight: bold;
+        }
+
+        .navbar .brand {
+            font-size: 1.5rem;
+            color: #b5e745; /* צבע חדש */
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .dropdown {
             position: relative;
-            width: 100vw; /* רוחב מלא של המסך */
-            height: 100vh; /* גובה מלא של המסך */
-            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-                        url("{% static 'images/src_1739172226599-0.jpg' %}");
-            background-size: cover; /* מתאים את התמונה כך שתמלא את האלמנט מבלי לעוות אותה */
-            background-position: center; /* ממקם את התמונה במרכז */
-            background-repeat: no-repeat; /* מונע חזרה על התמונה */
+        }
+
+        .navbar .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            min-width: 150px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .navbar .dropdown-content a {
+            color: black;
+            padding: 10px 15px;
+            display: block;
+            text-decoration: none;
+        }
+
+        .navbar .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .navbar .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* אזור ראשי */
+        .hero {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+                        url("{% static 'images/src_1739172226599-0.jpg' %}") no-repeat center center;
+            background-size: cover;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
             text-align: center;
-            color: white; /* מבטיח שהטקסט ייראה ברור */
-            background-color: #000; /* צבע רקע למקרה שהתמונה לא תיטען */
-            height: 100vh;
-            -webkit-background-size: cover;
-            background-size: cover;
-            background-position: center center;
-            position: relative;
         }
 
         .hero h1 {
-            font-size: 3rem;
-            font-weight: bold;
+            font-size: 4rem;
+            margin-bottom: 10px;
         }
 
         .hero p {
             font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .hero .icon-circle {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 25px;
+            border-radius: 50%;
+            font-size: 2.5rem;
+            color: #7FDB4F;
             margin-bottom: 20px;
+            display: inline-block;
         }
 
         .btn {
-            padding: 10px 25px;
-            font-size: 1rem;
+            padding: 12px 30px;
+            border: none;
             border-radius: 25px;
-            border: 2px solid white;
-            background: transparent;
-            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .navbar {
-            background-color: black; /* שינוי צבע הרקע של ה-navbar */
+        .btn-login {
+            background-color: #7FDB4F;
+            color: black;
+        }
+
+        .btn-login:hover {
+            background-color: #6cb63f;
+        }
+
+        .btn-register {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-register:hover {
+            background-color: white;
+            color: black;
         }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">Moderna</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Services</a></li>
-                   
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            SignUp
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="signup_student">Student</a></li>
-                            <li><a class="dropdown-item" href="signup_lecc">Lecture</a></li>
-                            <li><a class="dropdown-item" href="signup_sec">Secretariat</a></li>
-                        </ul>
-                    </li>
-                </ul>
+<!-- תפריט ניווט -->
+<nav class="navbar">
+    <div class="brand">bakasha</div>
+    <div class="nav-links">
+        <a href="#">בית</a>
+        <a href="#">אודות</a>
+        <a href="#">שירותים</a>
+        <div class="dropdown">
+            <a href="#">הרשמה</a>
+            <div class="dropdown-content">
+                <a href="{% url 'signup_student' %}">סטודנט</a>
+                <a href="{% url 'signup_lecc' %}">מרצה</a>
+                <a href="{% url 'signup_sec' %}">מזכירות</a>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="container text-center">
-            <h1>EduFlow</h1>
-            <p></p>
-            <a href="#" class="btn">Read More</a>
-        </div>
-    </header>
+<!-- אזור ראשי -->
+<header class="hero">
+    <div class="container">
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <a href="{% url 'login' %}" class="btn btn-login">כניסה</a>
+        <a href="{% url 'signup_student' %}" class="btn btn-register">הרשמה</a>
+    </div>
+</header>
+
 </body>
 </html>

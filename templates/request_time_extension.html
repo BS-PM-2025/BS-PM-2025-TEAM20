@@ -1,67 +1,158 @@
-<style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f2f4f8;
-        padding: 20px;
-    }
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <title>בקשת הארכת זמן</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f3f3;
+            color: #333;
+            direction: rtl;
+            min-height: 100vh;
+        }
 
-    .form-container {
-        max-width: 450px;
-        margin: auto;
-        background-color: #fff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        transform: scale(0.95); /* הקטנה כללית */
-        transform-origin: top center;
-    }
+        /* Navbar styles (מהדף הראשון) */
+        .navbar {
+            background-color: #332f2f;
+            color: #b5e745;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+        }
 
-    .form-container h2 {
-        text-align: center;
-        color: #333;
-        margin-bottom: 20px;
-        font-size: 20px;
-    }
+        .navbar .left-section,
+        .navbar .right-section {
+            display: flex;
+            align-items: center;
+        }
 
-    .form-group {
-        margin-bottom: 15px;
-    }
+        .navbar .left-section i,
+        .navbar .right-section i {
+            font-size: 20px;
+            margin-left: 10px;
+            color: white;
+        }
 
-    .form-group label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 6px;
-        font-size: 14px;
-        color: #444;
-    }
+        .navbar .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b5e745;
+        }
 
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 14px;
-    }
+        .profile-info {
+            text-align: right;
+            margin-right: 8px;
+            color: #b5e745;
+        }
 
-    button[type="submit"] {
-        width: 100%;
-        background-color: #4CAF50;
-        color: white;
-        padding: 12px;
-        font-size: 14px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+        .profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
 
-    button[type="submit"]:hover {
-        background-color: #3e9142;
-    }
-</style>
+        .menu-icon {
+            font-size: 22px;
+            color: white;
+            cursor: pointer;
+        }
 
+        /* Form container */
+        .form-container {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            max-width: 450px;
+            width: 100%;
+            margin: 40px auto;
+        }
+
+        .form-container h2 {
+            font-weight: bold;
+            font-size: 24px;
+            color: #7eb443;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 15px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            direction: rtl;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #7eb443;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            background-color: #7eb443;
+            color: white;
+            padding: 14px 0;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #679d2f;
+        }
+
+        .error-message {
+            color: #d9534f;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar (כמו בדף סטודנט) -->
+<div class="navbar">
+    <div class="left-section">
+        <a href="/"><i>⏴</i></a>
+        <div class="profile-info">שלום, סטודנט</div>
+    </div>
+    <div class="title">Bakasha</div>
+    <div class="right-section">
+        <i class="menu-icon">☰</i>
+    </div>
+</div>
+
+<!-- טופס -->
 <div class="form-container">
     <h2>בקשת הארכת זמן</h2>
     <form method="POST" enctype="multipart/form-data">
@@ -71,10 +162,13 @@
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {{ field }}
                 {% if field.errors %}
-                    <div style="color: red;">{{ field.errors }}</div>
+                    <div class="error-message">{{ field.errors }}</div>
                 {% endif %}
             </div>
         {% endfor %}
         <button type="submit">שלח בקשה</button>
     </form>
 </div>
+
+</body>
+</html>

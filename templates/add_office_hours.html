@@ -1,98 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>Add Office Hours</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <title>הוסף שעות קבלה</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #74ebd5, #ACB6E5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: #ffffff;
+            color: #333;
             margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #332f2f;
+            color: #b5e745;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            direction: rtl;
+        }
+
+        .navbar .left-section,
+        .navbar .right-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .left-section a {
+            text-decoration: none;
+            color: #b5e745;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        .navbar .left-section a:hover {
+            background-color: #4caf5080;
+        }
+
+        .navbar .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #b5e745;
         }
 
         .container {
+            max-width: 600px;
+            margin: 40px auto;
             background-color: white;
-            padding: 40px;
+            padding: 40px 30px;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            max-width: 600px;
-            width: 100%;
+            direction: rtl;
         }
 
         h1 {
             text-align: center;
-            color: #333;
+            color: #332f2f;
             margin-bottom: 30px;
         }
 
         form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
         label {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            font-size: 1.1rem;
+            text-align: right;
+            display: block;
         }
 
         input, select, textarea {
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px 14px;
+            border-radius: 8px;
             border: 1px solid #ccc;
             font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: right;
         }
 
         button {
-            padding: 12px;
-            background-color: #4CAF50;
-            color: white;
+            padding: 14px;
+            background-color: #b5e745;
+            color: #332f2f;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            width: 100%;
         }
 
         button:hover {
-            background-color: #45a049;
-        }
-
-        .back-arrow {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            text-decoration: none;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        .back-arrow:hover {
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: #94bf3d;
         }
     </style>
 </head>
 <body>
 
-<a href="{% url 'sec_page' %}" class="back-arrow">← Back</a>
+<!-- Navbar -->
+<div class="navbar">
+    <div class="left-section">
+        <a href="{% url 'sec_page' %}">← חזרה</a>
+    </div>
+    <div class="title">הוסף שעות קבלה</div>
+    <div class="right-section"></div>
+</div>
 
+<!-- Main Content -->
 <div class="container">
-    <h1>Add Office Hours</h1>
+    <h1>הוסף שעות קבלה</h1>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Save</button>
+        <button type="submit">שמור</button>
     </form>
 </div>
 

@@ -1,82 +1,138 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>רשימת בקשות להארכת זמן</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f2f4f8;
-            padding: 30px;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+            color: #333;
         }
+
+        .navbar {
+            background-color: #332f2f;
+            color: #b5e745;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+
+        .navbar .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b5e745;
+        }
+
+        .navbar a, .navbar i {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+        }
+
         .container {
             max-width: 1000px;
-            margin: auto;
-            background-color: #fff;
+            margin: 30px auto;
+            background-color: #ffffff;
             padding: 25px;
-            border-radius: 10px;
+            border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             text-align: center;
-            color: #2c3e50;
+            color: #7eb443;
             margin-bottom: 20px;
         }
+
         .search-container {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .search-container label {
             font-weight: bold;
             margin-left: 10px;
         }
+
+        input[type="month"] {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            background-color: #fafafa;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
+            background-color: #fafafa;
         }
+
+        thead {
+            background-color: #b5e745;
+            color: #333;
+        }
+
         th, td {
-            padding: 12px 14px;
+            padding: 12px;
             text-align: center;
             border-bottom: 1px solid #ddd;
         }
-        thead {
-            background-color: #3498db;
-            color: white;
-        }
+
         tbody tr:hover {
             background-color: #f0f8ff;
         }
-        button {
-            padding: 6px 12px;
-            margin: 0 4px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        button[name="status"][value="approved"] {
-            background-color: #2ecc71;
-            color: white;
-        }
-        button[name="status"][value="rejected"] {
-            background-color: #e74c3c;
-            color: white;
-        }
+
         a.download-link {
             color: #2980b9;
             text-decoration: none;
             font-weight: bold;
         }
+
+        button {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        button[name="status"][value="approved"] {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        button[name="status"][value="rejected"] {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <a href="{% url 'student_page' %}">⏴</a>
+    <div class="title">Bakasha</div>
+    <i class="menu-icon">☰</i>
+</div>
+
+<!-- תוכן הדף -->
 <div class="container">
     <h2>רשימת בקשות להארכת זמן</h2>
 
-    <!-- שדה חיפוש לפי חודש -->
     <div class="search-container">
         <label for="monthSearch">חפש לפי חודש מועד הגשה:</label>
         <input type="month" id="monthSearch" onchange="filterByMonth()">
@@ -129,28 +185,15 @@
 
 <script>
 function filterByMonth() {
-    const monthInput = document.getElementById("monthSearch").value; // yyyy-mm
-    const table = document.getElementById("requestsTable");
-    const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    const monthInput = document.getElementById("monthSearch").value;
+    const rows = document.querySelectorAll("#requestsTable tbody tr");
 
-    for (let i = 0; i < rows.length; i++) {
-        const deadlineCell = rows[i].getElementsByTagName("td")[3];
-        const deadlineText = deadlineCell.textContent.trim();
-
-        const parsedDate = new Date(deadlineText);
-        if (isNaN(parsedDate)) {
-            rows[i].style.display = ""; // מציג גם אם אי אפשר להמיר
-            continue;
-        }
-
-        const rowMonth = parsedDate.toISOString().slice(0, 7); // yyyy-mm
-
-        if (!monthInput || rowMonth === monthInput) {
-            rows[i].style.display = "";
-        } else {
-            rows[i].style.display = "none";
-        }
-    }
+    rows.forEach(row => {
+        const deadline = row.cells[3].textContent.trim();
+        const parsedDate = new Date(deadline);
+        const rowMonth = isNaN(parsedDate) ? "" : parsedDate.toISOString().slice(0, 7);
+        row.style.display = (!monthInput || rowMonth === monthInput) ? "" : "none";
+    });
 }
 </script>
 

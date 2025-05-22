@@ -6,8 +6,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
-            background-color: #f9f9f9;
-            font-size: 0.95rem;
+            background-color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 20px;
         }
         .profile-container {
             max-width: 600px;
@@ -23,52 +26,54 @@
             height: 140px;
             object-fit: cover;
             border-radius: 50%;
-            border: 4px solid #0d6efd; /* bootstrap primary color */
-            margin: 0 auto 20px auto;
+            border: 4px solid #b5e745; /* צבע ירוק בהיר - כמו בעיצוב הקודם */
+            margin: 0 auto 25px auto;
             display: block;
         }
         h2 {
             font-weight: 700;
             margin-bottom: 25px;
-            color: #333;
+            color: #7eb443;
         }
         .profile-info p {
             text-align: right;
             margin: 8px 0;
             font-weight: 500;
+            font-size: 1.05rem;
         }
         .profile-info strong {
             color: #555;
             min-width: 110px;
             display: inline-block;
         }
-        .edit-link {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 10px 30px;
-            background-color: #0d6efd;
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
-        .edit-link:hover {
-            background-color: #084cd0;
-            text-decoration: none;
-        }
         hr {
             margin: 30px 0;
             border-color: #ddd;
         }
+        .edit-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 36px;
+            background-color: #7eb443;
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .edit-link:hover {
+            background-color: #6aa233;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
+
 <div class="profile-container">
     {% if profile.profile_picture %}
         <img src="{{ profile.profile_picture.url }}" alt="תמונת פרופיל" class="profile-picture" />
     {% else %}
-        <!-- במידה ואין תמונה, אפשר להוסיף תמונה ברירת מחדל או אייקון -->
         <img src="https://via.placeholder.com/140?text=User" alt="תמונת ברירת מחדל" class="profile-picture" />
     {% endif %}
 
@@ -90,5 +95,6 @@
 
     <a href="{% url 'manage_my_profile' %}" class="edit-link">ערוך פרופיל</a>
 </div>
+
 </body>
 </html>

@@ -1,194 +1,240 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>All Grade Improvement Requests</title>
-   <style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(to right, #74ebd5, #ACB6E5);
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>כל בקשות שיפור הציון</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white; /* רקע לבן */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: #333;
+            direction: rtl;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    .controls {
-        margin-top: 20px;
-        margin-bottom: -15px;
-    }
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 60px;
+            background-color: #332f2f;
+            color: #b5e745;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            padding: 0 20px;
+        }
 
-    .controls button {
-        padding: 8px 14px;
-        margin: 0 6px;
-        font-size: 13px;
-        cursor: pointer;
-        border: none;
-        border-radius: 8px;
-        background-color: #333;
-        color: white;
-        transition: background-color 0.3s ease;
-    }
+        .navbar a.back-arrow {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            text-decoration: none;
+            color: #b5e745;
+            background-color: transparent;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            z-index: 101;
+        }
 
-    .controls button:hover {
-        background-color: #000;
-    }
+        .navbar a.back-arrow:hover {
+            background-color: rgba(181, 231, 69, 0.2);
+        }
 
-    .container {
-        background-color: white;
-        margin: 30px 0;
-        padding: 30px;
-        border-radius: 16px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-        width: 95%;
-        max-width: 1100px;
-    }
+        .controls {
+            margin: 90px 0 10px 0;
+            display: flex;
+            gap: 10px;
+        }
 
-    .table-container {
-        max-height: 70vh;
-        overflow-y: auto;
-        overflow-x: auto;
-        border-radius: 12px;
-        border: 1px solid #ddd;
-    }
+        .controls button {
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 25px;
+            background-color: #332f2f;
+            color: #b5e745;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
 
-    h1 {
-        text-align: center;
-        margin-bottom: 25px;
-        color: #333;
-    }
+        .controls button:hover {
+            background-color: #b5e745;
+            color: #332f2f;
+        }
 
-    table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        font-size: 14px;
-        border-radius: 12px;
-        overflow: hidden;
-    }
+        .container {
+            background-color: white;
+            margin: 20px auto 40px auto;
+            padding: 25px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            width: 95%;
+            max-width: 1200px;
+            /* כדי לא להיות תחת ה-navbar */
+            margin-top: 20px;
+        }
 
-    th, td {
-        padding: 14px 12px;
-        text-align: left;
-        border-bottom: 1px solid #e5e5e5;
-    }
+        h1 {
+            text-align: center;
+            color: #332f2f;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 26px;
+        }
 
-    th {
-        background-color: #f7f9fc;
-        color: #333;
-        font-weight: 600;
-        position: sticky;
-        top: 0;
-        z-index: 2;
-    }
+        .table-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+        }
 
-    tr:nth-child(even) {
-        background-color: #fcfcfc;
-    }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 14px;
+            border-radius: 12px;
+            overflow: hidden;
+            direction: rtl;
+        }
 
-    tr:hover {
-        background-color: #f1f9ff;
-        transition: background-color 0.3s;
-    }
+        th, td {
+            padding: 14px 16px;
+            text-align: right;
+            border-bottom: 1px solid #e5e5e5;
+            vertical-align: middle;
+        }
 
-    .no-data {
-        text-align: center;
-        font-style: italic;
-        color: #777;
-        padding: 20px;
-    }
+        th {
+            background-color: #b5e745;
+            color: #332f2f;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            font-size: 15px;
+        }
 
-    .back-arrow {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        text-decoration: none;
-        color: white;
-        background-color: rgba(0, 0, 0, 0.3);
-        padding: 8px 14px;
-        border-radius: 6px;
-        font-weight: bold;
-        font-size: 14px;
-        transition: background-color 0.3s ease;
-    }
+        tr:nth-child(even) {
+            background-color: #f9fbe7;
+        }
 
-    .back-arrow:hover {
-        background-color: rgba(0, 0, 0, 0.5);
-    }
+        tr:hover {
+            background-color: #e0f2f1;
+            transition: background-color 0.3s;
+        }
 
-    select, button[type="submit"] {
-        padding: 6px 10px;
-        font-size: 13px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        background-color: #f9f9f9;
-        transition: background-color 0.3s ease;
-    }
+        .no-data {
+            text-align: center;
+            font-style: italic;
+            color: #777;
+            padding: 20px;
+        }
 
-    select:hover, button[type="submit"]:hover {
-        background-color: #eaeaea;
-    }
+        select, button[type="submit"] {
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 25px;
+            border: 1px solid #b5e745;
+            background-color: #f3f8e8;
+            color: #332f2f;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 90px;
+        }
 
-    button[type="submit"] {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        margin-left: 8px;
-    }
+        select:hover, button[type="submit"]:hover {
+            background-color: #d4e7b0;
+        }
 
-    button[type="submit"]:hover {
-        background-color: #0056b3;
-    }
+        button[type="submit"] {
+            background-color: #b5e745;
+            border: none;
+            font-weight: 700;
+            color: #332f2f;
+            margin-right: 6px;
+        }
 
-    form {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-</style>
+        button[type="submit"]:hover {
+            background-color: #8fb32a;
+        }
+
+        form {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
 
     <script>
         function zoomIn() {
             const table = document.querySelector("table");
             const currentSize = parseFloat(window.getComputedStyle(table).fontSize);
-            table.style.fontSize = (currentSize + 1) + "px";
+            if (currentSize < 24) { // הגבלת גודל מקסימלי
+                table.style.fontSize = (currentSize + 1) + "px";
+            }
         }
 
         function zoomOut() {
             const table = document.querySelector("table");
             const currentSize = parseFloat(window.getComputedStyle(table).fontSize);
-            table.style.fontSize = (currentSize - 1) + "px";
+            if (currentSize > 10) { // הגבלת גודל מינימלי
+                table.style.fontSize = (currentSize - 1) + "px";
+            }
         }
     </script>
 </head>
 <body>
 
-<a href="{% url 'sec_page' %}" class="back-arrow">← Back</a>
-
-<div class="controls">
-    <button onclick="zoomOut()">- Zoom Out</button>
-    <button onclick="zoomIn()">+ Zoom In</button>
+<div class="navbar" role="banner">
+    <a href="{% url 'sec_page' %}" class="back-arrow" aria-label="חזור לעמוד הקודם">← חזרה</a>
+    כל בקשות שיפור הציון
 </div>
 
-<div class="container">
-    <h1>All Grade Improvement Requests</h1>
+<div class="controls" role="group" aria-label="שליטת זום">
+    <button onclick="zoomOut()" aria-label="הקטן טקסט">- הקטן</button>
+    <button onclick="zoomIn()" aria-label="הגדל טקסט">+ הגדל</button>
+</div>
+
+<div class="container" role="main">
+    <h1>כל בקשות שיפור הציון</h1>
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Course</th>
-                    <th>Current Grade</th>
-                    <th>Desired Grade</th>
-                    <th>Reason</th>
-                    <th>Status</th>
-                    <th>Created At</th>
-                    <th>Student ID</th>
-                    <th>Email</th>
-                    <th>Username</th>
-                    <th>Update Status</th>
+                    <th>מזהה</th>
+                    <th>קורס</th>
+                    <th>ציון נוכחי</th>
+                    <th>ציון רצוי</th>
+                    <th>סיבה</th>
+                    <th>סטטוס</th>
+                    <th>נוצר בתאריך</th>
+                    <th>ת"ז סטודנט</th>
+                    <th>אימייל</th>
+                    <th>שם משתמש</th>
+                    <th>עדכון סטטוס</th>
                 </tr>
             </thead>
             <tbody>
@@ -209,19 +255,19 @@
                                 <form method="POST">
                                     {% csrf_token %}
                                     <input type="hidden" name="request_id" value="{{ request.id }}">
-                                    <select name="status">
-                                        <option value="Pending" {% if request.status == "Pending" %}selected{% endif %}>Pending</option>
-                                        <option value="Approved" {% if request.status == "Approved" %}selected{% endif %}>Approved</option>
-                                        <option value="Rejected" {% if request.status == "Rejected" %}selected{% endif %}>Rejected</option>
+                                    <select name="status" aria-label="בחר סטטוס">
+                                        <option value="Pending" {% if request.status == "Pending" %}selected{% endif %}>ממתין</option>
+                                        <option value="Approved" {% if request.status == "Approved" %}selected{% endif %}>מאושר</option>
+                                        <option value="Rejected" {% if request.status == "Rejected" %}selected{% endif %}>נדחה</option>
                                     </select>
-                                    <button type="submit">Update</button>
+                                    <button type="submit" aria-label="עדכן סטטוס">עדכן</button>
                                 </form>
                             </td>
                         </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="11" class="no-data">No grade improvement requests available.</td>
+                        <td colspan="11" class="no-data">אין בקשות שיפור ציון זמינות.</td>
                     </tr>
                 {% endif %}
             </tbody>

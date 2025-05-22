@@ -5,21 +5,23 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                // כאן תוכל להוסיף פקודות כמו: sh 'mvn clean install' או npm install וכו'
+                // כאן תוכל להוסיף פקודות בנייה אם צריך, לדוגמה:
+                // sh 'pip install -r requirements.txt'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                // כאן תוכל להריץ פקודות בדיקה כמו: sh 'npm test' או pytest וכו'
+                echo 'Running Django tests...'
+                sh 'python manage.py test'
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
-                // שלב הדיפלוי שלך (אם יש)
+                // כאן תוכל להוסיף שלב דיפלוי, למשל:
+                // sh './deploy_script.sh'
             }
         }
     }

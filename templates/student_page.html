@@ -1,44 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Welcome to Student Page</title>
+    <title>דף סטודנט</title>
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/css/student.css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #332f2f;
+            color: #b5e745;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+        }
+
+        .navbar .left-section,
+        .navbar .right-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .left-section i,
+        .navbar .right-section i {
+            font-size: 20px;
+            margin-left: 10px;
+            color: white;
+        }
+
+        .navbar .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b5e745;
+        }
+
+        .profile-info {
+            text-align: right;
+            margin-right: 8px;
+            color: #b5e745;
+        }
+
+        .profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .menu-icon {
+            font-size: 22px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #7eb443;
+        }
+
+        .welcome-message {
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .nav-buttons button {
+            background-color: #f3f3f3;
+            border: none;
+            padding: 14px 16px;
+            font-size: 16px;
+            border-radius: 25px;
+            text-align: right;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-buttons button:hover {
+            background-color: #e6e6e6;
+        }
+
+        .new-request-button {
+            background-color: #b5e745;
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-<a href="{% url 'login' %}" class="back-arrow">← Back</a>
+<!-- Navbar -->
+<div class="navbar">
+    <div class="left-section">
+        <a href="{% url 'login' %}"><i>⏴</i></a>
+        <div class="profile-info"></div>
+    </div>
+    <div class="title">Bakasha</div>
+    <div class="right-section">
+        <i class="menu-icon">☰</i>
+    </div>
+</div>
 
+<!-- Main Content -->
 <div class="container">
-    <h2>Welcome to Student Page</h2>
-    <p class="welcome-message">We're happy to have you here. You're now part of our student community!</p>
+    <h2>ברוך הבא לסטודנט</h2>
+    <p class="welcome-message">שמחים שבחרת להצטרף לקהילת הסטודנטים שלנו</p>
 
     <div class="nav-buttons">
-        <button onclick="navigateToRequestForm()">📈 Improve Grade</button>
-
+        <button onclick="navigateToRequestForm()">📈 שיפור ציון</button>
         <button onclick="navigateToProfile()">👤 הפרופיל שלי</button>
+        <button onclick="navigateToOfficeHours()">🕒 שעות קבלה</button>
+        <button onclick="navigateToFeedback()">📝 הוסף משוב</button>
+        <button onclick="openChatBot()">💬 שיחה עם בוט</button>
+        <button onclick="openChat()">💬 צ'אט עם מרצה</button>
+        <button onclick="openChat1()">💬 צ'אט עם מזכירות</button>
+        <button onclick="navigateToTimeExtensionRequest()">⏳ בקשה להארכת זמן</button>
+        <button onclick="window.location.href='{% url 'student_reception_hours' %}'">📅 שעות קבלה לסטודנט</button>
 
-        <button onclick="navigateToOfficeHours()">🕒 Office Hours</button>
-        <button onclick="navigateToFeedback()">📝 Add Feedback</button>
-        <button onclick="openChatBot()">💬 Chat with Bot</button>
-        <button onclick="openChat()">💬 ChatLecture</button>
-        <button onclick="openChat1()">💬 ChatSec</button>
 
-        <button onclick="navigateToTimeExtensionRequest()">⏳ Request Time Extension</button>
-
-
-         <button onclick="window.location.href='{% url 'student_reception_hours' %}'">📅 שעות קבלה לסטודנט</button>
-        <!-- בדף הבית של סטודנט -->
-        <button onclick="window.location.href='{% url 'office_hours_list' %}'">📅 קבע פגישה</button>
-        <button onclick="window.location.href='{% url 'my_appointments' %}'">📋 הפגישות שלי</button>
-
-        <!-- הכפתור החדש להפניה לדף בקשה למרצה -->
         <button onclick="navigateToStudentRequest()">📝 בקשה חדשה למרצה</button>
         <button onclick="navigateToDocumentRequest()">📄 בקשות מסמכים</button>
-
-        <!-- הכפתור שהוספתי להפניה לדף שעות קבלה לסטודנט -->
         <button onclick="navigateToStudentReception()">🕒 שעות קבלה לסטודנט</button>
     </div>
 </div>
@@ -76,23 +177,14 @@
         window.open("/student-secretary-chat/");
     }
 
-    function navigateToFormRequest() {
-        window.location.href = "/request_for_form/";
-    }
-
     function navigateToTimeExtensionRequest() {
         window.location.href = "/request_time_extension/";
-    }
-
-    function navigateToBookMeeting() {
-        window.location.href = "/book_meeting/";
     }
 
     function navigateToStudentRequest() {
         window.location.href = "/submit-request/";
     }
 
-    // הפונקציה החדשה להפניה לדף שעות קבלה לסטודנט
     function navigateToStudentReception() {
         window.location.href = "/student_rec/";
     }

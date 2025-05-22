@@ -1,23 +1,114 @@
-
 {% block content %}
-<div class="container mt-4">
-    <h2>ניהול שעות קבלה - מרצה {{ request.user.username }}</h2>
-    <form method="post" class="mb-4">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">הוסף שעות קבלה</button>
-    </form>
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ניהול שעות קבלה</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #333;
+            direction: rtl;
+            text-align: right;
+        }
 
-    <h3>שעות קבלה קיימות</h3>
-    <ul class="list-group">
-        {% for rh in reception_hours %}
-        <li class="list-group-item">
-            {{ rh.date }} בין {{ rh.start_time }} ל-{{ rh.end_time }}
-            ({{ rh.bookings.count }} הזמנות)
-        </li>
-        {% empty %}
-        <li class="list-group-item">אין שעות קבלה</li>
-        {% endfor %}
-    </ul>
-</div>
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 20px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        h2, h3 {
+            color: #7eb443;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 30px;
+            text-align: right;
+        }
+
+        form p {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        button[type="submit"] {
+            background-color: #b5e745;
+            color: #333;
+            font-weight: bold;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #a0cc3c;
+        }
+
+        ul.list-group {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul.list-group li.list-group-item {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-size: 16px;
+        }
+
+        ul.list-group li.list-group-item.empty {
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>ניהול שעות קבלה - מרצה {{ request.user.username }}</h2>
+        <form method="post" class="mb-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">הוסף שעות קבלה</button>
+        </form>
+
+        <h3>שעות קבלה קיימות</h3>
+        <ul class="list-group">
+            {% for rh in reception_hours %}
+            <li class="list-group-item">
+                {{ rh.date }} בין {{ rh.start_time }} ל-{{ rh.end_time }} ({{ rh.bookings.count }} הזמנות)
+            </li>
+            {% empty %}
+            <li class="list-group-item empty">אין שעות קבלה</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
 {% endblock %}

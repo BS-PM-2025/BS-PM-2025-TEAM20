@@ -1,32 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>All Feedbacks</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>כל המשובים</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .feedback-box {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+            color: #333;
         }
-        .rating {
-            font-weight: bold;
+
+        h2 {
+            text-align: center;
             color: #4CAF50;
+            margin-bottom: 25px;
+        }
+
+        .feedback-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .feedback-box {
+            background-color: #f3f9f0;
+            border: 1.5px solid #b5e745;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 8px rgba(181, 231, 69, 0.2);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .feedback-box:hover {
+            box-shadow: 0 8px 20px rgba(181, 231, 69, 0.4);
+        }
+
+        .comment {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            direction: rtl;
+        }
+
+        .rating {
+            font-weight: 700;
+            color: #4CAF50;
+            font-size: 1em;
+            direction: ltr; /* לשמור דירוג מימין לשמאל */
+        }
+
+        .no-feedback {
+            text-align: center;
+            font-style: italic;
+            color: #888;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
-    <h2>All Feedbacks</h2>
-
-    {% for fb in feedbacks %}
-        <div class="feedback-box">
-            <p><strong>Comment:</strong> {{ fb.comment }}</p>
-            <p class="rating">Rating: {{ fb.rating }}/5</p>
-        </div>
-    {% empty %}
-        <p>No feedback submitted yet.</p>
-    {% endfor %}
+    <h2>כל המשובים</h2>
+    <div class="feedback-container">
+        {% for fb in feedbacks %}
+            <div class="feedback-box">
+                <p class="comment">💬 {{ fb.comment }}</p>
+                <p class="rating">⭐ דירוג: {{ fb.rating }}/5</p>
+            </div>
+        {% empty %}
+            <p class="no-feedback">עדיין לא הוגשו משובים.</p>
+        {% endfor %}
+    </div>
 </body>
 </html>

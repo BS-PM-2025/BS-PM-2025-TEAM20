@@ -1,85 +1,257 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback</title>
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/student.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>משוב</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #333;
+            direction: rtl;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #332f2f;
+            color: #b5e745;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .navbar .left-section,
+        .navbar .right-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .left-section a {
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+        .navbar .left-section a:hover {
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .navbar .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b5e745;
+        }
+
+        /* Main container */
+        .container {
+            max-width: 700px;
+            margin: 30px auto 50px auto;
+            padding: 30px 20px;
+            background-color: #f3f3f3;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #7eb443;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* Form Styles */
+        form {
+            direction: rtl;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+            text-align: right;
+        }
+        textarea {
+            width: 100%;
+            resize: vertical;
+            min-height: 100px;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            direction: rtl;
+        }
+
+        .stars {
+            font-size: 2.5rem;
+            cursor: pointer;
+            user-select: none;
+            text-align: right;
+            direction: ltr; /* keep stars left-to-right visually */
+        }
+        .star {
+            color: gray;
+            transition: color 0.2s ease;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            background-color: #7eb443;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        button[type="submit"]:hover {
+            background-color: #6aa233;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-weight: 600;
+            text-align: center;
+            color: #333;
+            min-height: 1.5em;
+        }
+
+        /* Back arrow */
+        .back-arrow {
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .back-arrow:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
-<a href="{% url 'student_page' %}" class="back-arrow">← Back</a>
+<!-- Navbar -->
+<div class="navbar">
+    <div class="left-section">
+        <a href="{% url 'student_page' %}">⏴ חזור</a>
+    </div>
+    <div class="title">משוב משתמשים</div>
+    <div class="right-section">
+        <!-- אפשר להוסיף אייקון תפריט אם תרצה -->
+    </div>
+</div>
 
+<!-- Main Content -->
 <div class="container">
-    <h2>Provide Your Feedback</h2>
-    <form id="feedbackForm">
+    <a href="{% url 'student_page' %}" class="back-arrow">⏴ חזור</a>
+
+    <h2>השאר משוב</h2>
+
+    <form id="feedbackForm" novalidate>
         <div class="form-group">
-            <label for="comment">Your Comment:</label>
+            <label for="comment">הערות שלך:</label>
             <textarea id="comment" name="comment" rows="5" required></textarea>
         </div>
 
         <div class="form-group">
-            <label for="rating">Your Rating:</label>
-            <div class="stars" id="stars">
-                <span class="star" data-value="1">★</span>
-                <span class="star" data-value="2">★</span>
-                <span class="star" data-value="3">★</span>
-                <span class="star" data-value="4">★</span>
-                <span class="star" data-value="5">★</span>
+            <label>דרג אותנו:</label>
+            <div class="stars" id="stars" role="radiogroup" aria-label="דירוג כוכבים">
+                <span class="star" data-value="1" role="radio" aria-checked="false" tabindex="0">★</span>
+                <span class="star" data-value="2" role="radio" aria-checked="false" tabindex="-1">★</span>
+                <span class="star" data-value="3" role="radio" aria-checked="false" tabindex="-1">★</span>
+                <span class="star" data-value="4" role="radio" aria-checked="false" tabindex="-1">★</span>
+                <span class="star" data-value="5" role="radio" aria-checked="false" tabindex="-1">★</span>
             </div>
             <input type="hidden" name="rating" id="rating" required>
         </div>
 
-        <button type="submit">Submit Feedback</button>
+        <button type="submit">שלח משוב</button>
     </form>
 
-    <p id="message"></p>
+    <p id="message" aria-live="polite"></p>
 </div>
 
 <script>
-    // Update rating based on selected stars
-    document.querySelectorAll('.star').forEach(star => {
-        star.addEventListener('click', function() {
-            const rating = this.getAttribute('data-value');
-            document.getElementById('rating').value = rating;
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating');
+    const message = document.getElementById('message');
 
-            // Update star appearance
-            document.querySelectorAll('.star').forEach(star => {
-                star.style.color = star.getAttribute('data-value') <= rating ? 'gold' : 'gray';
-            });
+    function setRating(rating) {
+        ratingInput.value = rating;
+        stars.forEach(star => {
+            star.style.color = star.getAttribute('data-value') <= rating ? 'gold' : 'gray';
+            star.setAttribute('aria-checked', star.getAttribute('data-value') == rating ? 'true' : 'false');
+            star.tabIndex = star.getAttribute('data-value') == rating ? 0 : -1;
+        });
+    }
+
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            setRating(star.getAttribute('data-value'));
+        });
+        star.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setRating(star.getAttribute('data-value'));
+                star.focus();
+            }
         });
     });
 
-    // Handle form submission
-    document.getElementById('feedbackForm').addEventListener('submit', function(event) {
-        event.preventDefault();
+    document.getElementById('feedbackForm').addEventListener('submit', (e) => {
+        e.preventDefault();
 
-        const comment = document.getElementById('comment').value;
-        const rating = document.getElementById('rating').value;
+        if (!ratingInput.value) {
+            message.style.color = 'red';
+            message.textContent = "אנא דרג אותנו.";
+            return;
+        }
 
-        // Make an AJAX request to save the feedback
+        const comment = document.getElementById('comment').value.trim();
+        const rating = ratingInput.value;
+
         fetch('/submit_feedback/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': '{{ csrf_token }}'
             },
-            body: JSON.stringify({
-                comment: comment,
-                rating: rating
-            })
+            body: JSON.stringify({ comment, rating })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                document.getElementById('message').textContent = "Thank you for your feedback!";
+                message.style.color = 'green';
+                message.textContent = "תודה על המשוב!";
+                e.target.reset();
+                setRating(0);
             } else {
-                document.getElementById('message').textContent = "Error submitting feedback. Please try again.";
+                message.style.color = 'red';
+                message.textContent = "שגיאה בשליחת המשוב. אנא נסה שנית.";
             }
         })
-        .catch(error => {
-            document.getElementById('message').textContent = "Error submitting feedback. Please try again.";
+        .catch(() => {
+            message.style.color = 'red';
+            message.textContent = "שגיאה בשליחת המשוב. אנא נסה שנית.";
         });
     });
 </script>

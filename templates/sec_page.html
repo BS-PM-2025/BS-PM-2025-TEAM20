@@ -1,35 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Welcome to Sec Page</title>
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #74ebd5, #ACB6E5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
-            position: relative;
+            padding: 0;
+            background-color: #ffffff;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #332f2f;
+            color: #b5e745;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+        }
+
+        .navbar .left-section a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .navbar .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b5e745;
+        }
+
+        .navbar .right-section {
+            font-size: 20px;
+            color: white;
         }
 
         .container {
-            background-color: white;
-            padding: 40px;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            max-width: 600px;
-            width: 100%;
             text-align: center;
         }
 
         h2 {
-            color: #333;
+            color: #7eb443;
             margin-bottom: 20px;
         }
 
@@ -40,100 +67,85 @@
             margin-bottom: 10px;
         }
 
-        footer {
-            margin-top: 30px;
-            padding-top: 10px;
-            font-size: 14px;
-            color: #555;
-        }
-
-        .back-arrow {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            text-decoration: none;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-            z-index: 10;
-        }
-
-        .back-arrow:hover {
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
         .nav-buttons {
-            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 30px;
         }
 
         .button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
+            background-color: #f3f3f3;
+            color: #333;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
+            padding: 14px 16px;
             font-size: 16px;
+            border-radius: 25px;
+            text-align: right;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease;
             text-decoration: none;
-            margin: 10px 0;
             display: inline-block;
-            text-align: center;
-        }
-
-        .button i {
-            margin-right: 8px;
         }
 
         .button:hover {
-            background-color: #45a049;
+            background-color: #e6e6e6;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #555;
         }
     </style>
 </head>
 <body>
 
-<a href="{% url 'login_lecc' %}" class="back-arrow">← Back</a>
+<!-- Navbar -->
+<div class="navbar">
+    <div class="left-section">
+        <a href="{% url 'login_lecc' %}">← Back</a>
+    </div>
+    <div class="title">Secretary Portal</div>
+    <div class="right-section">
+        ☰
+    </div>
+</div>
 
+<!-- Main Content -->
 <div class="container">
     <h2>Welcome to Sec Page</h2>
     <p class="welcome-message">Welcome to the Sec Page!</p>
     <p>We're happy to have you here. You're now part of the academic community!</p>
 
     <div class="nav-buttons">
-        <a href="{% url 'request_list' %}" class="button">
-            <i class="fas fa-list"></i> Requests for Improving Scores
-        </a>
-        <a href="{% url 'add_office_hours' %}" class="button">
-            <i class="fas fa-clock"></i> Office Hours
-        </a>
-        <a href="{% url 'upload_form' %}" class="button">
-            <i class="fas fa-upload"></i> Upload Form for Requests
-        </a>
-        <!-- כפתור חדש לצפייה בכל שעות הקבלה -->
-        <a href="{% url 'office_hours_list' %}" class="button">
-            <i class="fas fa-calendar-alt"></i> View Office Hours
-        </a>
-        <a href="{% url 'extension_request_list' %}" class="button">
-    <i class="fas fa-list"></i> Requests for Exra time
-             <a href="{% url 'student_secretary_chat' %}" class="button">
-
-    <i class="fas fa-list"></i> Chat
-<a href="{% url 'secretary_requests' %}" class="button">
-    <i class="fas fa-file-alt"></i> Document Requests
+    <a href="{% url 'request_list' %}" class="button">
+    <i class="fas fa-list" style="color: #007bff;"></i> Requests for Improving Scores
 </a>
-
-
-
+<a href="{% url 'add_office_hours' %}" class="button">
+    <i class="fas fa-clock" style="color: #28a745;"></i> Office Hours
+</a>
+<a href="{% url 'upload_form' %}" class="button">
+    <i class="fas fa-upload" style="color: #ffc107;"></i> Upload Form for Requests
+</a>
+<a href="{% url 'office_hours_list' %}" class="button">
+    <i class="fas fa-calendar-alt" style="color: #17a2b8;"></i> View Office Hours
+</a>
+<a href="{% url 'extension_request_list' %}" class="button">
+    <i class="fas fa-hourglass-half" style="color: #fd7e14;"></i> Requests for Extra Time
+</a>
+<a href="{% url 'student_secretary_chat' %}" class="button">
+    <i class="fas fa-comments" style="color: #6f42c1;"></i> Chat
+</a>
+<a href="{% url 'secretary_requests' %}" class="button">
+    <i class="fas fa-file-alt" style="color: #dc3545;"></i> Document Requests
 </a>
 
     </div>
 
-    <footer>
+    <div class="footer">
         <p>&copy; 2025 Lecturer Page. All rights reserved.</p>
-    </footer>
+    </div>
 </div>
 
 </body>

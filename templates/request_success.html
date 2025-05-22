@@ -1,58 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request Submitted</title>
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>בקשה הוגשה</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            background-color: #f9f9f9; /* רקע בהיר */
             height: 100vh;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            color: #333;
         }
 
+        /* Navbar בסגנון דף הסטודנט */
+        nav.navbar {
+            background-color: #332f2f;
+            color: #b5e745;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav.navbar .left-section,
+        nav.navbar .right-section {
+            display: flex;
+            align-items: center;
+        }
+
+        nav.navbar .left-section a {
+            font-size: 20px;
+            margin-left: 10px;
+            color: white;
+            text-decoration: none;
+        }
+
+        nav.navbar .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b5e745;
+        }
+
+        nav.navbar .menu-icon {
+            font-size: 22px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Container */
         .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            text-align: center;
+            background: white;
+            padding: 30px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
             max-width: 500px;
-            width: 90%;
+            width: 100%;
+            text-align: center;
+            margin-top: 40px;
         }
 
         h2 {
-            color: #333;
-            margin-bottom: 20px;
+            color: #7eb443;
+            margin-bottom: 25px;
         }
 
-        a {
+        a.button-link {
             display: inline-block;
             margin-top: 20px;
             padding: 12px 24px;
-            background-color: #4CAF50;
-            color: white;
+            background-color: #b5e745; /* ירוק דומה */
+            color: #333;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
             transition: background-color 0.3s ease;
+            cursor: pointer;
         }
-
-        a:hover {
-            background-color: #45a049;
+        a.button-link:hover {
+            background-color: #9cc036;
         }
     </style>
 </head>
 <body>
 
+<!-- Navbar -->
+<nav class="navbar" role="navigation" aria-label="ראשי">
+    <div class="left-section">
+        <a href="{% url 'home' %}">⏴</a>
+    </div>
+    <div class="title">MySite</div>
+    <div class="right-section">
+        <div class="menu-icon">☰</div>
+    </div>
+</nav>
+
 <div class="container">
-    <h2>Your request has been submitted successfully!</h2>
-    <a href="{% url 'student_requests' %}">View My Requests</a>
+    <h2>הבקשה שלך הוגשה בהצלחה!</h2>
+    <a href="{% url 'student_requests' %}" class="button-link">צפה בבקשות שלי</a>
 </div>
 
 </body>
