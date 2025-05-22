@@ -5,15 +5,16 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                // כאן תוכל להוסיף פקודות בנייה אם צריך, לדוגמה:
-                // sh 'pip install -r requirements.txt'
+                // התקנת התלויות
+                sh 'python3 -m pip install --upgrade pip'
+                sh 'python3 -m pip install -r requirements.txt'
             }
         }
 
         stage('Test') {
             steps {
                 echo 'Running Django tests...'
-                sh 'python manage.py test'
+                sh 'python3 manage.py test'
             }
         }
 
