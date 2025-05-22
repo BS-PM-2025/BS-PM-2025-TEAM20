@@ -1,25 +1,165 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <title>הרשמה</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
-    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            margin: 0;
+            padding: 0;
+        }
+
+        .topbar {
+            background-color: #2e2828;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 24px;
+            font-size: 18px;
+        }
+
+        .logo {
+            color: #9ccd00;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .signup-container {
+            max-width: 400px;
+            margin: 20px auto;
+            text-align: center;
+            padding: 10px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        label {
+            display: block;
+            text-align: right;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 14px;
+            border: none;
+            border-radius: 8px;
+            background-color: #f4f4f4;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #9ccd00;
+        }
+
+        .signup-button {
+            background-color: #9ccd00;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 60%;
+            font-size: 14px;
+            border-radius: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .login-button {
+            background-color: #2e2828;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 60%;
+            font-size: 14px;
+            border-radius: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .back-icon {
+            text-decoration: none;
+            color: white;
+        }
+
+        .no-account {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #222;
+        }
+
+        .error-list {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 8px;
+            list-style: none;
+            margin-bottom: 16px;
+        }
+    </style>
 </head>
 <body>
-    <a href="{% url 'home' %}" class="back-arrow">&#8592; Back to Home</a>
+    <div class="topbar">
+        <a href="{% url 'home' %}" class="back-icon">⬅</a>
+        <span class="logo">Bakasha</span>
+        <span></span>
+    </div>
 
-    <div class="container">
-        <h2>Sign Up</h2>
+    <div class="signup-container">
+        <h2>הרשמה</h2>
+
+        {% if form.errors %}
+            <ul class="error-list">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Sign Up</button>
+
+            <label for="id_username">שם משתמש</label>
+            {{ form.username }}
+
+            <label for="id_email">אימייל</label>
+            {{ form.email }}
+
+            <label for="id_password">סיסמה</label>
+            {{ form.password }}
+
+            <label for="id_first_name">שם פרטי</label>
+            {{ form.first_name }}
+
+            <label for="id_last_name">שם משפחה</label>
+            {{ form.last_name }}
+
+            <button type="submit" class="signup-button">הרשמה</button>
         </form>
-        <div class="login-link">
-            <p>Already have an account? <a href="{% url 'login_lecc' %}">Login here</a></p>
-        </div>
+
+        <p class="no-account">כבר יש לך משתמש?</p>
+        <a href="{% url 'login_lecc' %}">
+            <button class="login-button">התחברות</button>
+        </a>
     </div>
 </body>
 </html>
