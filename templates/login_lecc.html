@@ -1,35 +1,194 @@
 {% load static %}
+
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <title>התחברות מרצה</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            margin: 0;
+            padding: 0;
+        }
+
+    .topbar {
+        background-color: #2e2828;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 24px;
+        font-size: 18px;
+    }
+
+    .logo {
+        color: #9ccd00;
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .login-container {
+        max-width: 400px;
+        margin: 20px auto;
+        text-align: center;
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 22px;
+        margin-bottom: 20px;
+        color: #222;
+    }
+
+    label {
+        display: block;
+        text-align: right;
+        margin-bottom: 6px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 14px;
+        border: none;
+        border-radius: 8px;
+        background-color: #f4f4f4;
+        font-size: 14px;
+    }
+
+   .custom-select {
+    background-color: #2e2828;
+    color: white;
+    font-weight: bold;
+    width: 60%;
+    margin: 0 auto 16px;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    display: block;
+    border: none;
+    direction: rtl;
+
+}
+
+.custom-select option {
+    background-color: #f2f3f5;
+    color: black;
+    direction: rtl;
+}
+
+
+    .login-button {
+        background-color: #9ccd00;
+        color: white;
+        border: none;
+        padding: 10px;
+        width: 60%;
+        font-size: 14px;
+        border-radius: 8px;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    .signup-button {
+        background-color: #2e2828;
+        color: white;
+        border: none;
+        padding: 10px;
+        width: 60%;
+        font-size: 14px;
+        border-radius: 8px;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    .no-account {
+        margin-top: 16px;
+        font-size: 14px;
+        color: #222;
+    }
+
+    .error-list {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 8px;
+        list-style: none;
+        margin-bottom: 16px;
+    }
+</style>
+
+
 </head>
 <body>
-    <div class="container">
-        <h2>Login</h2>
+    <div class="topbar">
+    <span></span>
+    <span class="logo">Bakasha</span>
+    <a href="/" class="back-icon" style="text-decoration: none; color: white;">⬅</a>
+</div>
 
-        {% if form.errors %}
-            <ul class="error-list">
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
+<div class="login-container">
+    <h2>לאיזה מערכת תרצה להכנס</h2>
+
+    {% if form.errors %}
+        <ul class="error-list">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li>{{ error }}</li>
                 {% endfor %}
-            </ul>
-        {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Login</button>
-        </form>
+    <form method="POST">
+        {% csrf_token %}
 
-        <div class="signup-link">
-            <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
-        </div>
-    </div>
+        <label for="role">בחר משתמש</label>
+        <select name="role" id="role" class="custom-select" required>
+            <option value="">בחר תפקיד</option>
+            <option value="student">סטודנט</option>
+            <option value="lecturer">מרצה</option>
+            <option value="Secretary">מזכירות</option>
+        </select>
+
+        <label for="username">שם משתמש</label>
+        {{ form.username }}
+
+        <label for="password">סיסמה</label>
+        {{ form.password }}
+
+        <button type="submit" class="login-button">כניסה</button>
+    </form>
+
+    <p class="no-account">אין לך משתמש ?</p>
+    <a href="{% url 'signup' %}">
+        <button class="signup-button">הרשמה</button>
+    </a>
+</div>
+```
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const roleSelect = document.getElementById('role');
+    roleSelect.addEventListener('change', function () {
+        const selectedRole = roleSelect.value;
+
+        if (selectedRole === 'student') {
+            window.location.href = "/accounts/login/";
+        } else if (selectedRole === 'admin') {
+            window.location.href = "/accounts/login_sec/";
+        }
+        // אם בחר "lecturer" לא נעשה כלום - ימשיך למלא ולשלוח
+    });
+});
+</script>
+
 </body>
 </html>
