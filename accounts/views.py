@@ -371,7 +371,7 @@ def login_lecc(request):
             password = form.cleaned_data['password']
 
             # חיפוש המשתמש ב- UserRegister לפי שם המשתמש
-            user = UserRegister.objects.filter(username=username).first()  # השתמש ב-filter
+            user = UserRegisterLec.objects.filter(username=username).first()  # השתמש ב-filter
 
             if user:  # אם נמצא משתמש
                 if user.password == password:  # בדוק אם הסיסמה תואמת
