@@ -167,12 +167,21 @@
         {{ form.password }}
 
         <button type="submit" class="login-button">כניסה</button>
-    </form>
 
-    <p class="no-account">אין לך משתמש ?</p>
-    <a href="{% url 'signup_lecc' %}">
-        <button class="signup-button">הרשמה</button>
+<!-- שכחת סיסמה -->
+<div style="text-align: center; margin-top: 8px; margin-bottom: 20px;">
+    <a href="{% url 'password_reset' %}" style="color: #5a8f00; text-decoration: none; font-size: 13px;">
+        שכחת סיסמה?
     </a>
+</div>
+
+
+<!-- הרשמה -->
+<p class="no-account" style="margin-bottom: 8px;">אין לך משתמש ?</p>
+<a href="{% url 'signup_lecc' %}">
+    <button class="signup-button">הרשמה</button>
+</a>
+
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
