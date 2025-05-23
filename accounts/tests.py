@@ -83,3 +83,22 @@ class SuccessViewTests(TestCase):
         response = self.client.get(reverse('success'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'request_success.html')
+
+
+
+#הקאתון
+from django.test import TestCase
+from django.urls import reverse
+
+class DummyTest(TestCase):
+    def test_homepage_loads(self):
+        response = self.client.get("/")
+        self.assertIn(response.status_code, [200, 302])
+
+    def test_login_page_loads(self):
+        response = self.client.get(reverse("login_lecc"))
+        self.assertIn(response.status_code, [200, 302])
+
+    def test_signup_page_loads(self):
+        response = self.client.get(reverse("signup_lecc"))
+        self.assertIn(response.status_code, [200, 302])
