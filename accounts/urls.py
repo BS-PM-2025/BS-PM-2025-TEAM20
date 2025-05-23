@@ -114,4 +114,5 @@ path('student_request/', views.submit_request_view, name='submit_request'),
     path('student_rec/', views.student_reception_hours, name='student_reception_hours'),
     path('student/book/<int:reception_hour_id>/', views.book_reception_hour, name='book_reception_hour'),
     path('student/cancel/<int:booking_id>/', views.cancel_reception_booking, name='cancel_reception_booking'),
+   
     ]

@@ -35,19 +35,21 @@ urlpatterns = [
                   path('request_success/', views.request_success, name='request_success'),
 
 
-   path('accounts/', include('accounts.urls')),
-
+  # path('/', include('accounts.urls')),
+  path('accounts/', include('accounts.urls')),
     path('', lambda request: render(request, 'home.html'), name='home'),
 
     path('admin/', admin.site.urls),  # נתיב לממשק ניהול
-    path('signup/', views.signup_view, name='signup'),  # נתיב להרשמה (האם יש צורך בו?)
+    path('signup/', views.signup_view, name='signup'),
+      path('signup_student/', views.signup_student, name='signup_student'),  # נתיב להרשמה (האם יש צורך בו?)
     path('home/', views.home_view, name='home'),  # נתיב לדף הבית
     path('', home_view, name='home'),  # נתיב לברירת מחדל (דף הבית)
-    path('accounts/', include('accounts.urls')),
-    path('signup_student/', views.signup_student, name='signup_student'),
- path('signup_lec/', views.signup_student, name='signup_lec'),
+    
+    
+ #path('signup_lec/', views.signup_student, name='signup_lec'),
 path('signup_sec/', views.signup_sec, name='signup_sec'),
 path('signup_lecc/', views.signup_lecc, name='signup_lecc'),
+path('absence/', views.absence_request, name='absence'),
     path('student_requests/', views.student_requests, name='student_requests'),  # הנתיב לדף student_requests
     path('student/request_form/', views.request_form, name='request_form'),
     path('request_success/', views.success_view, name='success'),

@@ -19,6 +19,8 @@ def signup_view(request):
     return render(request, 'signup.html', {'form': form})
 
 
+def absence_request(request):
+    return render(request, 'absence.html')  # דף התלמיד לאחר ההרשמה
 
 
 from django.shortcuts import render, redirect
