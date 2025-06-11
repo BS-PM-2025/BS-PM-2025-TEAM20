@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>הייעוצים שלי</h2>
+<ul>
+    {% for consult in consultations %}
+        <li>{{ consult.consultation_date }} {{ consult.consultation_time }} - {{ consult.subject }}</li>
+    {% empty %}
+        <li>אין ייעוצים מתוכננים.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
