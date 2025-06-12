@@ -2,11 +2,13 @@ pipeline {
     agent any
 
     environment {
+        // הגדרת משתני סביבה עבור חיבור בסיס הנתונים
         DB_NAME = 'test_db'
         DB_USER = 'jenkins_user'
         DB_PASS = 'jenkins_pass'
         DB_HOST = 'localhost'
         DB_PORT = '1433'
+        // אם יש צורך, אפשר להוסיף משתנים נוספים
     }
 
     stages {
@@ -20,44 +22,24 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
+                // שדרוג pip והתקנת כל התלויות
                 sh 'python3 -m pip install --upgrade pip'
                 sh 'python3 -m pip install -r requirements.txt'
-                sh 'python3 -m pip install coverage junit-xml' // ודא שיש לך חבילות ל־JUnit XML
             }
         }
 
-       stage('Test') {
-    steps {
-        echo 'Running Django unit and integration tests with coverage metrics...'
-
-        sh '''
-          export PATH=$HOME/.local/bin:$PATH
-          coverage run --source=. manage.py test
-          coverage report
-          coverage xml
-          coverage html
-        '''
-
-        script {
-            try {
-                junit 'reports/junit/*.xml'
-            } catch (err) {
-                echo "No JUnit XML reports found."
+        stage('Test') {
+            steps {
+                echo 'Running Django unit and integration tests...'
+                // כאן ניתן להוסיף יצירת בסיס נתונים זמני או ניקוי אם צריך (למשל שורת shell להרצת סקריפט DB)
+                sh 'python3 manage.py test'
             }
         }
-
-        publishCoverage adapters: [
-            coberturaAdapter('coverage.xml')
-        ], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
-
-        archiveArtifacts artifacts: 'htmlcov/**', allowEmptyArchive: true
-    }
-}
 
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
-                // הפעלת סקריפט פריסה אם יש
+                // כאן יש להוסיף סקריפט פריסה אמיתי, למשל:
                 // sh './deploy_script.sh'
             }
         }
