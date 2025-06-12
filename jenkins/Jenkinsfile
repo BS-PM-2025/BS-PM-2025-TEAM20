@@ -2,13 +2,11 @@ pipeline {
     agent any
 
     environment {
-        // הגדרת משתני סביבה עבור חיבור בסיס הנתונים
         DB_NAME = 'test_db'
         DB_USER = 'jenkins_user'
         DB_PASS = 'jenkins_pass'
         DB_HOST = 'localhost'
         DB_PORT = '1433'
-        // אם יש צורך, אפשר להוסיף משתנים נוספים
     }
 
     stages {
@@ -22,24 +20,49 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                // שדרוג pip והתקנת כל התלויות
                 sh 'python3 -m pip install --upgrade pip'
                 sh 'python3 -m pip install -r requirements.txt'
+                sh 'python3 -m pip install coverage junit-xml' // ודא שיש לך חבילות ל־JUnit XML
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running Django unit and integration tests...'
-                // כאן ניתן להוסיף יצירת בסיס נתונים זמני או ניקוי אם צריך (למשל שורת shell להרצת סקריפט DB)
-                sh 'python3 manage.py test'
+                echo 'Running Django unit and integration tests with coverage metrics...'
+
+                // הרצת הבדיקות עם coverage ושמירת תוצאות גם ב־XML וגם ב־HTML
+                sh 'coverage run --source=.' +
+                   ' manage.py test'
+
+                sh 'coverage report'
+                sh 'coverage xml'   // מייצר coverage.xml בדיפולט ב-root
+                sh 'coverage html'  // מייצר תיקיית htmlcov
+
+                // הרצת טסטים עם דוחות JUnit - אפשר להשתמש ב־pytest-django למשל או
+                // להמיר פלט ה־Django ל־JUnit XML עם חבילה מתאימה.
+                // אם אין דוחות JUnit, שורה זו תיכשל - לכן אפשר לשים בתוך try/catch:
+                script {
+                    try {
+                        junit 'reports/junit/*.xml'
+                    } catch (err) {
+                        echo "No JUnit XML reports found."
+                    }
+                }
+
+                // פרסום דוח כיסוי קוד ל-Jenkins (דורש התקנת Cobertura plugin)
+                publishCoverage adapters: [
+                    coberturaAdapter('coverage.xml')
+                ], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+
+                // שמירת דוח HTML של coverage כתוצר (artifact)
+                archiveArtifacts artifacts: 'htmlcov/**', allowEmptyArchive: true
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
-                // כאן יש להוסיף סקריפט פריסה אמיתי, למשל:
+                // הפעלת סקריפט פריסה אם יש
                 // sh './deploy_script.sh'
             }
         }
