@@ -2,13 +2,11 @@ pipeline {
     agent any
 
     environment {
-        // הגדרת משתני סביבה עבור חיבור בסיס הנתונים
         DB_NAME = 'test_db'
         DB_USER = 'jenkins_user'
         DB_PASS = 'jenkins_pass'
         DB_HOST = 'localhost'
         DB_PORT = '1433'
-        // אם יש צורך, אפשר להוסיף משתנים נוספים
     }
 
     stages {
@@ -21,25 +19,32 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo 'Building the project...'
-                // שדרוג pip והתקנת כל התלויות
-                sh 'python3 -m pip install --upgrade pip'
-                sh 'python3 -m pip install -r requirements.txt'
+                script {
+                    def start = System.currentTimeMillis()
+                    echo 'Building the project...'
+                    sh 'python3 -m pip install --upgrade pip'
+                    sh 'python3 -m pip install -r requirements.txt'
+                    def duration = (System.currentTimeMillis() - start) / 1000
+                    echo "Build stage took ${duration} seconds"
+                }
             }
         }
 
         stage('Test') {
             steps {
                 echo 'Running Django unit and integration tests...'
-                // כאן ניתן להוסיף יצירת בסיס נתונים זמני או ניקוי אם צריך (למשל שורת shell להרצת סקריפט DB)
-                sh 'python3 manage.py test'
+                sh 'python3 manage.py test --junitxml=reports/test-results.xml'
+            }
+            post {
+                always {
+                    junit 'reports/test-results.xml'
+                }
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
-                // כאן יש להוסיף סקריפט פריסה אמיתי, למשל:
                 // sh './deploy_script.sh'
             }
         }
