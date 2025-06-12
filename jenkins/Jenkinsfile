@@ -2,13 +2,11 @@ pipeline {
     agent any
 
     environment {
-        // הגדרת משתני סביבה עבור חיבור בסיס הנתונים
         DB_NAME = 'test_db'
         DB_USER = 'jenkins_user'
         DB_PASS = 'jenkins_pass'
         DB_HOST = 'localhost'
         DB_PORT = '1433'
-        // אם יש צורך, אפשר להוסיף משתנים נוספים
     }
 
     stages {
@@ -19,23 +17,21 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                echo 'Building the project...'
-                sh 'python3 -m pip install --upgrade pip'
-                sh 'python3 -m pip install -r requirements.txt'
-            }
-        }
+stage('Build') {
+    steps {
+        sh 'python3 -m pip install --upgrade pip'
+        sh 'python3 -m pip install -r requirements.txt'  // OK ✅
+        // כאן כבר אין שורת התקנה של xmlrunner — טוב מאוד!
+    }
+}
+
+
 
         stage('Test') {
             steps {
-                echo 'Running Django tests and generating JUnit XML report...'
-                // יצירת תיקיית reports אם לא קיימת
+                echo 'Running tests with pytest and generating JUnit XML report...'
                 sh 'mkdir -p reports'
-                // הרצת בדיקות עם הפקת דוח JUnit XML
-                // אם משתמשים בpytest: sh 'pytest --junitxml=reports/results.xml'
-                // כאן דוגמה עם django-xmlrunner (יש להתקין אותו בrequirements)
-                sh 'python3 manage.py test --testrunner=xmlrunner.extra.djangotestrunner.XMLTestRunner --output-dir=reports'
+                sh 'pytest --junitxml=reports/results.xml'
             }
             post {
                 always {
