@@ -1,6 +1,7 @@
 Django>=3.2
 django-mssql-backend
+django-mssql-backend==2.8.1
 pyodbc>=4.0.0
-pytest
-pytest-django
-unittest-xml-reporting  # אם אתה באמת משתמש בזה
+django-mssql-backend==2.8.1
+pyodbc>=4.0.34
+# גרסה שתואמת ל-django-mssql-backend

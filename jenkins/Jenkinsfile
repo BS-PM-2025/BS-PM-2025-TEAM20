@@ -2,11 +2,13 @@ pipeline {
     agent any
 
     environment {
+        // הגדרת משתני סביבה עבור חיבור בסיס הנתונים
         DB_NAME = 'test_db'
         DB_USER = 'jenkins_user'
         DB_PASS = 'jenkins_pass'
         DB_HOST = 'localhost'
         DB_PORT = '1433'
+        // אם יש צורך, אפשר להוסיף משתנים נוספים
     }
 
     stages {
@@ -19,6 +21,8 @@ pipeline {
 
         stage('Build') {
             steps {
+                echo 'Building the project...'
+                // שדרוג pip והתקנת כל התלויות
                 sh 'python3 -m pip install --upgrade pip'
                 sh 'python3 -m pip install -r requirements.txt'
             }
@@ -26,21 +30,16 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running tests with pytest and generating JUnit XML report...'
-                sh 'mkdir -p reports'
-                sh 'python3 -m pytest --junitxml=reports/results.xml'
-            }
-            post {
-                always {
-                    echo 'Publishing JUnit test reports...'
-                    junit 'reports/*.xml'
-                }
+                echo 'Running Django unit and integration tests...'
+                // כאן ניתן להוסיף יצירת בסיס נתונים זמני או ניקוי אם צריך (למשל שורת shell להרצת סקריפט DB)
+                sh 'python3 manage.py test'
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
+                // כאן יש להוסיף סקריפט פריסה אמיתי, למשל:
                 // sh './deploy_script.sh'
             }
         }
