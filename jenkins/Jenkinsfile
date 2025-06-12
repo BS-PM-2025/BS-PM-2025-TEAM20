@@ -2,13 +2,11 @@ pipeline {
     agent any
 
     environment {
-        // הגדרת משתני סביבה עבור חיבור בסיס הנתונים
         DB_NAME = 'test_db'
         DB_USER = 'jenkins_user'
         DB_PASS = 'jenkins_pass'
         DB_HOST = 'localhost'
         DB_PORT = '1433'
-        // אם יש צורך, אפשר להוסיף משתנים נוספים
     }
 
     stages {
@@ -22,33 +20,42 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                // שדרוג pip והתקנת כל התלויות
                 sh 'python3 -m pip install --upgrade pip'
                 sh 'python3 -m pip install -r requirements.txt'
+                sh 'python3 -m pip install coverage pytest pytest-django pytest-cov pytest-junitxml'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running Django unit and integration tests...'
-                // כאן ניתן להוסיף יצירת בסיס נתונים זמני או ניקוי אם צריך (למשל שורת shell להרצת סקריפט DB)
-                sh 'python3 manage.py test'
+                echo 'Running Django unit and integration tests with coverage and junit xml...'
+                // הפעלת pytest עם כיסוי קוד ויצירת דוח JUnit XML
+                sh '''
+                    pytest --cov=. --cov-report=xml --junitxml=results.xml
+                '''
+            }
+            post {
+                always {
+                    // העלאת דוחות JUnit ל-Jenkins להצגה בדשבורד
+                    junit 'results.xml'
+                    // ניתן להוסיף גם דוחות כיסוי דרך פלאגין חיצוני כמו Cobertura
+                    publishCoverage adapters: [coberturaAdapter('coverage.xml')]
+                }
             }
         }
 
         stage('Dedup') {
             steps {
                 echo 'Running deduplication step...'
-                // כאן תוסיף את הפקודות להרצת הדדאפ, למשל:
+                // לדוגמה:
                 // sh 'python3 dedup_script.py'
-                // או כל סקריפט אחר שצריך להריץ
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
-                // כאן יש להוסיף סקריפט פריסה אמיתי, למשל:
+                // לדוגמה:
                 // sh './deploy_script.sh'
             }
         }
