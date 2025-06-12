@@ -27,7 +27,7 @@ pipeline {
         stage('Run Unit + Integration Tests') {
             steps {
                 echo '🧪 Running Django tests with coverage...'
-                sh 'python3 -m pytest app/tests.py --ds=djangoProject11.settings --junitxml=test-results.xml || true'
+                sh 'python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --junitxml=test-results.xml || true'
             }
         }
 
@@ -58,7 +58,7 @@ pipeline {
                 echo '📊 Measuring code coverage with pytest-cov...'
                 sh '''
                     pip install pytest-cov || true
-                    python3 -m pytest app/tests.py --ds=djangoProject11.settings --cov=app --cov-report=term-missing --cov-report=xml || true
+                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=app --cov-report=term-missing --cov-report=xml || true
                 '''
             }
         }
