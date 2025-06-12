@@ -7,7 +7,6 @@ pipeline {
         DB_PASS = 'jenkins_pass'
         DB_HOST = 'localhost'
         DB_PORT = '1433'
-        VENV_DIR = 'venv'  // תיקיית הסביבה הווירטואלית
     }
 
     stages {
@@ -18,18 +17,12 @@ pipeline {
             }
         }
 
-        stage('Setup Virtualenv and Install Dependencies') {
+        stage('Build') {
             steps {
-                echo 'Setting up Python virtual environment and installing dependencies...'
-                // יצירת סביבה וירטואלית
-                sh 'python3 -m venv ${VENV_DIR}'
-                // הפעלת הסביבה הווירטואלית והתקנת חבילות
-                sh """
-                   source ${VENV_DIR}/bin/activate
-                   pip install --upgrade pip
-                   pip install -r requirements.txt
-                   pip install coverage junit-xml
-                   """
+                echo 'Building the project...'
+                sh 'python3 -m pip install --upgrade pip'
+                sh 'python3 -m pip install -r requirements.txt'
+                sh 'python3 -m pip install coverage junit-xml' // ודא שיש לך חבילות ל־JUnit XML
             }
         }
 
@@ -37,16 +30,17 @@ pipeline {
             steps {
                 echo 'Running Django unit and integration tests with coverage metrics...'
 
-                // הפעלת הבדיקות עם סביבה וירטואלית ו־coverage
-                sh """
-                   source ${VENV_DIR}/bin/activate
-                   python -m coverage run --source=. manage.py test
-                   python -m coverage report
-                   python -m coverage xml
-                   python -m coverage html
-                """
+                // הרצת הבדיקות עם coverage ושמירת תוצאות גם ב־XML וגם ב־HTML
+                sh 'coverage run --source=.' +
+                   ' manage.py test'
 
-                // ניסיון לפרסם דוחות JUnit (אם קיימים)
+                sh 'coverage report'
+                sh 'coverage xml'   // מייצר coverage.xml בדיפולט ב-root
+                sh 'coverage html'  // מייצר תיקיית htmlcov
+
+                // הרצת טסטים עם דוחות JUnit - אפשר להשתמש ב־pytest-django למשל או
+                // להמיר פלט ה־Django ל־JUnit XML עם חבילה מתאימה.
+                // אם אין דוחות JUnit, שורה זו תיכשל - לכן אפשר לשים בתוך try/catch:
                 script {
                     try {
                         junit 'reports/junit/*.xml'
@@ -68,7 +62,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
-                // שים כאן את פקודות הפריסה שלך, לדוגמה:
+                // הפעלת סקריפט פריסה אם יש
                 // sh './deploy_script.sh'
             }
         }
