@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     environment {
+        // הגדרת משתני סביבה עבור חיבור בסיס הנתונים
         DB_NAME = 'test_db'
         DB_USER = 'jenkins_user'
         DB_PASS = 'jenkins_pass'
         DB_HOST = 'localhost'
         DB_PORT = '1433'
-        // מוסיפים את ה-user local bin ל-PATH כדי שפקודות כמו pytest יימצאו
-        PATH = "${env.HOME}/.local/bin:${env.PATH}"
+        // אם יש צורך, אפשר להוסיף משתנים נוספים
     }
 
     stages {
@@ -22,40 +22,24 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
+                // שדרוג pip והתקנת כל התלויות
                 sh 'python3 -m pip install --upgrade pip'
                 sh 'python3 -m pip install -r requirements.txt'
-                // התקנת תלויות נוספות של בדיקות
-                sh 'python3 -m pip install coverage pytest pytest-django pytest-cov'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running Django unit and integration tests with coverage and junit xml...'
-                sh '''
-                    python3 -m pytest --cov=. --cov-report=xml --junitxml=results.xml
-                '''
-            }
-            post {
-                always {
-                    junit 'results.xml'
-                    publishCoverage adapters: [coberturaAdapter('coverage.xml')]
-                }
-            }
-        }
-
-        stage('Dedup') {
-            steps {
-                echo 'Running deduplication step...'
-                // לדוגמה:
-                // sh 'python3 dedup_script.py'
+                echo 'Running Django unit and integration tests...'
+                // כאן ניתן להוסיף יצירת בסיס נתונים זמני או ניקוי אם צריך (למשל שורת shell להרצת סקריפט DB)
+                sh 'python3 manage.py test'
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
-                // לדוגמה:
+                // כאן יש להוסיף סקריפט פריסה אמיתי, למשל:
                 // sh './deploy_script.sh'
             }
         }
