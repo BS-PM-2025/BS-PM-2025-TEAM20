@@ -2,64 +2,85 @@ pipeline {
     agent any
 
     environment {
-        DB_NAME = 'test_db'
-        DB_USER = 'jenkins_user'
-        DB_PASS = 'jenkins_pass'
-        DB_HOST = 'localhost'
-        DB_PORT = '1433'
+        PYTHONUNBUFFERED = '1'
+        DJANGO_SETTINGS_MODULE = 'djangoProject11.settings'
+        PYTHONPATH = "${env.WORKSPACE}"
+        CI = 'true'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Install Dependencies') {
             steps {
-                echo 'Checking out source code from Git...'
-                checkout scm
+                echo '📦 Installing dependencies...'
+                sh 'pip install -r requirements.txt || pip install Django pytest pytest-django'
             }
         }
 
-        stage('Build') {
+        stage('Prepare Database') {
             steps {
-                script {
-                    def start = System.currentTimeMillis()
-                    echo 'Building the project...'
-                    sh 'python3 -m pip install --upgrade pip'
-                    sh 'python3 -m pip install -r requirements.txt'
-                    def duration = (System.currentTimeMillis() - start) / 1000
-                    echo "Build stage took ${duration} seconds"
-                }
+                echo '🗄️ Preparing database...'
+                sh 'python3 manage.py makemigrations'
+                sh 'python3 manage.py migrate'
             }
         }
 
-        stage('Test') {
+        stage('Run Unit + Integration Tests') {
             steps {
-                echo 'Running Django unit and integration tests...'
-                sh 'python3 manage.py test --junitxml=reports/test-results.xml'
-            }
-            post {
-                always {
-                    junit 'reports/test-results.xml'
-                }
+                echo '🧪 Running Django tests with coverage...'
+                sh 'python3 -m pytest app/tests.py --ds=RequestFlow.settings --junitxml=test-results.xml || true'
             }
         }
 
-        stage('Deploy') {
+        stage('Calculate Defect Density') {
             steps {
-                echo 'Deploying the application...'
-                // sh './deploy_script.sh'
+                echo '📊 Calculating Defect Density...'
+                sh '''
+                    # Count test failures from pytest results
+                    FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
+
+                    # Count lines of code (excluding tests/migrations/venv)
+                    LOC=$(find app -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
+
+                    if [ "$LOC" -gt 0 ]; then
+                        DEFECT_DENSITY=$(echo "scale=2; $FAILURES / $LOC * 1000" | bc)
+                    else
+                        DEFECT_DENSITY=0
+                    fi
+
+                    echo "📈 Defect Density: $DEFECT_DENSITY defects per 1000 LOC"
+                '''
             }
         }
+
+
+        stage('Code Coverage') {
+            steps {
+                echo '📊 Measuring code coverage with pytest-cov...'
+                sh '''
+                    pip install pytest-cov || true
+                    python3 -m pytest app/tests.py --ds=RequestFlow.settings --cov=app --cov-report=term-missing --cov-report=xml || true
+                '''
+            }
+        }
+
+
+        stage('Static Code Check: pylint') {
+          steps {
+             echo '📎 Running pylint...'
+            sh '''
+              pip install pylint || true
+              export PATH=$PATH:$HOME/.local/bin
+              pylint app --exit-zero || true
+               '''
+    }
+}
+
     }
 
     post {
         always {
-            echo 'Cleaning up workspace...'
-            cleanWs()
-        }
-        success {
-            echo 'Build and tests succeeded.'
-        }
-        failure {
-            echo 'Build or tests failed.'
+            echo '📊 Archiving test results...'
+            junit 'test-results.xml'
         }
     }
 }
