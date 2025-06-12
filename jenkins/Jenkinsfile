@@ -17,15 +17,12 @@ pipeline {
             }
         }
 
-stage('Build') {
-    steps {
-        sh 'python3 -m pip install --upgrade pip'
-        sh 'python3 -m pip install -r requirements.txt'  // OK ✅
-        // כאן כבר אין שורת התקנה של xmlrunner — טוב מאוד!
-    }
-}
-
-
+        stage('Build') {
+            steps {
+                sh 'python3 -m pip install --upgrade pip'
+                sh 'python3 -m pip install -r requirements.txt'
+            }
+        }
 
         stage('Test') {
             steps {

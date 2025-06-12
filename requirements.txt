@@ -3,5 +3,4 @@ django-mssql-backend
 pyodbc>=4.0.0
 pytest
 pytest-django
-pytest-xml
-unittest-xml-reporting
+unittest-xml-reporting  # אם אתה באמת משתמש בזה
