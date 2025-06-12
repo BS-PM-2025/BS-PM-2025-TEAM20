@@ -348,3 +348,19 @@ class ReceptionHourForm(forms.ModelForm):
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
+
+
+
+
+from django import forms
+from .models import Consul
+
+class ConsulForm(forms.ModelForm):
+    class Meta:
+        model = Consul
+        fields = ['title', 'date', 'time', 'location']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'time': forms.TimeInput(attrs={'type': 'time'}),
+        }

@@ -554,3 +554,22 @@ class ReceptionBooking(models.Model):
 
     def __str__(self):
         return f"{self.student.username} booked {self.reception_hour}"
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+
+class Consul(models.Model):
+    title = models.CharField("נושא", max_length=100)
+    date = models.DateField("תאריך")
+    time = models.TimeField("שעה")
+    location = models.CharField("מיקום", max_length=200)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="נוצר על ידי")
+
+    def __str__(self):
+        return f"{self.title} - {self.date} {self.time}"
+
+    class Meta:
+        verbose_name = "שעת קבלה"
+        verbose_name_plural = "שעות קבלה"

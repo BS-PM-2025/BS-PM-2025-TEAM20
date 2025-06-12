@@ -136,6 +136,7 @@
         <button onclick="openChat1()">💬 צ'אט עם מזכירות</button>
         <button onclick="navigateToTimeExtensionRequest()">⏳ בקשה להארכת זמן</button>
         <button onclick="window.location.href='{% url 'student_reception_hours' %}'">📅 שעות קבלה לסטודנט</button>
+<button onclick="navigateToLastRequests()">📋 מצב בקשות</button>
 
 
         <button onclick="navigateToStudentRequest()">📝 בקשה חדשה למרצה</button>
@@ -149,9 +150,10 @@
         window.location.href = "request_form/";
     }
 
-    function navigateToOfficeHours() {
-        window.location.href = "/office_hours/";
-    }
+function navigateToOfficeHours() {
+         window.location.href = "{% url 'consul_list' %}";
+}
+
 
     function navigateToDocumentRequest() {
         window.location.href = "/submit_document_request/";
@@ -188,6 +190,10 @@
     function navigateToStudentReception() {
         window.location.href = "/student_rec/";
     }
+    function navigateToLastRequests() {
+    window.location.href = "/last-requests/";
+}
+
 </script>
 
 </body>

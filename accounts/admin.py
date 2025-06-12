@@ -136,3 +136,13 @@ from django.contrib import admin
 from .models import StuProf
 
 admin.site.register(StuProf)
+
+
+
+from django.contrib import admin
+from .models import Consul
+
+@admin.register(Consul)
+class ConsulAdmin(admin.ModelAdmin):
+    list_display = ('title', 'date', 'time', 'location', 'created_by')
+    list_filter = ('date',)

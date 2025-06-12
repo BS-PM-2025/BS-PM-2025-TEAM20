@@ -399,7 +399,7 @@ from .models import GradeImprovementRequest
 from .forms import GradeImprovementRequestForm
 from .models import GradeImprovementRequest, UserRegisterStu1
 
-
+@login_required
 def request_grade_improvement(request):
     if request.method == 'POST':
         form = GradeImprovementRequestForm(request.POST)
@@ -1785,6 +1785,12 @@ def submit_document_request(request):
 def secretary_requests_view(request):
     requests = DocumentRequest.objects.filter(is_completed=False).order_by('-created_at')
     return render(request, 'secretary_requests.html', {'requests': requests})
+# views.py
+from django.shortcuts import get_object_or_404
+
+def document_request_detail(request, request_id):
+    document_request = get_object_or_404(DocumentRequest, id=request_id)
+    return render(request, 'document_request_detail.html', {'request': document_request})
 
 from django.core.mail import EmailMessage
 from django.shortcuts import render, redirect, get_object_or_404
@@ -2082,3 +2088,30 @@ def cancel_reception_booking(request, booking_id):
         fail_silently=True,
     )
     return redirect('student_reception_hours')
+
+
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .forms import ConsulForm
+from .models import Consul
+
+@login_required
+def add1_consul(request):
+    if request.method == 'POST':
+        form = ConsulForm(request.POST)
+        if form.is_valid():
+            consul = form.save(commit=False)
+            consul.created_by = request.user
+            consul.save()
+            return redirect('consul_list')
+    else:
+        form = ConsulForm()
+    return render(request, 'consul_form.html', {'form': form})
+
+@login_required
+def consul_list(request):
+    consuls = Consul.objects.all().order_by('date', 'time')
+    return render(request, 'consul_list.html', {'consuls': consuls})

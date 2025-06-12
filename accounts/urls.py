@@ -114,4 +114,10 @@ path('student_request/', views.submit_request_view, name='submit_request'),
     path('student_rec/', views.student_reception_hours, name='student_reception_hours'),
     path('student/book/<int:reception_hour_id>/', views.book_reception_hour, name='book_reception_hour'),
     path('student/cancel/<int:booking_id>/', views.cancel_reception_booking, name='cancel_reception_booking'),
-    ]
+    path('add1/', views.add1_consul, name='add1_consul'),
+    path('student/list/', views.consul_list, name='consul_list'),
+# urls.py
+path('document_request/<int:request_id>/', views.document_request_detail, name='document_request_detail'),
+
+
+]

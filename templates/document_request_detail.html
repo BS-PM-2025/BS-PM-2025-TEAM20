@@ -1,0 +1,59 @@
+<!-- templates/document_request_detail.html -->
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>פרטי בקשה</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f5f5;
+            margin: 20px;
+            color: #333;
+        }
+        .container {
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h2 {
+            color: #7eb443;
+            margin-bottom: 20px;
+        }
+        .field {
+            margin-bottom: 16px;
+        }
+        .field label {
+            font-weight: bold;
+        }
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+            background: #b5e745;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 8px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>פרטי בקשה</h2>
+    <div class="field"><label>שם הסטודנט:</label> {{ request.student_name }}</div>
+    <div class="field"><label>אימייל:</label> {{ request.student_email }}</div>
+    <div class="field"><label>סוג המסמך:</label> {{ request.get_document_type_display }}</div>
+    <div class="field"><label>מידע נוסף:</label> {{ request.additional_info }}</div>
+    <div class="field"><label>האם הושלם:</label> {{ request.is_completed|yesno:"כן,לא" }}</div>
+    {% if request.uploaded_document %}
+        <div class="field"><label>קובץ שהועלה:</label> <a href="{{ request.uploaded_document.url }}">הורדה</a></div>
+    {% else %}
+        <div class="field"><label>קובץ שהועלה:</label> לא הועלה קובץ</div>
+    {% endif %}
+    <a href="{% url 'secretary_requests' %}" class="back-link">← חזור לרשימת הבקשות</a>
+</div>
+</body>
+</html>

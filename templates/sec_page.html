@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Welcome to Sec Page</title>
+    <title>ברוך הבא למערכת המזכירות</title>
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
     <style>
@@ -13,6 +13,7 @@
             padding: 0;
             background-color: #ffffff;
             color: #333;
+            direction: rtl;
         }
 
         .navbar {
@@ -22,6 +23,13 @@
             align-items: center;
             justify-content: space-between;
             padding: 8px 16px;
+            width: 100%;
+            height: 56px;
+            box-sizing: border-box;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .navbar .left-section a {
@@ -101,50 +109,46 @@
 </head>
 <body>
 
-<!-- Navbar -->
+<!-- סרגל עליון -->
 <div class="navbar">
     <div class="left-section">
-        <a href="{% url 'login_lecc' %}">← Back</a>
+        <a href="{% url 'login_lecc' %}">← חזור</a>
     </div>
-    <div class="title">Secretary Portal</div>
+    <div class="title">פורטל מזכירות</div>
     <div class="right-section">
         ☰
     </div>
 </div>
 
-<!-- Main Content -->
+<!-- תוכן עיקרי -->
 <div class="container">
-    <h2>Welcome to Sec Page</h2>
-    <p class="welcome-message">Welcome to the Sec Page!</p>
-    <p>We're happy to have you here. You're now part of the academic community!</p>
+    <h2>ברוך הבא לפורטל המזכירות</h2>
+    <p class="welcome-message">שמח לראות אותך כאן!</p>
+    <p>כעת אתה חלק ממערכת אקדמית חכמה ונגישה.</p>
 
     <div class="nav-buttons">
-    <a href="{% url 'request_list' %}" class="button">
-    <i class="fas fa-list" style="color: #007bff;"></i> Requests for Improving Scores
-</a>
-<a href="{% url 'add_office_hours' %}" class="button">
-    <i class="fas fa-clock" style="color: #28a745;"></i> Office Hours
-</a>
-<a href="{% url 'upload_form' %}" class="button">
-    <i class="fas fa-upload" style="color: #ffc107;"></i> Upload Form for Requests
-</a>
-<a href="{% url 'office_hours_list' %}" class="button">
-    <i class="fas fa-calendar-alt" style="color: #17a2b8;"></i> View Office Hours
-</a>
-<a href="{% url 'extension_request_list' %}" class="button">
-    <i class="fas fa-hourglass-half" style="color: #fd7e14;"></i> Requests for Extra Time
-</a>
-<a href="{% url 'student_secretary_chat' %}" class="button">
-    <i class="fas fa-comments" style="color: #6f42c1;"></i> Chat
-</a>
-<a href="{% url 'secretary_requests' %}" class="button">
-    <i class="fas fa-file-alt" style="color: #dc3545;"></i> Document Requests
-</a>
-
+        <a href="{% url 'request_list' %}" class="button">
+            <i class="fas fa-list" style="color: #007bff;"></i> בקשות לשיפור ציונים
+        </a>
+        <a href="{% url 'add1_consul' %}" class="button">
+            <i class="fas fa-clock" style="color: #28a745;"></i> הוספת שעות קבלה
+        </a>
+        <a href="{% url 'consul_list' %}" class="button">
+            <i class="fas fa-calendar-alt" style="color: #17a2b8;"></i> צפייה בשעות קבלה
+        </a>
+        <a href="{% url 'extension_request_list' %}" class="button">
+            <i class="fas fa-hourglass-half" style="color: #fd7e14;"></i> בקשות להארכת זמן
+        </a>
+        <a href="{% url 'student_secretary_chat' %}" class="button">
+            <i class="fas fa-comments" style="color: #6f42c1;"></i> צ'אט עם סטודנטים
+        </a>
+        <a href="{% url 'secretary_requests' %}" class="button">
+            <i class="fas fa-file-alt" style="color: #dc3545;"></i> בקשות למסמכים
+        </a>
     </div>
 
     <div class="footer">
-        <p>&copy; 2025 Lecturer Page. All rights reserved.</p>
+        <p>&copy; 2025 פורטל מזכירות. כל הזכויות שמורות.</p>
     </div>
 </div>
 
