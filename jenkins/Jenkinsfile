@@ -19,16 +19,17 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'python3 -m pip install --upgrade pip'
-                sh 'python3 -m pip install -r requirements.txt'
+                sh 'python3 -m venv venv'
+                sh './venv/bin/pip install --upgrade pip'
+                sh './venv/bin/pip install -r requirements.txt'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests with pytest and generating JUnit XML report...'
+                echo 'Running tests with pytest and generating JUnit XML report inside virtualenv...'
                 sh 'mkdir -p reports'
-                sh 'pytest --junitxml=reports/results.xml'
+                sh './venv/bin/python -m pytest --junitxml=reports/results.xml'
             }
             post {
                 always {
