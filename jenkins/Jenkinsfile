@@ -36,6 +36,15 @@ pipeline {
             }
         }
 
+        stage('Dedup') {
+            steps {
+                echo 'Running deduplication step...'
+                // כאן תוסיף את הפקודות להרצת הדדאפ, למשל:
+                // sh 'python3 dedup_script.py'
+                // או כל סקריפט אחר שצריך להריץ
+            }
+        }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
