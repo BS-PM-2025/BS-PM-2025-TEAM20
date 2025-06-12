@@ -7,6 +7,8 @@ pipeline {
         DB_PASS = 'jenkins_pass'
         DB_HOST = 'localhost'
         DB_PORT = '1433'
+        // מוסיפים את ה-user local bin ל-PATH כדי שפקודות כמו pytest יימצאו
+        PATH = "${env.HOME}/.local/bin:${env.PATH}"
     }
 
     stages {
@@ -17,29 +19,26 @@ pipeline {
             }
         }
 
-  stage('Build') {
-    steps {
-        echo 'Building the project...'
-        sh 'python3 -m pip install --upgrade pip'
-        sh 'python3 -m pip install -r requirements.txt'
-        // התקנת תלויות נוספות של בדיקות
-        sh 'python3 -m pip install coverage pytest pytest-django pytest-cov'
-    }
-}
+        stage('Build') {
+            steps {
+                echo 'Building the project...'
+                sh 'python3 -m pip install --upgrade pip'
+                sh 'python3 -m pip install -r requirements.txt'
+                // התקנת תלויות נוספות של בדיקות
+                sh 'python3 -m pip install coverage pytest pytest-django pytest-cov'
+            }
+        }
 
         stage('Test') {
             steps {
                 echo 'Running Django unit and integration tests with coverage and junit xml...'
-                // הפעלת pytest עם כיסוי קוד ויצירת דוח JUnit XML
                 sh '''
-                    pytest --cov=. --cov-report=xml --junitxml=results.xml
+                    python3 -m pytest --cov=. --cov-report=xml --junitxml=results.xml
                 '''
             }
             post {
                 always {
-                    // העלאת דוחות JUnit ל-Jenkins להצגה בדשבורד
                     junit 'results.xml'
-                    // ניתן להוסיף גם דוחות כיסוי דרך פלאגין חיצוני כמו Cobertura
                     publishCoverage adapters: [coberturaAdapter('coverage.xml')]
                 }
             }
