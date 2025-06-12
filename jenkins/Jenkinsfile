@@ -17,14 +17,15 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                echo 'Building the project...'
-                sh 'python3 -m pip install --upgrade pip'
-                sh 'python3 -m pip install -r requirements.txt'
-                sh 'python3 -m pip install coverage pytest pytest-django pytest-cov pytest-junitxml'
-            }
-        }
+  stage('Build') {
+    steps {
+        echo 'Building the project...'
+        sh 'python3 -m pip install --upgrade pip'
+        sh 'python3 -m pip install -r requirements.txt'
+        // התקנת תלויות נוספות של בדיקות
+        sh 'python3 -m pip install coverage pytest pytest-django pytest-cov'
+    }
+}
 
         stage('Test') {
             steps {
