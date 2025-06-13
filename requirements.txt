@@ -1,8 +1,7 @@
-Django>=3.2
-django-mssql-backend
-django-mssql-backend==2.8.1
-pyodbc>=4.0.0
+Django>=3.2,<4.0
 django-mssql-backend==2.8.1
 pyodbc>=4.0.34
-
-# גרסה שתואמת ל-django-mssql-backend
+pytest
+pytest-django
+pylint
+pytest-cov
