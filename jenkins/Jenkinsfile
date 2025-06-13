@@ -12,7 +12,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing dependencies...'
-                sh 'pip install -r requirements.txt || pip install Django pytest pytest-django'
+                sh 'pip install -r requirements.txt || pip install Django pytest pytest-django pylint pytest-cov'
             }
         }
 
@@ -36,15 +36,12 @@ pipeline {
                 echo '📊 Calculating Defect Density...'
                 sh '''
                     FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
-
                     LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
-
                     if [ "$LOC" -gt 0 ]; then
                         DEFECT_DENSITY=$(echo "scale=2; $FAILURES / $LOC * 1000" | bc)
                     else
                         DEFECT_DENSITY=0
                     fi
-
                     echo "📈 Defect Density: $DEFECT_DENSITY defects per 1000 LOC"
                 '''
             }
@@ -54,8 +51,7 @@ pipeline {
             steps {
                 echo '📊 Measuring code coverage with pytest-cov...'
                 sh '''
-                    pip install pytest-cov || true
-                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=term-missing --cov-report=xml || true
+                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=html:coverage_html --cov-report=xml || true
                 '''
             }
         }
@@ -64,9 +60,7 @@ pipeline {
             steps {
                 echo '📎 Running pylint...'
                 sh '''
-                    pip install pylint || true
-                    export PATH=$PATH:$HOME/.local/bin
-                    pylint accounts --exit-zero || true
+                    pylint accounts --exit-zero --output-format=html > pylint_report.html || true
                 '''
             }
         }
@@ -76,6 +70,26 @@ pipeline {
         always {
             echo '📊 Archiving test results...'
             junit 'test-results.xml'
+
+            // מפרסם דוח כיסוי קוד HTML
+            publishHTML([
+                reportDir: 'coverage_html',
+                reportFiles: 'index.html',
+                reportName: 'Code Coverage Report',
+                keepAll: true,
+                allowMissing: false,
+                alwaysLinkToLastBuild: true
+            ])
+
+            // מפרסם דוח pylint HTML
+            publishHTML([
+                reportDir: '.',
+                reportFiles: 'pylint_report.html',
+                reportName: 'Pylint Report',
+                keepAll: true,
+                allowMissing: false,
+                alwaysLinkToLastBuild: true
+            ])
         }
     }
 }
