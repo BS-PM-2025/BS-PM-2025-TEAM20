@@ -35,11 +35,9 @@ pipeline {
             steps {
                 echo '📊 Calculating Defect Density...'
                 sh '''
-                    # Count test failures from pytest results
                     FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
 
-                    # Count lines of code (excluding tests/migrations/venv)
-                    LOC=$(find app -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
+                    LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
 
                     if [ "$LOC" -gt 0 ]; then
                         DEFECT_DENSITY=$(echo "scale=2; $FAILURES / $LOC * 1000" | bc)
@@ -52,29 +50,26 @@ pipeline {
             }
         }
 
-
         stage('Code Coverage') {
             steps {
                 echo '📊 Measuring code coverage with pytest-cov...'
                 sh '''
                     pip install pytest-cov || true
-                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=app --cov-report=term-missing --cov-report=xml || true
+                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=term-missing --cov-report=xml || true
                 '''
             }
         }
 
-
         stage('Static Code Check: pylint') {
-          steps {
-             echo '📎 Running pylint...'
-            sh '''
-              pip install pylint || true
-              export PATH=$PATH:$HOME/.local/bin
-              pylint app --exit-zero || true
-               '''
-    }
-}
-
+            steps {
+                echo '📎 Running pylint...'
+                sh '''
+                    pip install pylint || true
+                    export PATH=$PATH:$HOME/.local/bin
+                    pylint accounts --exit-zero || true
+                '''
+            }
+        }
     }
 
     post {
