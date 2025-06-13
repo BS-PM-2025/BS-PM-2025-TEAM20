@@ -6,13 +6,16 @@ pipeline {
         DJANGO_SETTINGS_MODULE = 'djangoProject11.settings'
         PYTHONPATH = "${env.WORKSPACE}"
         CI = 'true'
+
+        DEFECT_DENSITY = 'N/A'
+        COVERAGE_PERCENT = 'N/A'
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing dependencies...'
-                sh 'pip install -r requirements.txt || pip install Django pytest pytest-django'
+                sh 'pip install -r requirements.txt || pip install Django pytest pytest-django pytest-cov'
             }
         }
 
@@ -27,36 +30,29 @@ pipeline {
         stage('Run Unit + Integration Tests') {
             steps {
                 echo '🧪 Running Django tests with coverage...'
-                sh 'python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --junitxml=test-results.xml || true'
+                sh 'python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --junitxml=test-results.xml --cov=accounts --cov-report=xml --cov-report=term || true'
             }
         }
 
         stage('Calculate Defect Density') {
             steps {
                 echo '📊 Calculating Defect Density...'
-                sh '''
-                    FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
-
-                    LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
-
-                    if [ "$LOC" -gt 0 ]; then
-                        DEFECT_DENSITY=$(echo "scale=2; $FAILURES / $LOC * 1000" | bc)
-                    else
-                        DEFECT_DENSITY=0
-                    fi
-
-                    echo "📈 Defect Density: $DEFECT_DENSITY defects per 1000 LOC"
-                '''
-            }
-        }
-
-        stage('Code Coverage') {
-            steps {
-                echo '📊 Measuring code coverage with pytest-cov...'
-                sh '''
-                    pip install pytest-cov || true
-                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=term-missing --cov-report=xml || true
-                '''
+                script {
+                    def defectDensity = sh(
+                        script: '''
+                            FAILURES=$(grep -o 'failures="[0-9]\\+"' test-results.xml | grep -o '[0-9]')
+                            LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
+                            if [ "$LOC" -gt 0 ]; then
+                                echo "scale=2; $FAILURES / $LOC * 1000" | bc
+                            else
+                                echo "0"
+                            fi
+                        ''',
+                        returnStdout: true
+                    ).trim()
+                    env.DEFECT_DENSITY = defectDensity
+                    echo "📈 Defect Density: ${defectDensity} defects per 1000 LOC"
+                }
             }
         }
 
@@ -76,6 +72,31 @@ pipeline {
         always {
             echo '📊 Archiving test results...'
             junit 'test-results.xml'
+
+            script {
+                def coveragePercent = sh(
+                    script: '''
+                        if [ -f coverage.xml ]; then
+                            grep "<coverage " coverage.xml | sed -E 's/.*line-rate="([0-9.]+)".*/\\1/'
+                        else
+                            echo "N/A"
+                        fi
+                    ''',
+                    returnStdout: true
+                ).trim()
+
+                env.COVERAGE_PERCENT = coveragePercent
+            }
+
+            echo """
++----------------------+-------------------------------+
+| Metric               | Value                         |
++----------------------+-------------------------------+
+| Defect Density       | ${env.DEFECT_DENSITY} defects / 1000 LOC |
+| Code Coverage        | ${env.COVERAGE_PERCENT != "N/A" ? (env.COVERAGE_PERCENT.toFloat()*100).round(2) + "%" : "N/A"}            |
+| Pylint Status        | (ראה פלט pylint למידע)         |
++----------------------+-------------------------------+
+"""
         }
     }
 }
