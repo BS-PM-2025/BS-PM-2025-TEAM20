@@ -64,32 +64,35 @@ pipeline {
                 '''
             }
         }
+
+        stage('Publish Reports') {
+            steps {
+                echo '📢 Publishing HTML reports...'
+                publishHTML([
+                    reportDir: 'coverage_html',
+                    reportFiles: 'index.html',
+                    reportName: 'Code Coverage Report',
+                    keepAll: true,
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true
+                ])
+
+                publishHTML([
+                    reportDir: '.',
+                    reportFiles: 'pylint_report.html',
+                    reportName: 'Pylint Report',
+                    keepAll: true,
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true
+                ])
+            }
+        }
     }
 
     post {
         always {
             echo '📊 Archiving test results...'
             junit 'test-results.xml'
-
-            // מפרסם דוח כיסוי קוד HTML
-            publishHTML([
-                reportDir: 'coverage_html',
-                reportFiles: 'index.html',
-                reportName: 'Code Coverage Report',
-                keepAll: true,
-                allowMissing: false,
-                alwaysLinkToLastBuild: true
-            ])
-
-            // מפרסם דוח pylint HTML
-            publishHTML([
-                reportDir: '.',
-                reportFiles: 'pylint_report.html',
-                reportName: 'Pylint Report',
-                keepAll: true,
-                allowMissing: false,
-                alwaysLinkToLastBuild: true
-            ])
         }
     }
 }
