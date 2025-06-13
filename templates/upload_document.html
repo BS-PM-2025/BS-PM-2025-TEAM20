@@ -1,17 +1,141 @@
-<!-- upload_document.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>העלאת מסמך</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #333;
+            direction: rtl;
+        }
+
+        .navbar {
+            background-color: #332f2f;
+            color: #b5e745;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .navbar .left-section a {
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+        .navbar .left-section a:hover {
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .navbar .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b5e745;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 30px auto 50px auto;
+            padding: 30px 20px;
+            background-color: #f3f3f3;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #7eb443;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        form {
+            direction: rtl;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+            text-align: right;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin-bottom: 20px;
+            padding: 6px;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            background-color: #7eb443;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #6aa233;
+        }
+
+        .back-arrow {
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .back-arrow:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <div class="left-section">
+        <a href="{% url 'student_page' %}">⏴ חזור</a>
+    </div>
+    <div class="title">העלאת מסמך</div>
+    <div class="right-section"></div>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+    <a href="{% url 'student_page' %}" class="back-arrow">⏴ חזור</a>
+
     <h2>העלאת מסמך עבור {{ request_obj.student_email }}</h2>
+
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <label>בחר קובץ:</label>
-        <input type="file" name="uploaded_file" required>
+        <label for="uploaded_file">בחר קובץ:</label>
+        <input type="file" id="uploaded_file" name="uploaded_file" required>
         <button type="submit">שלח</button>
     </form>
+</div>
+
 </body>
 </html>
