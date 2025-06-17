@@ -72,8 +72,9 @@ pipeline {
             steps {
                 echo '🧠 Measuring code complexity with radon...'
                 sh '''
-                    pip install radon || true
-                    radon cc accounts -s -a
+                    pip install --user radon || true
+                    export PATH=$PATH:$HOME/.local/bin
+                    radon cc accounts -s -a || true
                 '''
             }
         }
