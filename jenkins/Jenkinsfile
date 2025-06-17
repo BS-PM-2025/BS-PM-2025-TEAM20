@@ -12,7 +12,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing dependencies...'
-                sh 'pip install -r requirements.txt || pip install Django pytest pytest-django'
+                sh 'pip install -r requirements.txt || pip install Django pytest pytest-django pytest-cov pylint'
             }
         }
 
@@ -26,7 +26,7 @@ pipeline {
 
         stage('Run Unit + Integration Tests') {
             steps {
-                echo '🧪 Running Django tests with coverage...'
+                echo '🧪 Running Django tests...'
                 sh '''
                     echo "========== Unit + Integration Tests ==========" >> metrix.txt
                     python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --junitxml=test-results.xml | tee -a metrix.txt || true
@@ -36,9 +36,10 @@ pipeline {
 
         stage('Calculate Defect Density') {
             steps {
-                echo '📊 ====== מדדים ======'
+                echo '📊 Calculating Defect Density...'
                 sh '''
                     echo "========== Defect Density ==========" >> metrix.txt
+
                     FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
                     LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
 
@@ -55,10 +56,9 @@ pipeline {
 
         stage('Code Coverage') {
             steps {
-                echo '📊 Measuring code coverage with pytest-cov...'
+                echo '📊 Measuring code coverage...'
                 sh '''
                     echo "========== Code Coverage ==========" >> metrix.txt
-                    pip install pytest-cov || true
                     python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=term-missing --cov-report=xml | tee -a metrix.txt || true
                 '''
             }
@@ -69,8 +69,6 @@ pipeline {
                 echo '📎 Running pylint...'
                 sh '''
                     echo "========== Pylint ==========" >> metrix.txt
-                    pip install pylint || true
-                    export PATH=$PATH:$HOME/.local/bin
                     pylint accounts --exit-zero | tee -a metrix.txt || true
                 '''
             }
@@ -79,7 +77,7 @@ pipeline {
 
     post {
         always {
-            echo '📊 Archiving test results...'
+            echo '📊 Archiving metrix...'
             junit 'test-results.xml'
             archiveArtifacts artifacts: 'metrix.txt', onlyIfSuccessful: true
         }
