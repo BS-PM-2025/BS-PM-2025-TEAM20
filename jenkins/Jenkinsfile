@@ -33,10 +33,12 @@ pipeline {
 
         stage('Calculate Defect Density') {
             steps {
-                echo '📊 Calculating Defect Density...'
+                echo '📊 ====== מדדים ======'
                 sh '''
-                    FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
+                    echo
+                    echo "---------- Defect Density Calculation ----------"
 
+                    FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
                     LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
 
                     if [ "$LOC" -gt 0 ]; then
@@ -45,7 +47,9 @@ pipeline {
                         DEFECT_DENSITY=0
                     fi
 
+                    echo
                     echo "📈 Defect Density: $DEFECT_DENSITY defects per 1000 LOC"
+                    echo
                 '''
             }
         }
