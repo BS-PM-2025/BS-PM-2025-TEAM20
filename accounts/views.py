@@ -2073,6 +2073,8 @@ def book_reception_hour(request, reception_hour_id):
     return redirect('student_reception_hours')
 # עדכון קטן לצורך commit
 # עדכון קטן לצורך commit
+# עדכון קטן לצורך commit
+
 
 
 @login_required
