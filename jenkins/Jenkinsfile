@@ -27,7 +27,10 @@ pipeline {
         stage('Run Unit + Integration Tests') {
             steps {
                 echo '🧪 Running Django tests with coverage...'
-                sh 'python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --junitxml=test-results.xml || true'
+                sh '''
+                    echo "========== Unit + Integration Tests ==========" >> metrix.txt
+                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --junitxml=test-results.xml | tee -a metrix.txt || true
+                '''
             }
         }
 
@@ -35,8 +38,7 @@ pipeline {
             steps {
                 echo '📊 ====== מדדים ======'
                 sh '''
-                    echo "---------- Defect Density Calculation ----------" | tee -a metrix.txt
-
+                    echo "========== Defect Density ==========" >> metrix.txt
                     FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
                     LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
 
@@ -55,6 +57,7 @@ pipeline {
             steps {
                 echo '📊 Measuring code coverage with pytest-cov...'
                 sh '''
+                    echo "========== Code Coverage ==========" >> metrix.txt
                     pip install pytest-cov || true
                     python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=term-missing --cov-report=xml | tee -a metrix.txt || true
                 '''
@@ -65,6 +68,7 @@ pipeline {
             steps {
                 echo '📎 Running pylint...'
                 sh '''
+                    echo "========== Pylint ==========" >> metrix.txt
                     pip install pylint || true
                     export PATH=$PATH:$HOME/.local/bin
                     pylint accounts --exit-zero | tee -a metrix.txt || true
