@@ -31,12 +31,11 @@ pipeline {
             }
         }
 
-        stage('📊 ====== מדדים ======') {
+        stage('Calculate Defect Density') {
             steps {
-                echo '📈 Calculating Defect Density...'
+                echo '📊 ====== מדדים ======'
                 sh '''
-                    echo
-                    echo "---------- Defect Density Calculation ----------" > metrics.txt
+                    echo "---------- Defect Density Calculation ----------" | tee -a metrix.txt
 
                     FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
                     LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
@@ -47,8 +46,7 @@ pipeline {
                         DEFECT_DENSITY=0
                     fi
 
-                    echo "📈 Defect Density: $DEFECT_DENSITY defects per 1000 LOC" >> metrics.txt
-                    cat metrics.txt
+                    echo "📈 Defect Density: $DEFECT_DENSITY defects per 1000 LOC" | tee -a metrix.txt
                 '''
             }
         }
@@ -58,7 +56,7 @@ pipeline {
                 echo '📊 Measuring code coverage with pytest-cov...'
                 sh '''
                     pip install pytest-cov || true
-                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=term-missing --cov-report=xml || true
+                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=term-missing --cov-report=xml | tee -a metrix.txt || true
                 '''
             }
         }
@@ -69,7 +67,7 @@ pipeline {
                 sh '''
                     pip install pylint || true
                     export PATH=$PATH:$HOME/.local/bin
-                    pylint accounts --exit-zero || true
+                    pylint accounts --exit-zero | tee -a metrix.txt || true
                 '''
             }
         }
@@ -79,7 +77,7 @@ pipeline {
         always {
             echo '📊 Archiving test results...'
             junit 'test-results.xml'
-            archiveArtifacts artifacts: 'metrics.txt', fingerprint: true
+            archiveArtifacts artifacts: 'metrix.txt', onlyIfSuccessful: true
         }
     }
 }
