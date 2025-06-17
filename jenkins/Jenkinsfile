@@ -36,15 +36,12 @@ pipeline {
                 echo '📊 Calculating Defect Density...'
                 sh '''
                     FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
-
                     LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
-
                     if [ "$LOC" -gt 0 ]; then
                         DEFECT_DENSITY=$(echo "scale=2; $FAILURES / $LOC * 1000" | bc)
                     else
                         DEFECT_DENSITY=0
                     fi
-
                     echo "📈 Defect Density: $DEFECT_DENSITY defects per 1000 LOC"
                 '''
             }
@@ -67,6 +64,26 @@ pipeline {
                     pip install pylint || true
                     export PATH=$PATH:$HOME/.local/bin
                     pylint accounts --exit-zero || true
+                '''
+            }
+        }
+
+        stage('Code Complexity') {
+            steps {
+                echo '🧠 Measuring code complexity with radon...'
+                sh '''
+                    pip install radon || true
+                    radon cc accounts -s -a
+                '''
+            }
+        }
+
+        stage('Security Check') {
+            steps {
+                echo '🔐 Running security analysis with bandit...'
+                sh '''
+                    pip install bandit || true
+                    bandit -r accounts || true
                 '''
             }
         }
