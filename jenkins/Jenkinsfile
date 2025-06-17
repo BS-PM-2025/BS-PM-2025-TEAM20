@@ -6,6 +6,7 @@ pipeline {
         DJANGO_SETTINGS_MODULE = 'djangoProject11.settings'
         PYTHONPATH = "${env.WORKSPACE}"
         CI = 'true'
+        OUTPUT_DIR = 'C:\\Users\\נגם\\OneDrive\\שולחן העבודה\\CA\\djangoProject11\\test_results'
     }
 
     stages {
@@ -19,17 +20,8 @@ pipeline {
         stage('Prepare Database') {
             steps {
                 echo '🗄️ Preparing database...'
-                sh '''
-                    echo "------------------------------"
-                    echo "🗄️ Running makemigrations"
-                    echo "------------------------------"
-                    python3 manage.py makemigrations
-
-                    echo "------------------------------"
-                    echo "🗄️ Running migrate"
-                    echo "------------------------------"
-                    python3 manage.py migrate
-                '''
+                sh 'python3 manage.py makemigrations'
+                sh 'python3 manage.py migrate'
             }
         }
 
@@ -37,15 +29,8 @@ pipeline {
             steps {
                 echo '🧪 Running Django tests with coverage...'
                 sh '''
-                    echo "------------------------------"
-                    echo "🧪 Running pytest tests"
-                    echo "------------------------------"
-                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --junitxml=test-results.xml || true
-
-                    echo "------------------------------"
-                    echo "📋 Test Summary (last 20 lines)"
-                    echo "------------------------------"
-                    tail -n 20 test-results.xml || true
+                    mkdir -p "$OUTPUT_DIR" || mkdir "$OUTPUT_DIR"
+                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --junitxml="$OUTPUT_DIR/test-results.xml" || true
                 '''
             }
         }
@@ -54,17 +39,14 @@ pipeline {
             steps {
                 echo '📊 Calculating Defect Density...'
                 sh '''
-                    echo "------------------------------"
-                    echo "📊 Calculating Defect Density"
-                    echo "------------------------------"
-                    FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
+                    FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' "$OUTPUT_DIR/test-results.xml" | grep -o '[0-9]')
                     LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
                     if [ "$LOC" -gt 0 ]; then
                         DEFECT_DENSITY=$(echo "scale=2; $FAILURES / $LOC * 1000" | bc)
                     else
                         DEFECT_DENSITY=0
                     fi
-                    echo "📈 Defect Density: $DEFECT_DENSITY defects per 1000 LOC"
+                    echo "📈 Defect Density: $DEFECT_DENSITY defects per 1000 LOC" | tee "$OUTPUT_DIR/defect_density.txt"
                 '''
             }
         }
@@ -74,10 +56,7 @@ pipeline {
                 echo '📊 Measuring code coverage with pytest-cov...'
                 sh '''
                     pip install pytest-cov || true
-                    echo "------------------------------"
-                    echo "📊 Running pytest with coverage"
-                    echo "------------------------------"
-                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=term-missing --cov-report=xml || true
+                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=term-missing --cov-report=xml:"$OUTPUT_DIR/coverage.xml" || true
                 '''
             }
         }
@@ -88,15 +67,7 @@ pipeline {
                 sh '''
                     pip install pylint || true
                     export PATH=$PATH:$HOME/.local/bin
-                    echo "------------------------------"
-                    echo "📋 pylint Report"
-                    echo "------------------------------"
-                    pylint accounts --exit-zero | tee pylint_report.txt
-                    echo "------------------------------"
-                    echo "📋 pylint Summary (last 10 lines)"
-                    echo "------------------------------"
-                    tail -n 10 pylint_report.txt
-                    echo "------------------------------"
+                    pylint accounts --exit-zero | tee "$OUTPUT_DIR/pylint_report.txt" || true
                 '''
             }
         }
@@ -105,7 +76,7 @@ pipeline {
     post {
         always {
             echo '📊 Archiving test results...'
-            junit 'test-results.xml'
+            junit 'test_results/test-results.xml'
         }
     }
 }
