@@ -12,15 +12,21 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing dependencies...'
-                sh 'pip install -r requirements.txt || pip install Django pytest pytest-django pytest-cov pylint'
+                sh '''
+                    set -e
+                    pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Prepare Database') {
             steps {
                 echo '🗄️ Preparing database...'
-                sh 'python3 manage.py makemigrations'
-                sh 'python3 manage.py migrate'
+                sh '''
+                    set -e
+                    python3 manage.py makemigrations
+                    python3 manage.py migrate
+                '''
             }
         }
 
@@ -40,7 +46,7 @@ pipeline {
                 sh '''
                     echo "========== Defect Density ==========" >> metrix.txt
 
-                    FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
+                    FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]' || echo 0)
                     LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
 
                     if [ "$LOC" -gt 0 ]; then
@@ -69,7 +75,7 @@ pipeline {
                 echo '📎 Running pylint...'
                 sh '''
                     echo "========== Pylint ==========" >> metrix.txt
-                    pylint accounts --exit-zero | tee -a metrix.txt || true
+                    python3 -m pylint accounts --exit-zero | tee -a metrix.txt || true
                 '''
             }
         }
