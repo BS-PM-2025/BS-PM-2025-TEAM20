@@ -683,3 +683,33 @@ class LecturerCreateSlotViewTests(TestCase):
         form = response.context['form']
         self.assertTrue(form.errors)
 
+        from django.test import TestCase
+
+        from accounts.models import UserRegisterStu1
+
+        class CustomPasswordResetFormTests(TestCase):
+
+            def setUp(self):
+                # משתמש לבדיקה
+                self.existing_email = 'test@example.com'
+                UserRegisterStu1.objects.create(email=self.existing_email, username='testuser', password='testpass')
+
+            def test_valid_email_passes(self):
+                """בודק שאם האימייל קיים - הטופס עובר"""
+                form = CustomPasswordResetForm(data={'email': self.existing_email})
+                self.assertTrue(form.is_valid())
+
+            def test_non_existing_email_fails(self):
+                """בודק שטופס נכשל אם האימייל לא קיים"""
+                form = CustomPasswordResetForm(data={'email': 'nonexisting@example.com'})
+                self.assertFalse(form.is_valid())
+                self.assertIn('email', form.errors)
+                self.assertEqual(form.errors['email'], ['Email not found in the system.'])
+
+            def test_invalid_email_format(self):
+                """בודק שטופס נכשל אם הפורמט של האימייל לא תקין"""
+                form = CustomPasswordResetForm(data={'email': 'not-an-email'})
+                self.assertFalse(form.is_valid())
+                self.assertIn('email', form.errors)
+
+
