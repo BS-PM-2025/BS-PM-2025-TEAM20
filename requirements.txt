@@ -4,8 +4,6 @@ django-mssql-backend==2.8.1
 pyodbc>=4.0.0
 django-mssql-backend==2.8.1
 pyodbc>=4.0.34
-pylintgit add requirements.txt
-git commit -m "🔧 Add pylint to requirements.txt for static code checks"
-git push
+pylint
 
 # גרסה שתואמת ל-django-mssql-backend
