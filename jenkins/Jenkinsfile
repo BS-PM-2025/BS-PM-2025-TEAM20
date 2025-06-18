@@ -12,10 +12,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing dependencies...'
-                sh '''
-                    python3 -m pip install -r requirements.txt || \
-                    python3 -m pip install Django pytest pytest-django pytest-cov pylint
-                '''
+                sh 'pip install -r requirements.txt || pip install Django pytest pytest-django pytest-cov pylint'
             }
         }
 
@@ -30,13 +27,10 @@ pipeline {
         stage('Run Unit + Integration Tests') {
             steps {
                 echo '🧪 Running Django tests...'
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh '''
-                        echo "========== Unit + Integration Tests ==========" >> metrix.txt
-                        python3 -m pytest accounts/tests.py --ds=djangoProject11.settings \
-                            --junitxml=test-results.xml -rA 2>&1 | tee -a metrix.txt
-                    '''
-                }
+                sh '''
+                    echo "========== Unit + Integration Tests ==========" >> metrix.txt
+                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --junitxml=test-results.xml | tee -a metrix.txt || true
+                '''
             }
         }
 
@@ -46,9 +40,8 @@ pipeline {
                 sh '''
                     echo "========== Defect Density ==========" >> metrix.txt
 
-                    FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]+' || echo 0)
-                    LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" \
-                          | xargs wc -l | tail -n1 | awk '{print $1}')
+                    FAILURES=$(grep -o 'failures="\\?[0-9]\\+"' test-results.xml | grep -o '[0-9]')
+                    LOC=$(find accounts -name "*.py" ! -path "*tests*" ! -path "*migrations*" ! -path "*venv*" | xargs wc -l | tail -n1 | awk '{print $1}')
 
                     if [ "$LOC" -gt 0 ]; then
                         DEFECT_DENSITY=$(echo "scale=2; $FAILURES / $LOC * 1000" | bc)
@@ -64,54 +57,19 @@ pipeline {
         stage('Code Coverage') {
             steps {
                 echo '📊 Measuring code coverage...'
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh '''
-                        echo "========== Code Coverage ==========" >> metrix.txt
-                        python3 -m pytest accounts/tests.py --ds=djangoProject11.settings \
-                            --cov=accounts --cov-report=term-missing --cov-report=xml 2>&1 | tee -a metrix.txt
-                    '''
-                }
+                sh '''
+                    echo "========== Code Coverage ==========" >> metrix.txt
+                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings --cov=accounts --cov-report=term-missing --cov-report=xml | tee -a metrix.txt || true
+                '''
             }
         }
 
         stage('Static Code Check: pylint') {
             steps {
                 echo '📎 Running pylint...'
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh '''
-                        echo "========== Pylint ==========" >> metrix.txt
-                        python3 -m pylint accounts --exit-zero 2>&1 | tee -a metrix.txt
-                    '''
-                }
-            }
-        }
-
-        stage('Summarize Metrics Table') {
-            steps {
-                echo '📝 Creating Markdown metrics table...'
                 sh '''
-                    echo "" >> metrix.txt
-                    echo "| מדד                   | תוצאה                  |" >> metrix.txt
-                    echo "| --------------------- | ---------------------- |" >> metrix.txt
-
-                    DEFECT_DENSITY=$(grep -m1 'Defect Density:' metrix.txt | sed 's/.*Defect Density: //')
-                    COVERAGE=$(grep -E '^TOTAL.*[0-9]+%' metrix.txt | tail -1 | awk '{print $2}')
-                    if [ -z "$COVERAGE" ]; then COVERAGE="n/a"; fi
-
-                    TESTS_PASSED=$(grep -m1 -E '^[0-9]+ passed' metrix.txt | awk '{print $1}')
-                    if [ -z "$TESTS_PASSED" ]; then TESTS_PASSED=0; fi
-
-                    WARNINGS=$(grep -c 'WARNING:' metrix.txt)
-
-                    DURATION=$(grep -m1 -Eo '[0-9]+\\.[0-9]+s' metrix.txt)
-                    if [ -z "$DURATION" ]; then DURATION="n/a"; fi
-
-                    echo "| Defect Density        | $DEFECT_DENSITY |" >> metrix.txt
-                    echo "| Coverage (כיסוי כולל) | $COVERAGE |" >> metrix.txt
-                    echo "| Test Cases            | $TESTS_PASSED בדיקות – 100% הצלחה |" >> metrix.txt
-                    echo "| זמן ריצה של הבדיקות   | $DURATION |" >> metrix.txt
-                    echo "| אזהרות                | $WARNINGS |" >> metrix.txt
-                    echo "| Pylint                | צוין כבוצע             |" >> metrix.txt
+                    echo "========== Pylint ==========" >> metrix.txt
+                    pylint accounts --exit-zero | tee -a metrix.txt || true
                 '''
             }
         }
@@ -121,7 +79,7 @@ pipeline {
         always {
             echo '📊 Archiving metrix...'
             junit 'test-results.xml'
-            archiveArtifacts artifacts: 'metrix.txt', onlyIfSuccessful: false
+            archiveArtifacts artifacts: 'metrix.txt', onlyIfSuccessful: true
         }
     }
 }
