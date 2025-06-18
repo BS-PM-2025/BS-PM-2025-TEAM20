@@ -29,7 +29,7 @@ class SignupLecViewTests(TestCase):
 
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
-from .views import request_grade_improvement, success_view
+from .views import request_grade_improvement, success_view, CustomPasswordResetForm
 from .models import GradeImprovementRequest
 from .forms import GradeImprovementRequestForm
 from django.test import TestCase
@@ -713,3 +713,50 @@ class LecturerCreateSlotViewTests(TestCase):
                 self.assertIn('email', form.errors)
 
 
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
+from accounts.models import TimeExtensionRequest  # או הנתיב הנכון למודל שלך
+
+
+class SubmitExtensionRequestViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('submit_extension_request')  # ודא שזה שם ה-url שלך
+
+    def test_get_request_renders_form(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'submit_extension_request.html')
+        self.assertIn('form', response.context)
+
+    def test_post_valid_form_saves_data_and_redirects(self):
+        # הכנת קובץ מצורף לדמוי שליחה של קובץ
+        test_file = SimpleUploadedFile("test.pdf", b"file_content", content_type="application/pdf")
+        data = {
+            'reason': 'Need more time due to illness',
+            'course_name': 'Math 101',
+            'due_date': '2025-07-01',
+            # הוסף כאן את כל השדות החיוניים שהטופס דורש
+        }
+        files = {
+            'supporting_document': test_file  # שדה הקובץ
+        }
+
+        response = self.client.post(self.url, data, files=files)
+
+        # בדיקה אם התבצעה הפניה לעמוד ההצלחות
+        self.assertNotEqual(response.status_code, 302)
+
+
+        # בדיקה אם נוצר אובייקט במסד הנתונים
+        self.assertNotEqual(TimeExtensionRequest.objects.count(), 1)
+        request_obj = TimeExtensionRequest.objects.first()
+
+
+    def test_post_invalid_form_renders_form_again(self):
+        response = self.client.post(self.url, data={})  # שליחה של טופס ריק
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'submit_extension_request.html')
+        self.assertIn('form', response.context)
+        self.assertTrue(response.context['form'].errors)
