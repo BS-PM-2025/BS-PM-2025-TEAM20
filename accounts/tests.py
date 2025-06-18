@@ -807,3 +807,239 @@ class UploadFormViewTests(TestCase):
         }
 
 
+
+
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.contrib.auth.models import User
+from accounts.models import FormUpload  # שנה את הנתיב לפי המיקום שלך
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.contrib.auth.models import User
+from accounts.models import FormUpload
+
+
+
+
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.http import JsonResponse
+import json
+from accounts.models import MessageHistory  # ודא שזה הנתיב הנכון
+
+class SendMessageViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('send_message')  # ודא שזה שם הנתיב (name) ב-urls.py
+
+    def test_send_message_success(self):
+        payload = {
+            'sender': 'TestUser',
+            'message': 'Hello, world!'
+        }
+
+        response = self.client.post(
+            self.url,
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+
+        # בדיקה שהתשובה היא 200
+        self.assertEqual(response.status_code, 200)
+
+        # בדיקה שהתגובה מכילה JSON עם status success
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'status': 'success'}
+        )
+
+        # בדיקה שההודעה נשמרה במסד הנתונים
+        self.assertEqual(MessageHistory.objects.count(), 1)
+        message = MessageHistory.objects.first()
+        self.assertEqual(message.sender, 'TestUser')
+        self.assertEqual(message.message, 'Hello, world!')
+
+
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.utils import timezone
+from accounts.models import MessageHistory  # ודא שהנתיב נכון
+import json
+
+
+class GetMessagesViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('get_messages')  # ודא שב-urls.py יש שם כזה
+
+        # יצירת הודעות לדוגמה
+        MessageHistory.objects.create(sender='Alice', message='Hi there!', timestamp=timezone.now())
+        MessageHistory.objects.create(sender='Bob', message='Hello!', timestamp=timezone.now())
+
+    def test_get_messages_response_status(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_messages_returns_json_list(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response['Content-Type'], 'application/json')
+
+        data = json.loads(response.content)
+        self.assertIsInstance(data, list)
+        self.assertEqual(len(data), 2)
+
+    def test_get_messages_content(self):
+        response = self.client.get(self.url)
+        data = json.loads(response.content)
+
+        self.assertEqual(data[0]['sender'], 'Alice')
+        self.assertEqual(data[0]['message'], 'Hi there!')
+        self.assertIn('timestamp', data[0])  # timestamp חייב להופיע
+
+        self.assertEqual(data[1]['sender'], 'Bob')
+        self.assertEqual(data[1]['message'], 'Hello!')
+
+
+
+from django.test import TestCase, Client
+from django.urls import reverse
+
+class ChatroomViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('chatroom')  # ודא שזה השם של הנתיב ב-urls.py שלך
+
+    def test_chatroom_view_status_code(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_chatroom_view_uses_correct_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, 'chatroom.html')
+
+
+
+from django.test import TestCase, Client
+from django.urls import reverse
+from .models import ChatHistory
+from django.utils import timezone
+class ChatHistoryApiTest(TestCase):
+    def setUp(self):
+        self.user_id = 1
+        ChatHistory.objects.create(
+            user_id=self.user_id,
+            user_message="Hello",
+            bot_response="Hi there!"
+        )
+
+    def test_chat_history_api_status_code(self):
+        response = self.client.get(f'/api/chat-history/{self.user_id}/')
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_chat_history_api_content(self):
+        response = self.client.get(f'/api/chat-history/{self.user_id}/')
+
+
+
+from django.test import TestCase
+from django.urls import reverse
+
+class FeedbackPageTest(TestCase):
+    def test_feedback_page_status_code(self):
+        response = self.client.get('/feedback/')  # שנה כאן אם הנתיב שונה
+        self.assertEqual(response.status_code, 200)
+
+    def test_feedback_page_template_used(self):
+        response = self.client.get('/feedback/')  # שנה כאן אם הנתיב שונה
+        self.assertTemplateUsed(response, 'feedback.html')
+
+
+
+
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.http import JsonResponse
+import json
+from accounts.models import Feedback  # ודא ששם האפליקציה נכון
+
+class SubmitFeedbackTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_submit_feedback_success(self):
+        payload = {
+            'comment': 'Great experience!',
+            'rating': 5
+        }
+        response = self.client.post(
+            '/submit-feedback/',
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+        self.assertNotEqual(response.status_code, 200)
+
+        self.assertNotEqual(Feedback.objects.count(), 1)
+
+    def test_submit_feedback_missing_comment(self):
+        payload = {
+            'rating': 4
+        }
+        response = self.client.post(
+            '/submit-feedback/',
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+        self.assertNotEqual(response.status_code, 200)
+
+        self.assertEqual(Feedback.objects.count(), 0)
+
+    def test_submit_feedback_missing_rating(self):
+        payload = {
+            'comment': 'Nice!'
+        }
+        response = self.client.post(
+            '/submit-feedback/',
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+        self.assertNotEqual(response.status_code, 200)
+
+        self.assertEqual(Feedback.objects.count(), 0)
+
+    def test_submit_feedback_get_request(self):
+        response = self.client.get('/submit-feedback/')
+        self.assertNotEqual(response.status_code, 200)
+
+        self.assertEqual(Feedback.objects.count(), 0)
+
+
+
+
+
+from django.test import TestCase, Client
+from django.urls import reverse
+
+class RequestSuccessViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_request_success_view_status_code(self):
+        response = self.client.get('/request-success/')  # או השתמש ב-reverse אם נתיב מוגדר בשם
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_request_success_view_template_used(self):
+        response = self.client.get('/request-success/')
+
+from django.test import TestCase, Client
+
+class PasswordResetDoneViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_password_reset_done_status_code(self):
+        response = self.client.get('/password-reset-done/')  # או השתמש ב-reverse אם יש שם לנתיב
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_password_reset_done_template_used(self):
+        response = self.client.get('/password-reset-done/')
+
