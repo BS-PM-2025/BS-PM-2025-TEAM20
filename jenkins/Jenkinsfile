@@ -30,11 +30,13 @@ pipeline {
         stage('Run Unit + Integration Tests') {
             steps {
                 echo '🧪 Running Django tests...'
-                sh '''
-                    echo "========== Unit + Integration Tests ==========" >> metrix.txt
-                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings \
-                        --junitxml=test-results.xml -rA 2>&1 | tee -a metrix.txt || true
-                '''
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                        echo "========== Unit + Integration Tests ==========" >> metrix.txt
+                        python3 -m pytest accounts/tests.py --ds=djangoProject11.settings \
+                            --junitxml=test-results.xml -rA 2>&1 | tee -a metrix.txt
+                    '''
+                }
             }
         }
 
@@ -62,21 +64,25 @@ pipeline {
         stage('Code Coverage') {
             steps {
                 echo '📊 Measuring code coverage...'
-                sh '''
-                    echo "========== Code Coverage ==========" >> metrix.txt
-                    python3 -m pytest accounts/tests.py --ds=djangoProject11.settings \
-                        --cov=accounts --cov-report=term-missing --cov-report=xml 2>&1 | tee -a metrix.txt || true
-                '''
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                        echo "========== Code Coverage ==========" >> metrix.txt
+                        python3 -m pytest accounts/tests.py --ds=djangoProject11.settings \
+                            --cov=accounts --cov-report=term-missing --cov-report=xml 2>&1 | tee -a metrix.txt
+                    '''
+                }
             }
         }
 
         stage('Static Code Check: pylint') {
             steps {
                 echo '📎 Running pylint...'
-                sh '''
-                    echo "========== Pylint ==========" >> metrix.txt
-                    python3 -m pylint accounts --exit-zero 2>&1 | tee -a metrix.txt || true
-                '''
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                        echo "========== Pylint ==========" >> metrix.txt
+                        python3 -m pylint accounts --exit-zero 2>&1 | tee -a metrix.txt
+                    '''
+                }
             }
         }
 
