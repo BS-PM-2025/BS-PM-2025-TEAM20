@@ -711,8 +711,6 @@ class LecturerCreateSlotViewTests(TestCase):
                 form = CustomPasswordResetForm(data={'email': 'not-an-email'})
                 self.assertFalse(form.is_valid())
                 self.assertIn('email', form.errors)
-
-
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -731,7 +729,6 @@ class SubmitExtensionRequestViewTests(TestCase):
         self.assertIn('form', response.context)
 
     def test_post_valid_form_saves_data_and_redirects(self):
-        # הכנת קובץ מצורף לדמוי שליחה של קובץ
         test_file = SimpleUploadedFile("test.pdf", b"file_content", content_type="application/pdf")
         data = {
             'reason': 'Need more time due to illness',
@@ -740,19 +737,20 @@ class SubmitExtensionRequestViewTests(TestCase):
             # הוסף כאן את כל השדות החיוניים שהטופס דורש
         }
         files = {
-            'supporting_document': test_file  # שדה הקובץ
+            'supporting_document': test_file
         }
 
         response = self.client.post(self.url, data, files=files)
 
-        # בדיקה אם התבצעה הפניה לעמוד ההצלחות
+        # בדיקה אם התבצעה הפניה (redirect)
         self.assertNotEqual(response.status_code, 302)
 
-
-        # בדיקה אם נוצר אובייקט במסד הנתונים
+        # בדיקה אם אובייקט נוצר במסד הנתונים
         self.assertNotEqual(TimeExtensionRequest.objects.count(), 1)
         request_obj = TimeExtensionRequest.objects.first()
 
+
+        # ניתן להוסיף בדיקות נוספות לפי הצורך
 
     def test_post_invalid_form_renders_form_again(self):
         response = self.client.post(self.url, data={})  # שליחה של טופס ריק
@@ -760,3 +758,52 @@ class SubmitExtensionRequestViewTests(TestCase):
         self.assertTemplateUsed(response, 'submit_extension_request.html')
         self.assertIn('form', response.context)
         self.assertTrue(response.context['form'].errors)
+
+
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.auth.models import User
+from accounts.models import FormRequest  # שנה לנתיב הנכון
+
+
+class UploadFormViewTests(TestCase):
+    def setUp(self):
+        # יצירת משתמש וביצוע התחברות
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.client = Client()
+        self.client.login(username='testuser', password='testpass')
+        self.url = reverse('upload_form')  # ודא שהשם נכון ב-urls.py
+
+    def test_get_request_renders_form(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'upload_form.html')
+
+    def test_post_valid_file_upload_creates_FormRequest(self):
+        test_pdf = SimpleUploadedFile("test.pdf", b"file_content", content_type="application/pdf")
+        data = {
+            'form_name': 'Request Form',
+            'student_name': 'Test Student',
+            'student_id': '12345',
+            'Email': 'test@example.com',
+        }
+        files = {'file': test_pdf}
+
+
+        # בדיקה אם נוצר אובייקט במסד הנתונים
+        form_requests = FormRequest.objects.filter(student=self.user)
+        self.assertNotEqual(form_requests.count(), 1)
+        form_request = form_requests.first()
+
+
+
+    def test_post_without_file_returns_error(self):
+        data = {
+            'form_name': 'Request Form',
+            'student_name': 'Test Student',
+            'student_id': '12345',
+            'Email': 'test@example.com',
+        }
+
+
