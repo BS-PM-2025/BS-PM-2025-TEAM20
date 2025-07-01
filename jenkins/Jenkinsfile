@@ -33,6 +33,7 @@ pipeline {
                 '''
             }
         }
+        #צפיפןת פגמים
 #מודד כמה באגים יש לכל1000 שורות קוד נותן תמונה על איכות קוד
         stage('Calculate Defect Density') {
             steps {
@@ -69,7 +70,8 @@ pipeline {
                 echo '📎 Running pylint...'
                 sh '''
                     echo "========== Pylint ==========" >> metrix.txt
-                    pylint accounts --exit-zero | tee -a metrix.txt || true
+                    pylint accounts --exit-zero --score=y | tee -a metrix.txt || true
+
                 '''
             }
         }
