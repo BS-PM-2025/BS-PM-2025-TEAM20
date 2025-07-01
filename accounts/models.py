@@ -67,14 +67,19 @@ def get_last_user():
     return User.objects.last().id if User.objects.exists() else 1  # Or another default ID if no users exist
 from django.utils import timezone
 
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+from django.contrib.auth.hashers import make_password
+
 class UserRegisterStu1(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=get_last_user)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # ✅ بدون default
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    last_login = models.DateTimeField(default=timezone.now)  # הוספת שדה last_login
+    last_login = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.username
@@ -84,10 +89,12 @@ class UserRegisterStu1(models.Model):
         self.save()
 
     def update_last_login(self):
-        self.last_login = timezone.now()  # עדכון הזמן הנוכחי
+        self.last_login = timezone.now()
         self.save()
+
     def get_email_field_name(self):
         return 'email'
+
 class StudentLoginHistory(models.Model):
     username = models.CharField(max_length=100)
     login_time = models.DateTimeField(default=timezone.now)
@@ -364,8 +371,11 @@ class Meeting(models.Model):
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.db import models
+from .models import UserRegisterLec, UserRegisterStu1  # تأكدي من المسارات الصحيحة
+
 class OfficeHour(models.Model):
-    lecturer = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_staff': True})
+    lecturer = models.ForeignKey(UserRegisterLec, on_delete=models.CASCADE)
     day = models.CharField(max_length=20)
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -374,15 +384,13 @@ class OfficeHour(models.Model):
         return f"{self.lecturer.username} - {self.day} {self.start_time}-{self.end_time}"
 
 class Appointment(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_staff': False})
+    student = models.ForeignKey(UserRegisterStu1, on_delete=models.CASCADE)
     office_hour = models.ForeignKey(OfficeHour, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=20)
     request_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.student.username} -> {self.office_hour}"
-
-
 from django.db import models
 from django.utils import timezone
 
@@ -530,16 +538,10 @@ class StuProf(models.Model):
     email = models.EmailField(max_length=254, null=True, blank=True)  # השדה החדש
 
 
-
-
-
-from django.db import models
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from .models import UserRegisterLec  # أو من المسار الصحيح داخل مشروعك
 
 class ReceptionHour(models.Model):
-    lecturer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reception_hours')
+    lecturer = models.ForeignKey(UserRegisterLec, on_delete=models.CASCADE, related_name='reception_hours')
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()

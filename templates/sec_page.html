@@ -106,47 +106,42 @@
     <div class="left-section">
         <a href="{% url 'login_lecc' %}">← Back</a>
     </div>
-    <div class="title">Secretary Portal</div>
+    <div class="title">פורטל המזכירות</div>
     <div class="right-section">
         ☰
     </div>
 </div>
 
-<!-- Main Content -->
+<!-- תוכן ראשי -->
 <div class="container">
-    <h2>Welcome to Sec Page</h2>
-    <p class="welcome-message">Welcome to the Sec Page!</p>
-    <p>We're happy to have you here. You're now part of the academic community!</p>
+    <p class="welcome-message">!ברוכים הבאים לעמוד המזכירות</p>
+    <p>!שמחים שהצטרפתם,אתם כעת חלק מהקהילה האקדמית</p>
 
     <div class="nav-buttons">
-    <a href="{% url 'request_list' %}" class="button">
-    <i class="fas fa-list" style="color: #007bff;"></i> Requests for Improving Scores
-</a>
-<a href="{% url 'add_office_hours' %}" class="button">
-    <i class="fas fa-clock" style="color: #28a745;"></i> Office Hours
-</a>
-<a href="{% url 'upload_form' %}" class="button">
-    <i class="fas fa-upload" style="color: #ffc107;"></i> Upload Form for Requests
-</a>
-<a href="{% url 'office_hours_list' %}" class="button">
-    <i class="fas fa-calendar-alt" style="color: #17a2b8;"></i> View Office Hours
-</a>
-<a href="{% url 'extension_request_list' %}" class="button">
-    <i class="fas fa-hourglass-half" style="color: #fd7e14;"></i> Requests for Extra Time
-</a>
-<a href="{% url 'student_secretary_chat' %}" class="button">
-    <i class="fas fa-comments" style="color: #6f42c1;"></i> Chat
-</a>
-<a href="{% url 'secretary_requests' %}" class="button">
-    <i class="fas fa-file-alt" style="color: #dc3545;"></i> Document Requests
-</a>
-
+        <a href="{% url 'request_list' %}" class="button">
+            בקשות לשיפור ציונים <i class="fas fa-list" style="color: #007bff; margin-left: 8px;"></i>
+        </a>
+        <a href="{% url 'add_office_hours' %}" class="button">
+            הוספת שעות קבלה <i class="fas fa-clock" style="color: #28a745; margin-left: 8px;"></i>
+        </a>
+        <a href="{% url 'upload_form' %}" class="button">
+            העלאת טופס לבקשות <i class="fas fa-upload" style="color: #ffc107; margin-left: 8px;"></i>
+        </a>
+        <a href="{% url 'office_hours_list' %}" class="button">
+            צפייה בשעות קבלה <i class="fas fa-calendar-alt" style="color: #17a2b8; margin-left: 8px;"></i>
+        </a>
+        <a href="{% url 'extension_request_list' %}" class="button">
+            בקשות להארכת זמן <i class="fas fa-hourglass-half" style="color: #fd7e14; margin-left: 8px;"></i>
+        </a>
+        <a href="{% url 'student_secretary_chat' %}" class="button">
+            צ'אט <i class="fas fa-comments" style="color: #6f42c1; margin-left: 8px;"></i>
+        </a>
+        <a href="{% url 'secretary_requests' %}" class="button">
+            בקשות למסמכים <i class="fas fa-file-alt" style="color: #dc3545; margin-left: 8px;"></i>
+        </a>
     </div>
 
     <div class="footer">
-        <p>&copy; 2025 Lecturer Page. All rights reserved.</p>
+        <p>&copy; 2025 עמוד המזכירות כל הזכויות שמורות</p>
     </div>
 </div>
-
-</body>
-</html>

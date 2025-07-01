@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8" />
-    <title>הוסף שעות קבלה</title>
+    <title>הוספת שעות קבלה</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
     <style>
@@ -112,15 +112,15 @@
 <!-- Navbar -->
 <div class="navbar">
     <div class="left-section">
-        <a href="{% url 'sec_page' %}">← חזרה</a>
+        <a href="{% url 'sec_page' %}"> חזרה ←</a>
     </div>
-    <div class="title">הוסף שעות קבלה</div>
+    <div class="title">הוספת שעות קבלה</div>
     <div class="right-section"></div>
 </div>
 
 <!-- Main Content -->
 <div class="container">
-    <h1>הוסף שעות קבלה</h1>
+    <h1>הוספת שעות קבלה</h1>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}

@@ -128,25 +128,23 @@
 
     <div class="nav-buttons">
         <button onclick="navigateToRequestForm()">📈 שיפור ציון</button>
-        <button onclick="navigateToProfile()">👤 הפרופיל שלי</button>
-        <button onclick="navigateToOfficeHours()">🕒 שעות קבלה</button>
+        <button onclick="navigateToOfficeHours()"> 🕒 שעות קבלה של המזכירות</button>
         <button onclick="navigateToFeedback()">📝 הוסף משוב</button>
         <button onclick="openChatBot()">💬 שיחה עם בוט</button>
         <button onclick="openChat()">💬 צ'אט עם מרצה</button>
         <button onclick="openChat1()">💬 צ'אט עם מזכירות</button>
         <button onclick="navigateToTimeExtensionRequest()">⏳ בקשה להארכת זמן</button>
-        <button onclick="window.location.href='{% url 'student_reception_hours' %}'">📅 שעות קבלה לסטודנט</button>
+        <button onclick="window.location.href='{% url 'student_reception_hours' %}'">📅 שעות קבלה של מרצה</button>
 
 
         <button onclick="navigateToStudentRequest()">📝 בקשה חדשה למרצה</button>
         <button onclick="navigateToDocumentRequest()">📄 בקשות מסמכים</button>
-        <button onclick="navigateToStudentReception()">🕒 שעות קבלה לסטודנט</button>
     </div>
 </div>
 
 <script>
     function navigateToRequestForm() {
-        window.location.href = "request_form/";
+        window.location.href = "/accounts/student/request_form/";
     }
 
     function navigateToOfficeHours() {
@@ -169,10 +167,6 @@
         window.open("/chatroom/");
     }
 
-    function navigateToProfile() {
-        window.location.href = "{% url 'manage_my_profile' %}";
-    }
-
     function openChat1() {
         window.open("/student-secretary-chat/");
     }
@@ -185,9 +179,7 @@
         window.location.href = "/submit-request/";
     }
 
-    function navigateToStudentReception() {
-        window.location.href = "/student_rec/";
-    }
+
 </script>
 
 </body>

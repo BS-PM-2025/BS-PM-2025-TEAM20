@@ -3,33 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Form</title>
+    <title>העלאת טופס</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            padding: 40px;
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+            color: #332f2f;
+            margin-bottom: 30px;
+        }
+
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input[readonly] {
+            background-color: #eee;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background-color: #b5e745;
+            border: none;
+            color: #332f2f;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #b5e745;
+        }
+    </style>
 </head>
 <body>
-    <h2>Upload a Form</h2>
+    <h2>העלאת טופס</h2>
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <!-- פרטי הסטודנט -->
-        <label for="student_name">Student Name:</label>
+        <label for="student_name">שם הסטודנט:</label>
         <input type="text" name="student_name" id="student_name" value="{{ user.first_name }} {{ user.last_name }}" readonly>
 
-        <label for="student_id">Student ID:</label>
+        <label for="student_id">תעודת זהות:</label>
         <input type="text" name="student_id" id="student_id" value="{{ user.username }}" readonly>
 
-        <label for="student_email">Student Email:</label>
-        <input type="email" name="student_email" id="student_email" value="{{ user.Email }}" readonly>
+        <label for="student_email">אימייל:</label>
+        <input type="email" name="student_email" id="student_email" value="{{ user.email }}" readonly>
 
-        <!-- שם הטופס -->
-        <label for="form_name">Form Name:</label>
+        <label for="form_name">שם הטופס:</label>
         <input type="text" name="form_name" id="form_name" required>
 
-        <!-- העלאת קובץ PDF -->
-        <label for="file">PDF File:</label>
+        <label for="file">בחר קובץ PDF:</label>
         <input type="file" name="file" id="file" accept="application/pdf" required>
 
-        <button type="submit">Upload</button>
+        <button type="submit">שלח טופס</button>
     </form>
 </body>
 </html>

@@ -91,7 +91,7 @@
 
 <div class="navbar">
     <div class="left-section">
-        <a href="{% url 'sec_page' %}">← חזרה</a>
+        <a href="{% url 'sec_page' %}">חזרה←</a>
     </div>
     <div class="title">שעות קבלה</div>
     <div class="right-section"></div>
@@ -113,7 +113,7 @@
             <tr>
                 <td>{{ office.office_name }}</td>
                 <td>{{ office.opening_time }}</td>
-                <td>{{ office.closing_time }}</td>
+                <td>{{ office.closing_time|time:"H:i" }}</td>
                 <td>{{ office.additional_info }}</td>
             </tr>
             {% endfor %}

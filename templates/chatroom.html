@@ -160,13 +160,21 @@
 <!-- Navbar -->
 <div class="navbar">
     <div class="left-section">
-        <a href="{% url 'student_page' %}">⏴ חזור</a>
+        {% if user_type == 'lecturer' %}
+            <a href="{% url 'lecc_page' %}">⏴ חזור</a>
+        {% else %}
+            <a href="{% url 'student_page' %}">⏴ חזור</a>
+        {% endif %}
     </div>
     <div class="title">Bakasha</div>
     <div class="right-section">
         <span>💬 צ'אט תלמיד ↔ מרצה</span>
     </div>
 </div>
+
+
+
+
 
 <!-- Chat container -->
 <div class="chat-container">

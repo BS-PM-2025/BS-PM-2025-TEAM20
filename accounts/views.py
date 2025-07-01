@@ -55,20 +55,77 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegisterStu1Form
 from django.contrib.auth.models import User
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
+from .forms import UserRegisterStu1Form
+from .models import UserRegisterStu1
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from django.db import IntegrityError
+from django.contrib import messages
+
+# signup_student
 def signup_student(request):
     if request.method == 'POST':
-        form = UserRegisterStu1Form(request.POST)  # השתמש בטופס הנכון
+        form = UserRegisterStu1Form(request.POST)
         if form.is_valid():
-            form.save()  # שומר את הנתונים בטבלה UserRegisterLec
-            return redirect('login')  # הפנייה לדף המתאים לאחר ההרשמה
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            raw_password = form.cleaned_data['password']
+
+            # تحقق من التكرار
+            if User.objects.filter(username=username).exists():
+                form.add_error('username', 'שם המשתמש כבר קיים במערכת')
+            elif User.objects.filter(email=email).exists():
+                form.add_error('email', 'האימייל כבר רשום במערכת')
+            else:
+                try:
+                    user = User.objects.create_user(username=username, email=email, password=raw_password)
+
+                    student = form.save(commit=False)
+                    student.user = user
+                    student.save()  # دون الحاجة لتخزين كلمة المرور المشفرة مرة ثانية
+
+                    return redirect('login')
+                except IntegrityError:
+                    form.add_error(None, 'תקלה בשמירת המשתמש. נסה שם משתמש אחר.')
     else:
-        form = UserRegisterStu1Form()  # יוצרים את הטופס החדש במידה ולא נשלח טופס
+        form = UserRegisterStu1Form()
 
     return render(request, 'signup_student.html', {'form': form})
 
 
+# login_student
+def login_student(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
 
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+
+                request.session['user_type'] = 'student'
+                request.session['student_username'] = user.username
+
+                from .models import StudentLoginHistory
+                from django.utils.timezone import now
+                StudentLoginHistory.objects.create(username=user.username, login_time=now())
+
+                return redirect('student_page')
+
+            else:
+                form.add_error(None, "שם משתמש או סיסמה שגויים")
+    else:
+        form = LoginForm()
+
+    return render(request, 'login.html', {'form': form})
 
 def signup_lec(request):
     if request.method == 'POST':
@@ -242,48 +299,32 @@ from django.contrib.auth.hashers import check_password
 from django.utils.timezone import now
 
 
-def login_student(request):
-    print("Login function triggered!")  # הדפסה בתחילת הפונקציה
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from django.utils.timezone import now
+from .models import UserRegisterStu1, StudentLoginHistory
+from .forms import LoginForm
 
-    if request.method == 'POST':
-        print("POST request received!")  # הדפסה אם הפנייה היא מסוג POST
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            print("Form is valid!")  # הדפסה אם הטופס תקין
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-
-            print(f"Attempting login for: {username}")  # הדפסה לבדוק שהנתונים נכונים
-
-            try:
-                user = UserRegisterStu1.objects.get(username=username)
-                print(f"User found: {user.username}")  # הדפסה אם נמצא משתמש
-
-                if check_password(password, user.password):  # בדיקת סיסמה
-                    # 🔸 שמירה בהיסטוריית התחברויות
-                    print(f"Password matched for: {username}")  # הדפסה אם הסיסמה נכונה
-                    StudentLoginHistory.objects.create(username=username, login_time=now())
-
-                    # התחברות עם Django
-                    django_user = authenticate(request, username=username, password=password)
-                    if django_user:
-                        login(request, django_user)
-                        print(f"Login successful for: {username}")  # הדפסה אחרי התחברות
-
-                    return redirect('student_page')
-
-                else:
-                    form.add_error(None, 'סיסמה לא נכונה')
-
-            except UserRegisterStu1.DoesNotExist:
-                form.add_error(None, 'שם משתמש לא קיים')
-                print(f"User not found: {username}")  # הדפסה אם לא נמצא משתמש
-
-        else:
-            print("Form is not valid.")  # הדפסה אם הטופס לא תקין
-
-    else:
-        print("Request method is not POST.")  # הדפסה
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+from django.contrib.auth.hashers import check_password
+from .models import UserRegisterStu1, StudentLoginHistory
+from .forms import LoginForm
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.hashers import check_password
+from django.utils.timezone import now
+from django.contrib.auth.models import User
+from .models import UserRegisterStu1, StudentLoginHistory
+from .forms import LoginForm
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+from django.contrib.auth import authenticate, login
+from .forms import LoginForm
 
 
 def login_lec(request):
@@ -293,27 +334,29 @@ def login_lec(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            # חיפוש המשתמש ב- UserData לפי שם המשתמש
             try:
-                user =  UserRegister.objects.get(username=username)
-                if user.password == password:  # בדוק אם הסיסמה תואמת
-                    # אם הסיסמה נכונה, צור אובייקט משתמש של Django ואותך לאימות
+                user = UserRegister.objects.get(username=username)
+                if user.password == password:
                     django_user = authenticate(request, username=username, password=password)
 
                     if django_user is not None:
-                        # התחבר למערכת
                         login(request, django_user)
-                        return redirect('lec_page')  # הפנה את המשתמש לדף הבית
+
+                        # ✅ تحديد نوع المستخدم كمحاضر
+                        request.session['user_type'] = 'lecturer'
+
+                        return redirect('lec_page')
                     else:
-                        return redirect('lec_page')   # אם לא נמצא משתמש
+                        return redirect('lec_page')
                 else:
-                    form.add_error(None, 'סיסמה לא נכונה')  # שגיאה אם הסיסמה לא נכונה
-            except  UserRegister.DoesNotExist:
-                form.add_error(None, 'שם משתמש לא קיים')  # שגיאה אם שם המשתמש לא קיים
+                    form.add_error(None, 'סיסמה לא נכונה')
+            except UserRegister.DoesNotExist:
+                form.add_error(None, 'שם משתמש לא קיים')
     else:
         form = LoginForm()
 
     return render(request, 'login_lec.html', {'form': form})
+
 
 def login_sec(request):
     if request.method == 'POST':
@@ -322,28 +365,22 @@ def login_sec(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            # חיפוש המשתמש ב- UserData לפי שם המשתמש
             try:
-                user =  UserRegister.objects.get(username=username)
-                if user.password == password:  # בדוק אם הסיסמה תואמת
-                    # אם הסיסמה נכונה, צור אובייקט משתמש של Django ואותך לאימות
-                    django_user = authenticate(request, username=username, password=password)
+                user = UserRegister.objects.get(username=username)
+                if user.password == password:
+                    # ✅ تسجيل دخول يدوي
+                    request.session['user_type'] = 'secretary'
+                    request.session['sec_username'] = user.username
 
-                    if django_user is not None:
-                        # התחבר למערכת
-                        login(request, django_user)
-                        return redirect('sec_page')  # הפנה את המשתמש לדף הבית
-                    else:
-                        return redirect('sec_page')   # אם לא נמצא משתמש
+                    return redirect('sec_page')
                 else:
-                    form.add_error(None, 'סיסמה לא נכונה')  # שגיאה אם הסיסמה לא נכונה
-            except  UserRegister.DoesNotExist:
-                form.add_error(None, 'שם משתמש לא קיים')  # שגיאה אם שם המשתמש לא קיים
+                    form.add_error(None, 'סיסמה לא נכונה')
+            except UserRegister.DoesNotExist:
+                form.add_error(None, 'שם משתמש לא קיים')
     else:
         form = LoginForm()
 
     return render(request, 'login_sec.html', {'form': form})
-
 
 from .forms import UserRegisterForm  # וודא שזה הייבוא
 
@@ -370,24 +407,19 @@ def login_lecc(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            # חיפוש המשתמש ב- UserRegister לפי שם המשתמש
-            user = UserRegisterLec.objects.filter(username=username).first()  # השתמש ב-filter
+            user = UserRegisterLec.objects.filter(username=username).first()
 
-            if user:  # אם נמצא משתמש
-                if user.password == password:  # בדוק אם הסיסמה תואמת
-                    # אם הסיסמה נכונה, צור אובייקט משתמש של Django ואותך לאימות
-                    django_user = authenticate(request, username=username, password=password)
+            if user:
+                if user.password == password:
+                    # ✅ نحفظ نوع المستخدم كمحاضر
+                    request.session['user_type'] = 'lecturer'
+                    request.session['lecturer_username'] = user.username  # ← اختياري
 
-                    if django_user is not None:
-                        # התחבר למערכת
-                        login(request, django_user)
-                        return redirect('lecc_page')  # הפנה את המשתמש לדף הבית
-                    else:
-                        return redirect('lecc_page')   # אם לא נמצא משתמש
+                    return redirect('lecc_page')  # ← صفحة المحاضر الرئيسية
                 else:
-                    form.add_error(None, 'סיסמה לא נכונה')  # שגיאה אם הסיסמה לא נכונה
+                    form.add_error(None, 'סיסמה לא נכונה')
             else:
-                form.add_error(None, 'שם משתמש לא קיים')  # שגיאה אם שם המשתמש לא קיים
+                form.add_error(None, 'שם משתמש לא קיים')
     else:
         form = LoginForm()
 
@@ -399,24 +431,71 @@ from .models import GradeImprovementRequest
 from .forms import GradeImprovementRequestForm
 from .models import GradeImprovementRequest, UserRegisterStu1
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import GradeImprovementRequestForm
+from .models import UserRegisterStu1, GradeImprovementRequest
 
 def request_grade_improvement(request):
+    print("🛠️ נכנסנו לפונקציה request_grade_improvement")
+
+    # ✅ הדפסת תוכן הסשן
+    print("🧾 תוכן הסשן:")
+    for k, v in request.session.items():
+        print(f"{k} = {v}")
+
+    if request.session.get('user_type') != 'student':
+        print("🚫 המשתמש אינו סטודנט - מפנה לעמוד התחברות")
+        return redirect('login')  # ודא שזה ה-URL הנכון להתחברות סטודנט
+
     if request.method == 'POST':
+        print("📥 POST התקבל")
         form = GradeImprovementRequestForm(request.POST)
+
         if form.is_valid():
+            print("✅ הטופס תקין")
             grade_request = form.save(commit=False)
 
-            # Assign the currently logged-in user (if exists)
-            if request.user.is_authenticated:
-                grade_request.student = request.user
+            try:
+                username = request.session.get('student_username')
+                print("🔍 שם המשתמש מהסשן:", username)
+                student_profile = UserRegisterStu1.objects.get(username=username)
+                print("👤 פרופיל סטודנט נמצא:", student_profile)
+
+                # מילוי שדות דרושים
+                grade_request.student = student_profile.user
+                grade_request.email = student_profile.email
+                grade_request.username = student_profile.username
+
                 grade_request.save()
-                return redirect('request_success')
-            else:
-                return redirect('login')  # Force login if no user
+                print("💾 הבקשה נשמרה בהצלחה!")
+
+                messages.success(request, "הבקשה שלך לשיפור ציון נשלחה בהצלחה!")
+                return redirect('student_page')
+
+            except UserRegisterStu1.DoesNotExist:
+                print("❌ פרופיל סטודנט לא נמצא")
+                messages.error(request, "לא נמצא פרופיל תלמיד מתאים")
+                return redirect('student_page')
+
+            except Exception as e:
+                print(f"❌ שגיאה בשמירת הבקשה: {e}")
+                messages.error(request, "אירעה שגיאה בשמירת הבקשה")
+
+        else:
+            print("❌ הטופס אינו תקין:")
+            print(form.errors)
+            messages.error(request, "הטופס אינו תקין, נא לבדוק את השדות")
+
     else:
+        print("🧾 טעינת הטופס (GET)")
         form = GradeImprovementRequestForm()
 
     return render(request, 'request_form.html', {'form': form})
+
+
+
+
 from django.shortcuts import render
 
 def success_view(request):
@@ -510,48 +589,31 @@ from django.contrib.auth.decorators import login_required
 from .models import GradeImprovementRequest, UserRegisterStu1
 from .forms import GradeImprovementRequestForm
 from django.contrib import messages
+from django.contrib.auth.models import AnonymousUser
+from django.shortcuts import redirect, render
 
-@login_required
-def request_form(request):
-    if request.method == "POST":
-        form = GradeImprovementRequestForm(request.POST)
-        if form.is_valid():
-            grade_request = form.save(commit=False)
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import GradeImprovementRequestForm
+from .models import UserRegisterStu1
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import GradeImprovementRequestForm
+from .models import UserRegisterStu1
+from .forms import GradeImprovementRequestForm
+from .models import UserRegisterStu1
+from django.contrib import messages
+from django.shortcuts import render, redirect
 
-            # קבלת הרשומה האחרונה מטבלת UserRegisterStu
-            last_user_register = UserRegisterStu1.objects.order_by('-id').first()
-            if not last_user_register:
-                messages.error(request, "לא נמצאו משתמשים רשומים במערכת")
-                return redirect('student_page')
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import GradeImprovementRequestForm
+from .models import UserRegisterStu1
 
-            # ודא של־last_user_register יש אובייקט User תקין
-            if not last_user_register.user:
-                messages.error(request, "למשתמש האחרון אין משתמש מקושר")
-                return redirect('student_page')
-
-            # השמת ה‑student לפי user_id
-            grade_request.student_id = last_user_register.user_id
-
-            # מילוי אוטומטי של שדות email ו‑username אם הם ריקים
-            if not grade_request.email:
-                grade_request.email = last_user_register.email
-            if not grade_request.username:
-                grade_request.username = last_user_register.username
-
-            grade_request.save()
-            return redirect('request_success')
-    else:
-        # אפשר למלא מראש שדות מתוך המשתמש האחרון
-        initial_data = {}
-        last_user_register = UserRegisterStu1.objects.order_by('-id').first()
-        if last_user_register and last_user_register.user:
-            initial_data = {
-                'email': last_user_register.email,
-                'username': last_user_register.username,
-            }
-        form = GradeImprovementRequestForm(initial=initial_data)
-
-    return render(request, 'request_form.html', {'form': form})
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import GradeImprovementRequest, UserRegisterStu1
+from .forms import GradeImprovementRequestForm
 
 
 from django.shortcuts import get_object_or_404, redirect
@@ -563,10 +625,6 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import GradeImprovementRequest
-
-
-
-
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import GradeImprovementRequest
  # אני מניח שיש פונקציה כזו לשליחת המייל
@@ -587,64 +645,12 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import GradeImprovementRequest  # ודא שזה הנתיב הנכון
-@login_required
-def request_list(request):
-    if request.method == 'POST':
-        request_id = request.POST.get('request_id')
-        new_status = request.POST.get('status')
+from django.core.mail import send_mail, BadHeaderError
+from django.conf import settings
+from django.shortcuts import get_object_or_404, render, redirect
+from .models import GradeImprovementRequest
 
-        grade_request = get_object_or_404(GradeImprovementRequest, id=request_id)
-        grade_request.status = new_status
-        grade_request.save()
 
-        # ✅ Auto-send email in English
-        student_email = grade_request.email
-        subject = "Grade Improvement Request Status Update"
-        body = f"""
-Dear {grade_request.username},
-
-The status of your grade improvement request for the course "{grade_request.course_name}" has been updated to: {new_status}
-
-Request Details:
-• Current Grade: {grade_request.current_grade}
-• Desired Grade: {grade_request.desired_grade}
-• Reason: {grade_request.reason}
-
-If you have any questions or concerns, please contact the academic office.
-
-Best regards,  
-Grade Improvement System
-"""
-
-        try:
-            send_mail(
-                subject,
-                body,
-                settings.DEFAULT_FROM_EMAIL,
-                [student_email],
-                fail_silently=False
-            )
-        except BadHeaderError:
-            print("Invalid header found.")
-        except Exception as e:
-            print(f"Error sending email: {e}")
-
-        return redirect('request_list')
-
-    requests = GradeImprovementRequest.objects.all()
-    return render(request, 'request_list.html', {'requests': requests})
-
-def send_status_update_email(student_email, new_status, course_name):
-    subject = f"Status Update for {course_name}"
-    body = f"Dear Student,\n\nYour grade improvement request for {course_name} has been {new_status}.\n\nBest regards,\nYour University"
-
-    send_mail(
-        subject,
-        body,
-        settings.DEFAULT_FROM_EMAIL,  # נוודא שהמייל שמוגדר ב־settings.py ישלח
-        [student_email],  # שולחים לסטודנט
-        fail_silently=False,
-    )
 
 
 from django.http import JsonResponse
@@ -655,19 +661,7 @@ from django.shortcuts import render, redirect
 from .models import OfficeHours11
 from .forms import OfficeHoursForm
 
-def add_office_hours(request):
-    if request.method == 'POST':
-        form = OfficeHoursForm(request.POST)
-        if form.is_valid():
-            form.save()  # שומר את המידע במסד הנתונים
-            return redirect('show_office_hours')  # הפנה לדף שמציג את שעות הקבלה
-    else:
-        form = OfficeHoursForm()
-    return render(request, 'add_office_hours.html', {'form': form})
 
-def show_office_hours(request):
-    hours = OfficeHours11.objects.all()  # טוען את כל שעות הקבלה מהמסד נתונים
-    return render(request, 'show_office_hours.html', {'hours': hours})
 
 
 
@@ -795,16 +789,7 @@ from .models import StudentProfile
 from .forms import StudentProfileForm
 from django.contrib.auth.decorators import login_required
 
-
-
-
 from django.views.decorators.csrf import csrf_exempt
-
-
-
-
-
-
 
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
@@ -848,7 +833,6 @@ class CustomPasswordResetForm(forms.Form):
         if not UserRegisterStu1.objects.filter(email=email).exists():
             raise forms.ValidationError("Email not found in the system.")
         return email
-
 
 def send_password_reset_email(request):
     if request.method == "POST":
@@ -903,15 +887,6 @@ def password_reset_done(request):
     return render(request, 'password_reset_done.html')
 
 
-
-
-###################################################################
-
-# views.py
-
-
-
-
 from django.shortcuts import render
 
 def request_success(request):
@@ -940,8 +915,6 @@ def submit_feedback(request):
         else:
             return JsonResponse({'success': False})
     return JsonResponse({'success': False})
-
-
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import ChatbotQuestion, ChatbotConversation
@@ -970,7 +943,9 @@ from .models import ChatHistory
 from django.shortcuts import render
 
 def chatroom(request):
-    return render(request, 'chatroom.html')
+    user_type = request.session.get('user_type', 'student')  # القيمة الافتراضية: student
+    return render(request, 'chatroom.html', {'user_type': user_type})
+
 def chatroom1(request):
     return render(request, 'chatroom1.html')
 def chatbot_view(request):
@@ -1057,10 +1032,10 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 
 def chatroom(request):
-    return render(request, 'chatroom.html')
+    user_type = request.session.get('user_type', 'student')
+    return render(request, 'chatroom.html', {'user_type': user_type})
 
 def get_messages(request):
-    # מציאת כל ההודעות בטבלה MessageHistory
     messages = MessageHistory.objects.order_by('timestamp')
     data = [
         {'sender': m.sender, 'message': m.message, 'timestamp': m.timestamp.strftime('%H:%M')}
@@ -1147,8 +1122,19 @@ from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
 
 
-@login_required
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
+from .models import FormRequest
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from .models import FormRequest
+
 def upload_form(request):
+    # ✅ التحقق من أن المستخدم هو سكرتارية عبر الجلسة
+    if request.session.get('user_type') != 'secretary':
+        return redirect('login_sec')
+
     if request.method == 'POST':
         form_name = request.POST.get('form_name')
         student_name = request.POST.get('student_name')
@@ -1162,19 +1148,19 @@ def upload_form(request):
         fs = FileSystemStorage()
         filename = fs.save(pdf_file.name, pdf_file)
 
-        # יצירת אובייקט חדש עם פרטי הבקשה
+        # ❗ لاحظ: هنا لم نستخدم request.user لأن السكرتارية ليست مستخدم من نوع User
+        # يمكنك تخزين معلومات الطالب بدلًا من المستخدم نفسه
         form_request = FormRequest(
-            student=request.user,
             form_name=form_name,
-            pdf_file=filename
+            # في حال أردت فقط حفظ اسم الطالب دون علاقة ForeignKey:
+            # استخدم حقول إضافية في FormRequest مثل:
+            # student_name=student_name, student_email=student_email, ...
         )
         form_request.save()
 
-        return HttpResponse('Your form request has been uploaded successfully.')
+        return HttpResponse('הטופס הועלה בהצלחה!')
 
     return render(request, 'upload_form.html')
-
-
 
 # views.py
 from django.shortcuts import render, redirect
@@ -1207,38 +1193,7 @@ from django.shortcuts import render, redirect
 from .forms import TimeExtensionRequestForm
 from .models import TimeExtensionRequest
 
-def submit_time_extension_request(request):
-    if request.method == 'POST':
-        form = TimeExtensionRequestForm(request.POST, request.FILES)
-        if form.is_valid():
-            new_request = form.save()
 
-            # שמירת האימייל של הסטודנט בסשן
-            request.session['last_student_email'] = new_request.email
-
-            return redirect('last_student_requests')
-        else:
-            print("הטופס לא תקין:", form.errors)
-            return render(request, 'request_time_extension.html', {'form': form})
-    else:
-        form = TimeExtensionRequestForm()
-
-    return render(request, 'request_time_extension.html', {'form': form})
-
-def last_student_requests(request):
-    last_email = request.session.get('last_student_email')
-
-    if not last_email:
-        return render(request, 'last_student_requests.html', {
-            'student_requests': [],
-            'error': 'לא נמצאה כתובת אימייל של סטודנט. יש להגיש בקשה תחילה.'
-        })
-
-    student_requests = TimeExtensionRequest.objects.filter(email=last_email)
-    return render(request, 'last_student_requests.html', {
-        'student_requests': student_requests,
-        'email': last_email
-    })
 
 def request_success(request):
     # הצגת הודעת הצלחה
@@ -1283,81 +1238,6 @@ from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from .models import TimeExtensionRequest
 
-def extension_request_list(request):
-    print("📍 נכנסתי לפונקציה extension_request_list")
-
-    if request.method == 'POST':
-        request_id = request.POST.get('request_id')
-        new_status = request.POST.get('status')
-
-        print(f"🔄 קיבלנו בקשה לעדכון סטטוס. מזהה הבקשה: {request_id}, סטטוס חדש: {new_status}")
-
-        try:
-            extension_request = get_object_or_404(TimeExtensionRequest, id=request_id)
-            print(f"✅ הבקשה נמצאה: {extension_request}")
-        except Exception as e:
-            print(f"❌ שגיאה באחזור הבקשה: {e}")
-            messages.error(request, f"שגיאה באחזור הבקשה: {e}")
-            return redirect('extension_request_list')
-
-        try:
-            extension_request.status = new_status
-            extension_request.save()
-            print(f"✅ סטטוס הבקשה עודכן ל: {extension_request.get_status_display()}")
-        except Exception as e:
-            print(f"❌ שגיאה בעדכון הסטטוס: {e}")
-            messages.error(request, f"שגיאה בעדכון הסטטוס: {e}")
-            return redirect('extension_request_list')
-
-        student_email = extension_request.email
-        print(f"📧 כתובת המייל של הסטודנט: {student_email}")
-
-        if student_email:
-            subject = "עדכון סטטוס לבקשת הארכת זמן"
-            body = f"""
-שלום {extension_request.student_name},
-
-הסטטוס של בקשתך להארכת זמן במקצוע "{extension_request.subject}" 
-עודכן ל: {extension_request.get_status_display()}
-
-פרטי הבקשה:
-• מועד הגשה מקורי: {extension_request.original_deadline}
-• מספר ימים שהתבקשו: {extension_request.requested_extension_time}
-• סיבה: {extension_request.reason_for_extension}
-
-בברכה,
-מערכת ניהול בקשות
-"""
-            try:
-                print("📤 מנסה לשלוח את המייל עם התוכן הבא:")
-                print("נושא:", subject)
-                print("גוף ההודעה:\n", body)
-
-                send_mail(
-                    subject,
-                    body,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [student_email],
-                    fail_silently=False,
-                )
-                print("✅ המייל נשלח בהצלחה.")
-                messages.success(request, f"המייל נשלח לכתובת {student_email} בהצלחה.")
-            except BadHeaderError:
-                print("❌ שגיאה: כותרת מייל לא תקינה.")
-                messages.error(request, "כותרת המייל לא תקינה.")
-            except Exception as e:
-                print(f"❌ שגיאה בשליחת מייל: {e}")
-                messages.error(request, f"שגיאה בשליחת מייל: {e}")
-        else:
-            print("⚠️ אין כתובת מייל תקינה לסטודנט.")
-            messages.warning(request, "לא קיימת כתובת מייל תקינה לסטודנט.")
-
-        return redirect('extension_request_list')
-
-    # GET - הצגת כל הבקשות
-    requests = TimeExtensionRequest.objects.all()
-    print(f"📋 מספר הבקשות הכולל: {requests.count()}")
-    return render(request, 'extension_request_list.html', {'requests': requests})
 
 
 
@@ -1486,8 +1366,10 @@ from django.contrib.auth.decorators import login_required
 from .models import StuProf
 from .forms import StuProfForm,UserProfileForm
 
-@login_required
 def manage_my_profile(request):
+    if not request.user.is_authenticated:
+        return redirect('login')  # أو صفحة عامة، حسب المطلوب
+
     user = request.user
     profile = StuProf.objects.filter(student=user).first()
 
@@ -1525,6 +1407,7 @@ def manage_my_profile(request):
 
 
 
+
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import OfficeHour, Appointment
 from .forms import AppointmentForm
@@ -1533,25 +1416,36 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import OfficeHour, Appointment
 from .forms import AppointmentForm, OfficeHourForm
+from .models import OfficeHour, UserRegisterLec
+from .forms import OfficeHourForm
 
-@login_required
 def create_slots(request):
-    if not request.user.is_staff:
-        return redirect('home')
+    if request.session.get('user_type') != 'lecturer':
+        return redirect('login_lecc')
+
     if request.method == 'POST':
         form = OfficeHourForm(request.POST)
         if form.is_valid():
             slot = form.save(commit=False)
-            slot.lecturer = request.user
-            slot.save()
-            return redirect('my_appointments')
+
+            lecturer_username = request.session.get('lecturer_username')
+            lecturer = UserRegisterLec.objects.filter(username=lecturer_username).first()
+
+            if lecturer:
+                slot.lecturer = lecturer
+                slot.save()
+                return redirect('my_appointments')
+            else:
+                return render(request, 'create_slots.html', {
+                    'form': form,
+                    'error': 'מרצה לא נמצא'
+                })
     else:
         form = OfficeHourForm()
+
     return render(request, 'create_slots.html', {'form': form})
 
-def office_hours_list(request):
-    hours = OfficeHour.objects.all()
-    return render(request, 'office_hours_list.html', {'hours': hours})
+
 @login_required
 def book_appointment(request, pk):
     office_hour = get_object_or_404(OfficeHour, pk=pk)
@@ -1571,24 +1465,30 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import OfficeHour
 
-@login_required
 def my_appointments(request):
-    # אם המשתמש הוא מרצה, נקבל את כל שעות הקבלה שלו
-    if request.user.is_staff:
-        office_hours = OfficeHour.objects.filter(lecturer=request.user).order_by('day', 'start_time')
+    user_type = request.session.get('user_type')
+    username = request.session.get('lecturer_username')
+
+    if user_type == 'lecturer':
+        lecturer = UserRegisterLec.objects.filter(username=username).first()
+        office_hours = OfficeHour.objects.filter(lecturer=lecturer).order_by('day', 'start_time')
     else:
-        # אם זה סטודנט, נציג את כל שעות הקבלה הקיימות של כל המרצים
         office_hours = OfficeHour.objects.all().order_by('lecturer__username', 'day', 'start_time')
 
     return render(request, 'my_appointments.html', {'office_hours': office_hours})
-@login_required
+
 def lecturer_appointments(request):
-    if not request.user.is_staff:
-        return redirect('home')  # או דף אחר
+    if request.session.get('user_type') != 'lecturer':
+        return redirect('login_lecc')
 
-    appointments = Appointment.objects.filter(office_hour__lecturer=request.user).select_related('student', 'office_hour')
+    username = request.session.get('lecturer_username')
+    lecturer = UserRegisterLec.objects.filter(username=username).first()
+
+    appointments = Appointment.objects.filter(
+        office_hour__lecturer=lecturer
+    ).select_related('office_hour')
+
     return render(request, 'lecturer_appointments.html', {'appointments': appointments})
-
 
 @login_required
 def available_office_hours(request):
@@ -1660,42 +1560,7 @@ from .models import StudentRequest
 from .forms import StudentRequestForm, ProfessorResponseForm
 from django.conf import settings
 
-def submit_request_view(request):
-    if request.method == 'POST':
-        form = StudentRequestForm(request.POST)
-        if form.is_valid():
-            student_request = form.save()
 
-            # שליחת מייל למרצה (לפי המייל שהסטודנט הזין)
-            subject = f"בקשה חדשה מסטודנט: {student_request.request_type}"
-            message = f"""
-שלום,
-
-סטודנט בשם {student_request.student_name} שלח לך בקשה מסוג: {student_request.request_type}
-
-פרטים:
-{student_request.description}
-
-ליצירת קשר עם הסטודנט:
-אימייל: {student_request.student_email}
-
----
-
-מערכת ניהול הבקשות
-"""
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [student_request.professor_email],
-                fail_silently=False,
-            )
-
-            messages.success(request, "הבקשה נשלחה בהצלחה למייל של המרצה.")
-            return redirect('submit_request')
-    else:
-        form = StudentRequestForm()
-    return render(request, 'submit_request.html', {'form': form})
 
 
 def professor_requests_view(request):
@@ -1740,9 +1605,6 @@ def respond_request_view(request, request_id):
 
     return render(request, 'respond_request.html', {'form': form, 'student_request': student_request})
 
-
-
-
 # views.py
 from django.shortcuts import render
 from .models import Feedback
@@ -1751,19 +1613,6 @@ def all_feedbacks_view(request):
     feedbacks = Feedback.objects.all().order_by('-id')  # מציג את החדשים קודם
     return render(request, 'all_feedbacks.html', {'feedbacks': feedbacks})
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import EmailMessage
 from django.contrib import messages
@@ -1771,20 +1620,6 @@ from .models import DocumentRequest
 from .forms import DocumentRequestForm,UploadedDocumentForm
 from django.conf import settings
 
-def submit_document_request(request):
-    if request.method == 'POST':
-        form = DocumentRequestForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "הבקשה נשלחה למזכירות.")
-            return redirect('submit_document_request')
-    else:
-        form = DocumentRequestForm()
-    return render(request, 'submit_document_request.html', {'form': form})
-
-def secretary_requests_view(request):
-    requests = DocumentRequest.objects.filter(is_completed=False).order_by('-created_at')
-    return render(request, 'secretary_requests.html', {'requests': requests})
 
 from django.core.mail import EmailMessage
 from django.shortcuts import render, redirect, get_object_or_404
@@ -1972,15 +1807,12 @@ from .forms import UserProfileForm, StuProfForm
 User = get_user_model()
 
 
-@login_required
 def manage_my_profile(request):
-    user = request.user
-    profile, created = StuProf.objects.get_or_create(student=user)
+    if not request.user.is_authenticated:
+        return redirect('login')  # أو صفحة عامة، حسب المطلوب
 
-    # אם הפרופיל כבר קיים (כלומר לא נוצר עכשיו) ויש לו נתונים - נעשה הפניה ל-profile_detail
-    # אפשר לבדוק למשל שדה חובה כמו birth_date או כל שדה אחר שמאפיין שהפרופיל מלא
-    if not created and profile.birth_date is not None:
-        return redirect('profile_detail')
+    user = request.user
+    profile = StuProf.objects.filter(student=user).first()
 
     if request.method == 'POST':
         user_form = UserProfileForm(request.POST, instance=user)
@@ -1988,16 +1820,25 @@ def manage_my_profile(request):
 
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
-            profile_form.save()
-            return redirect('profile_detail')
+            prof = profile_form.save(commit=False)
+            prof.student = user
+            prof.save()
+            return redirect('my_profile')
+
     else:
         user_form = UserProfileForm(instance=user)
         profile_form = StuProfForm(instance=profile)
 
-    return render(request, 'manage_my_profile.html', {
-        'user_form': user_form,
-        'profile_form': profile_form,
-    })
+    if profile:
+        return render(request, 'my_profile_info.html', {
+            'user': user,
+            'profile': profile
+        })
+    else:
+        return render(request, 'my_profile_form.html', {
+            'user_form': user_form,
+            'profile_form': profile_form
+        })
 
 
 @login_required
@@ -2019,28 +1860,38 @@ from .models import ReceptionHour, ReceptionBooking
 from .forms import ReceptionHourForm
 
 
-@login_required
+from .models import ReceptionHour, UserRegisterLec
+from .forms import ReceptionHourForm
+
 def lecturer_reception_hours(request):
+    if request.session.get('user_type') != 'lecturer':
+        return redirect('login_lecc')  # ← أو أي صفحة تسجيل دخول للمحاضر
+
+    lecturer_username = request.session.get('lecturer_username')
+    lecturer = UserRegisterLec.objects.filter(username=lecturer_username).first()
+
     if request.method == 'POST':
         form = ReceptionHourForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and lecturer:
             reception_hour = form.save(commit=False)
-            reception_hour.lecturer = request.user
+            reception_hour.lecturer = lecturer
             reception_hour.save()
             return redirect('lecturer_reception_hours')
     else:
         form = ReceptionHourForm()
 
-    reception_hours = ReceptionHour.objects.filter(lecturer=request.user).order_by('date', 'start_time')
+    reception_hours = ReceptionHour.objects.filter(lecturer=lecturer).order_by('date', 'start_time')
     return render(request, 'lecturer_reception_hours.html',
                   {'form': form, 'reception_hours': reception_hours})
 
 
-@login_required
 def student_reception_hours(request):
     reception_hours = ReceptionHour.objects.all().order_by('date', 'start_time')
-    bookings = ReceptionBooking.objects.filter(student=request.user)
-    booked_reception_hour_ids = bookings.values_list('reception_hour_id', flat=True)
+
+    booked_reception_hour_ids = []
+    if request.user.is_authenticated:
+        bookings = ReceptionBooking.objects.filter(student=request.user)
+        booked_reception_hour_ids = bookings.values_list('reception_hour_id', flat=True)
 
     return render(request, 'student_reception_hours.html', {
         'reception_hours': reception_hours,
@@ -2082,3 +1933,276 @@ def cancel_reception_booking(request, booking_id):
         fail_silently=True,
     )
     return redirect('student_reception_hours')
+#####################################################################################
+#للتنبيهات والستاتوس
+def request_list(request):
+    # ✅ تحقق من نوع المستخدم من الجلسة
+    if request.session.get('user_type') != 'secretary':
+        return redirect('login_sec')
+
+    if request.method == 'POST':
+        request_id = request.POST.get('request_id')
+        new_status = request.POST.get('status')
+
+        grade_request = get_object_or_404(GradeImprovementRequest, id=request_id)
+        grade_request.status = new_status
+        grade_request.save()
+
+        # إرسال البريد الإلكتروني
+        student_email = grade_request.email
+        subject = "Grade Improvement Request Status Update"
+        body = f"""
+Dear {grade_request.username},
+
+The status of your grade improvement request for the course "{grade_request.course_name}" has been updated to: {new_status}
+
+Request Details:
+• Current Grade: {grade_request.current_grade}
+• Desired Grade: {grade_request.desired_grade}
+• Reason: {grade_request.reason}
+
+If you have any questions or concerns, please contact the academic office.
+
+Best regards,  
+Grade Improvement System
+"""
+
+        try:
+            send_mail(
+                subject,
+                body,
+                settings.DEFAULT_FROM_EMAIL,
+                [student_email],
+                fail_silently=False
+            )
+        except BadHeaderError:
+            print("Invalid header found.")
+        except Exception as e:
+            print(f"Error sending email: {e}")
+
+        return redirect('request_list')
+
+    requests = GradeImprovementRequest.objects.all()
+    return render(request, 'request_list.html', {'requests': requests})
+
+
+def submit_time_extension_request(request):
+    if request.method == 'POST':
+        form = TimeExtensionRequestForm(request.POST, request.FILES)
+        if form.is_valid():
+            new_request = form.save()
+
+            # שמירת האימייל של הסטודנט בסשן
+            request.session['last_student_email'] = new_request.email
+
+            return redirect('last_student_requests')
+        else:
+            print("הטופס לא תקין:", form.errors)
+            return render(request, 'request_time_extension.html', {'form': form})
+    else:
+        form = TimeExtensionRequestForm()
+
+    return render(request, 'request_time_extension.html', {'form': form})
+
+#طلبات الطالب
+def last_student_requests(request):
+    last_email = request.session.get('last_student_email')
+
+    if not last_email:
+        return render(request, 'last_student_requests.html', {
+            'student_requests': [],
+            'error': 'לא נמצאה כתובת אימייל של סטודנט. יש להגיש בקשה תחילה.'
+        })
+
+    student_requests = TimeExtensionRequest.objects.filter(email=last_email)
+    return render(request, 'last_student_requests.html', {
+        'student_requests': student_requests,
+        'email': last_email
+    })
+#زيادة العلامه
+def request_form(request):
+    if request.session.get('user_type') != 'student':
+        return redirect('login_student')
+
+    if request.method == "POST":
+        form = GradeImprovementRequestForm(request.POST)
+        if form.is_valid():
+            grade_request = form.save(commit=False)
+
+            student_username = request.session.get('student_username')
+            try:
+                student = UserRegisterStu1.objects.get(username=student_username)
+            except UserRegisterStu1.DoesNotExist:
+                messages.error(request, "לא נמצא פרופיל תלמיד מתאים")
+                return redirect('student_page')
+
+            # 🧩 تعبئة الحقول تلقائيًا من الطالب الحالي
+            grade_request.student_id = student.user_id
+            if not grade_request.email:
+                grade_request.email = student.email
+            if not grade_request.username:
+                grade_request.username = student.username
+
+            grade_request.save()
+            messages.success(request, "הבקשה נשלחה בהצלחה!")
+            return redirect('student_page')
+    else:
+        initial_data = {}
+        student_username = request.session.get('student_username')
+        try:
+            student = UserRegisterStu1.objects.get(username=student_username)
+            initial_data = {
+                'email': student.email,
+                'username': student.username,
+            }
+        except UserRegisterStu1.DoesNotExist:
+            messages.error(request, "לא נמצא פרופיל תלמיד מתאים")
+            return redirect('student_page')
+
+        form = GradeImprovementRequestForm(initial=initial_data)
+
+    return render(request, 'request_form.html', {'form': form})
+
+#بغدر يلغي حسب برنامجه
+def submit_request_view(request):
+    if request.method == 'POST':
+        form = StudentRequestForm(request.POST)
+        if form.is_valid():
+            student_request = form.save()
+
+            # שליחת מייל למרצה (לפי המייל שהסטודנט הזין)
+            subject = f"בקשה חדשה מסטודנט: {student_request.request_type}"
+            message = f"""
+שלום,
+
+סטודנט בשם {student_request.student_name} שלח לך בקשה מסוג: {student_request.request_type}
+
+פרטים:
+{student_request.description}
+
+ליצירת קשר עם הסטודנט:
+אימייל: {student_request.student_email}
+
+---
+
+מערכת ניהול הבקשות
+"""
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [student_request.professor_email],
+                fail_silently=False,
+            )
+
+            messages.success(request, "הבקשה נשלחה בהצלחה למייל של המרצה.")
+            return redirect('submit_request')
+    else:
+        form = StudentRequestForm()
+    return render(request, 'submit_request.html', {'form': form})
+
+#المحاضر يشوف الطلبات
+def extension_request_list(request):
+    print("📍 נכנסתי לפונקציה extension_request_list")
+
+    if request.method == 'POST':
+        request_id = request.POST.get('request_id')
+        new_status = request.POST.get('status')
+
+        print(f"🔄 קיבלנו בקשה לעדכון סטטוס. מזהה הבקשה: {request_id}, סטטוס חדש: {new_status}")
+
+        try:
+            extension_request = get_object_or_404(TimeExtensionRequest, id=request_id)
+            print(f"✅ הבקשה נמצאה: {extension_request}")
+        except Exception as e:
+            print(f"❌ שגיאה באחזור הבקשה: {e}")
+            messages.error(request, f"שגיאה באחזור הבקשה: {e}")
+            return redirect('extension_request_list')
+
+        try:
+            extension_request.status = new_status
+            extension_request.save()
+            print(f"✅ סטטוס הבקשה עודכן ל: {extension_request.get_status_display()}")
+        except Exception as e:
+            print(f"❌ שגיאה בעדכון הסטטוס: {e}")
+            messages.error(request, f"שגיאה בעדכון הסטטוס: {e}")
+            return redirect('extension_request_list')
+
+        student_email = extension_request.email
+        print(f"📧 כתובת המייל של הסטודנט: {student_email}")
+
+        if student_email:
+            subject = "עדכון סטטוס לבקשת הארכת זמן"
+            body = f"""
+שלום {extension_request.student_name},
+
+הסטטוס של בקשתך להארכת זמן במקצוע "{extension_request.subject}" 
+עודכן ל: {extension_request.get_status_display()}
+
+פרטי הבקשה:
+• מועד הגשה מקורי: {extension_request.original_deadline}
+• מספר ימים שהתבקשו: {extension_request.requested_extension_time}
+• סיבה: {extension_request.reason_for_extension}
+
+בברכה,
+מערכת ניהול בקשות
+"""
+            try:
+                print("📤 מנסה לשלוח את המייל עם התוכן הבא:")
+                print("נושא:", subject)
+                print("גוף ההודעה:\n", body)
+
+                send_mail(
+                    subject,
+                    body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [student_email],
+                    fail_silently=False,
+                )
+                print("✅ המייל נשלח בהצלחה.")
+                messages.success(request, f"המייל נשלח לכתובת {student_email} בהצלחה.")
+            except BadHeaderError:
+                print("❌ שגיאה: כותרת מייל לא תקינה.")
+                messages.error(request, "כותרת המייל לא תקינה.")
+            except Exception as e:
+                print(f"❌ שגיאה בשליחת מייל: {e}")
+                messages.error(request, f"שגיאה בשליחת מייל: {e}")
+        else:
+            print("⚠️ אין כתובת מייל תקינה לסטודנט.")
+            messages.warning(request, "לא קיימת כתובת מייל תקינה לסטודנט.")
+
+        return redirect('extension_request_list')
+
+    # GET - הצגת כל הבקשות
+    requests = TimeExtensionRequest.objects.all()
+    print(f"📋 מספר הבקשות הכולל: {requests.count()}")
+    return render(request, 'extension_request_list.html', {'requests': requests})
+
+def submit_document_request(request):
+    if request.method == 'POST':
+        form = DocumentRequestForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "הבקשה נשלחה למזכירות.")
+            return redirect('submit_document_request')
+    else:
+        form = DocumentRequestForm()
+    return render(request, 'submit_document_request.html', {'form': form})
+
+def secretary_requests_view(request):
+    requests = DocumentRequest.objects.filter(is_completed=False).order_by('-created_at')
+    return render(request, 'secretary_requests.html', {'requests': requests})
+
+def add_office_hours(request):
+    if request.method == 'POST':
+        form = OfficeHoursForm(request.POST)
+        if form.is_valid():
+            form.save()  # שומר את המידע במסד הנתונים
+            return redirect('show_office_hours')  # הפנה לדף שמציג את שעות הקבלה
+    else:
+        form = OfficeHoursForm()
+    return render(request, 'add_office_hours.html', {'form': form})
+
+def show_office_hours(request):
+    hours = OfficeHours11.objects.all()  # טוען את כל שעות הקבלה מהמסד נתונים
+    return render(request, 'show_office_hours.html', {'hours': hours})

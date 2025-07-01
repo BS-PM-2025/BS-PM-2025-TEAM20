@@ -56,17 +56,41 @@ class LoginForm(forms.Form):
 
 
 
-
 from django import forms
 from .models import GradeImprovementRequest
 
 class GradeImprovementRequestForm(forms.ModelForm):
     class Meta:
         model = GradeImprovementRequest
-        fields = ['username', 'course_name', 'current_grade', 'desired_grade', 'reason', 'email']  # הוספתי את 'username' לשדות
+        fields = ['username', 'course_name', 'current_grade', 'desired_grade', 'reason', 'email']
+        labels = {
+            'username': 'שם משתמש',
+            'course_name': 'שם הקורס',
+            'current_grade': 'ציון נוכחי',
+            'desired_grade': 'ציון מבוקש',
+            'reason': 'נימוק לבקשה',
+            'email': 'דוא"ל סטודנט',
+        }
         widgets = {
-            'reason': forms.Textarea(attrs={'rows': 4}),
-            'email': forms.EmailInput(attrs={'placeholder': 'Enter student email'})
+            'reason': forms.Textarea(attrs={
+                'rows': 4,
+                'placeholder': 'נא לפרט את הסיבה לשיפור הציון'
+            }),
+            'email': forms.EmailInput(attrs={
+                'placeholder': 'הכנס דוא"ל תקין'
+            }),
+            'username': forms.TextInput(attrs={
+                'placeholder': 'שם המשתמש של הסטודנט'
+            }),
+            'course_name': forms.TextInput(attrs={
+                'placeholder': 'הכנס את שם הקורס'
+            }),
+            'current_grade': forms.NumberInput(attrs={
+                'placeholder': 'הכנס את הציון הנוכחי'
+            }),
+            'desired_grade': forms.NumberInput(attrs={
+                'placeholder': 'הכנס את הציון המבוקש'
+            }),
         }
 
 
@@ -93,7 +117,12 @@ class OfficeHoursForm(forms.ModelForm):
     class Meta:
         model = OfficeHours11
         fields = ['office_name', 'opening_time', 'closing_time', 'additional_info']
-
+        labels = {
+            'office_name': 'שם המשרד',
+            'opening_time': 'שעת פתיחה',
+            'closing_time': 'שעת סגירה',
+            'additional_info': 'מידע נוסף',
+        }
 
 
 from django import forms
@@ -132,20 +161,33 @@ class ChatbotForm(forms.Form):
 
 
 
-# forms.py
-from django import forms
-from .models import TimeExtensionRequest
 from django import forms
 from .models import TimeExtensionRequest
 
 class TimeExtensionRequestForm(forms.ModelForm):
     class Meta:
         model = TimeExtensionRequest
-        fields = ['student_name', 'email', 'subject', 'original_deadline', 'requested_extension_time', 'reason_for_extension', 'supporting_documents']
+        fields = [
+            'student_name',
+            'email',
+            'subject',
+            'original_deadline',
+            'requested_extension_time',
+            'reason_for_extension',
+            'supporting_documents'
+        ]
+        labels = {
+            'student_name': 'שם הסטודנט',
+            'email': 'אימייל',
+            'subject': 'נושא',
+            'original_deadline': 'תאריך הגשה מקורי',
+            'requested_extension_time': 'זמן הארכה מבוקש',
+            'reason_for_extension': 'סיבת הבקשה',
+            'supporting_documents': 'מסמכים תומכים',
+        }
         widgets = {
             'reason_for_extension': forms.Textarea(attrs={'rows': 4, 'cols': 50}),
         }
-
 
 
 
@@ -242,9 +284,16 @@ class StudentRequestForm(forms.ModelForm):
     class Meta:
         model = StudentRequest
         fields = ['student_name', 'student_email', 'professor_email', 'request_type', 'description']
+        labels = {
+            'student_name': 'שם הסטודנט',
+            'student_email': 'אימייל הסטודנט',
+            'request_type': 'סוג הבקשה',
+            'description': 'תיאור הבקשה',
+        }
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
         }
+
 
 class ProfessorResponseForm(forms.ModelForm):
     class Meta:
@@ -263,6 +312,12 @@ class DocumentRequestForm(forms.ModelForm):
     class Meta:
         model = DocumentRequest
         fields = ['student_name', 'student_email', 'document_type', 'additional_info']
+        labels = {
+            'student_name': 'שם הסטודנט',
+            'student_email': 'אימייל הסטודנט',
+            'document_type': 'סוג המסמך',
+            'additional_info': 'מידע נוסף',
+        }
 
 from django import forms
 from .models import DocumentRequest

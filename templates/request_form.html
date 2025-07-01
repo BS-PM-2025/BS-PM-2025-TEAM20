@@ -126,6 +126,16 @@
 
 <!-- תוכן מרכזי -->
 <div class="container">
+    {% if messages %}
+  <ul style="list-style: none; padding: 0;">
+    {% for message in messages %}
+      <li style="background-color: #eaf6e0; color: #2e7d32; border: 1px solid #c8e6c9; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+        {{ message }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
     <h1>בקשת שיפור ציון</h1>
     <form method="post">
         {% csrf_token %}

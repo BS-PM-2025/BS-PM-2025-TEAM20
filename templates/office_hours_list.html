@@ -95,19 +95,19 @@
 </head>
 <body>
 
-<a href="{% url 'student_page' %}" class="back-arrow">← Back</a>
+<a href="{% url 'student_page' %}" class="back-arrow"> חזרה← </a>
 
 <div class="container">
-    <h1>Office Hours</h1>
+    <h1>שעות קבלה</h1>
     <table>
         <thead>
             <tr>
-                <th>Office Name</th>
-                <th>Opening Time</th>
-                <th>Closing Time</th>
-                <th>Additional Info</th>
-                <th>Edit</th>
-                <th>Delete</th>
+                <th>שם המשרד</th>
+                <th>שעת פתיחה</th>
+                <th>שעת סגירה</th>
+                <th>מידע נוסף</th>
+                <th>עריכה</th>
+                <th>מחיקה</th>
             </tr>
         </thead>
         <tbody>
@@ -115,13 +115,13 @@
             <tr data-id="{{ office.id }}">
                 <td class="name">{{ office.office_name }}</td>
                 <td class="open">{{ office.opening_time }}</td>
-                <td class="close">{{ office.closing_time }}</td>
+                <td>{{ office.closing_time|time:"H:i" }}</td>
                 <td class="info">{{ office.additional_info }}</td>
                 <td>
-                    <button class="edit-btn" onclick="editRow(this)">Edit</button>
+                    <button class="edit-btn" onclick="editRow(this)">ערוך</button>
                 </td>
                 <td>
-                    <button class="delete-btn" onclick="deleteRow(this)">Delete</button>
+                    <button class="delete-btn" onclick="deleteRow(this)">מחק</button>
                 </td>
             </tr>
             {% endfor %}
@@ -141,7 +141,7 @@
         cells[3].innerHTML = `<input type="text" value="${cells[3].textContent.trim()}">`;
 
         // Change Edit button to Save
-        button.textContent = "Save";
+        button.textContent = "שמור";
         button.setAttribute("onclick", "saveRow(this)");
     }
 
