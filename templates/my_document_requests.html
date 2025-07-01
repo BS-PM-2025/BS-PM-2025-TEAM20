@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>הבקשות שלי</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+        h2 {
+            text-align: center;
+            color: #2d5c1f;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background: white;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: right;
+        }
+        th {
+            background-color: #cde9aa;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .status-yes {
+            color: green;
+            font-weight: bold;
+        }
+        .status-no {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>הבקשות שהגשתי</h2>
+
+    {% if requests %}
+        <table>
+            <tr>
+                <th>סוג הבקשה</th>
+                <th>הוגשה בתאריך</th>
+                <th>סטטוס</th>
+                <th>מידע נוסף</th>
+            </tr>
+            {% for req in requests %}
+                <tr>
+                    <td>{{ req.get_document_type_display }}</td>
+                    <td>{{ req.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if req.is_completed %}
+                            <span class="status-yes">הושלם</span>
+                        {% else %}
+                            <span class="status-no">ממתין</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ req.additional_info|default:"-" }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>לא נמצאו בקשות.</p>
+    {% endif %}
+</body>
+</html>

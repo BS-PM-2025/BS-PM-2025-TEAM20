@@ -23,7 +23,7 @@ pipeline {
                 sh 'python3 manage.py migrate'
             }
         }
-
+#כמה בדיקות עברו או נכשלו לוודא שהכל עובד תקין
         stage('Run Unit + Integration Tests') {
             steps {
                 echo '🧪 Running Django tests...'
@@ -33,7 +33,7 @@ pipeline {
                 '''
             }
         }
-
+#מודד כמה באגים יש לכל1000 שורות קוד נותן תמונה על איכות קוד
         stage('Calculate Defect Density') {
             steps {
                 echo '📊 Calculating Defect Density...'
@@ -53,7 +53,7 @@ pipeline {
                 '''
             }
         }
-
+#אחוז שורות קוד שבוצעו בעת ריצת הטסטים
         stage('Code Coverage') {
             steps {
                 echo '📊 Measuring code coverage...'
@@ -63,7 +63,7 @@ pipeline {
                 '''
             }
         }
-
+#פילנת הוא קלי שבודקאת איכות הקוד מבחינת  עמידה בכללים
         stage('Static Code Check: pylint') {
             steps {
                 echo '📎 Running pylint...'
@@ -74,6 +74,8 @@ pipeline {
             }
         }
     }
+
+
 
     post {
         always {

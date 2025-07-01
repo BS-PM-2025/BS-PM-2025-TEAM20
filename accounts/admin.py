@@ -146,3 +146,13 @@ from .models import Consul
 class ConsulAdmin(admin.ModelAdmin):
     list_display = ('title', 'date', 'time', 'location', 'created_by')
     list_filter = ('date',)
+
+
+from django.contrib import admin
+from .models import ReceptionHour
+
+@admin.register(ReceptionHour)
+class ReceptionHourAdmin(admin.ModelAdmin):
+    list_display = ('lecturer', 'date', 'start_time', 'end_time')
+    list_filter = ('date', 'lecturer')
+    search_fields = ('lecturer__username',)

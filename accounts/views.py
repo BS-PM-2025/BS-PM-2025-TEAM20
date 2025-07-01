@@ -2121,3 +2121,35 @@ def add1_consul(request):
 def consul_list(request):
     consuls = Consul.objects.all().order_by('date', 'time')
     return render(request, 'consul_list.html', {'consuls': consuls})
+
+@login_required
+def cancel_consul(request, consul_id):
+    consul = get_object_or_404(Consul, id=consul_id)
+
+    if request.method == 'POST':
+        # שלח מייל
+        send_mail(
+            subject='ביטול שעת קבלה',
+            message=f"השעה הבאה בוטלה:\n\nכותרת: {consul.title}\nתאריך: {consul.date}\nשעה: {consul.time}\nמיקום: {consul.location}",
+            from_email='your_email@example.com',
+            recipient_list=['elatrshnaghm@gmail.com'],
+            fail_silently=False,
+        )
+
+        # מחק מהמסד נתונים
+        consul.delete()
+
+    return redirect('consul_list')
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import DocumentRequest
+
+@login_required
+def my_document_requests(request):
+    # סינון לפי כתובת המייל של המשתמש המחובר
+    user_email = request.user.email
+    my_requests = DocumentRequest.objects.filter(student_email=user_email).order_by('-created_at')
+    return render(request, 'my_document_requests.html', {'requests': my_requests})
+

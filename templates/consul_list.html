@@ -15,7 +15,6 @@
             direction: rtl;
         }
 
-        /* Navbar */
         .navbar {
             background-color: #332f2f;
             color: #b5e745;
@@ -46,6 +45,7 @@
             background-color: rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s ease;
         }
+
         .navbar .left-section a:hover {
             background-color: rgba(0, 0, 0, 0.4);
         }
@@ -56,7 +56,6 @@
             color: #b5e745;
         }
 
-        /* Main container */
         .container {
             max-width: 700px;
             margin: 30px auto 50px auto;
@@ -85,6 +84,7 @@
             box-shadow: 0 3px 7px rgba(0,0,0,0.1);
             font-size: 1.1rem;
             line-height: 1.4;
+            position: relative;
         }
 
         li strong {
@@ -92,7 +92,6 @@
             font-size: 1.3rem;
         }
 
-        /* Back button */
         .back-arrow {
             display: inline-block;
             margin-bottom: 25px;
@@ -104,10 +103,36 @@
             background-color: #e0e0e0;
             transition: background-color 0.3s ease;
         }
+
         .back-arrow:hover {
             background-color: #c3d96b;
             color: #2d4500;
             text-decoration: none;
+        }
+
+        .cancel-button {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+        }
+
+        .cancel-button form {
+            display: inline;
+        }
+
+        .cancel-button button {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .cancel-button button:hover {
+            background-color: #c9302c;
         }
     </style>
 </head>
@@ -134,6 +159,12 @@
             <li>
                 <strong>{{ consul.title }}</strong><br>
                 תאריך: {{ consul.date }} | שעה: {{ consul.time }} | מיקום: {{ consul.location }}
+                <div class="cancel-button">
+                    <form method="post" action="{% url 'cancel_consul' consul.id %}">
+                        {% csrf_token %}
+                        <button type="submit">בטל</button>
+                    </form>
+                </div>
             </li>
         {% empty %}
             <li>אין שעות קבלה זמינות כרגע.</li>

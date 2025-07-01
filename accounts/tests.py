@@ -1043,3 +1043,18 @@ class PasswordResetDoneViewTest(TestCase):
     def test_password_reset_done_template_used(self):
         response = self.client.get('/password-reset-done/')
 
+def test_feedback_submission_flow(self):
+    # 1. Create a test user
+    user = User.objects.create_user(username='test', password='123')
+    self.client.login(username='test', password='123')
+
+    # 2. Submit feedback (with all required fields)
+    payload = {'rating': 5, 'comment': 'Great!'}
+    response = self.client.post('/submit-feedback/', data=json.dumps(payload), content_type='application/json')
+
+    # 3. Verify the response and database
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(Feedback.objects.count(), 1)
+    feedback = Feedback.objects.first()
+    self.assertEqual(feedback.user, user)  # Check user association
+    self.assertEqual(feedback.comment, 'Great!')
