@@ -18,13 +18,16 @@ from django.test import TestCase
 from django.urls import reverse
 from .models import UserRegisterLec
 
+
+# Unit test for checking the GET request to the lecturer signup page
 class SignupLecViewTests(TestCase):
+
     def test_get_signup_lec_form(self):
+        # Send a GET request to the 'signup_lec' URL
         response = self.client.get(reverse('signup_lec'))
+
+        # Check that the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
-
-
-
 
 
 from django.test import TestCase, RequestFactory
